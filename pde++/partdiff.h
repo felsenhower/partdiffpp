@@ -47,6 +47,18 @@ struct options {
   uint64_t termination;    /* termination condition                          */
   uint64_t term_iteration; /* terminate if iteration number reached          */
   double term_precision;   /* terminate if precision reached                 */
+  options(const int, const std::string &, const std::vector<std::string> &);
+
+private:
+  const void askParams(const int, const std::string &,
+                       const std::vector<std::string> &);
+  const bool check_number();
+  const bool check_method();
+  const bool check_interlines();
+  const bool check_inf_func();
+  const bool check_termination();
+  const bool check_term_precision();
+  const bool check_term_iteration();
 };
 
 struct calculation_arguments {
@@ -55,10 +67,12 @@ struct calculation_arguments {
   double h;              /* length of a space between two lines            */
   double ***Matrix;      /* index matrix used for addressing M             */
   double *M;             /* two matrices with real values                  */
-  calculation_arguments(const options &options);
+  calculation_arguments(const options &);
   ~calculation_arguments();
+
+private:
   const void allocateMatrices();
-  const void initMatrices(const options &options);
+  const void initMatrices(const options &);
   const void freeMatrices();
 };
 
@@ -66,22 +80,8 @@ struct calculation_results {
   uint64_t m;
   uint64_t stat_iteration; /* number of current iteration                    */
   double stat_precision;   /* actual precision of all slaves in iteration    */
-  calculation_results(const options &options);
+  calculation_results(const options &);
 };
-
-namespace askparams {
-
-/* *************************** */
-/* Some function declarations. */
-/* *************************** */
-/* Documentation in files      */
-/* - askparams.c               */
-/* - displaymatrix.c           */
-/* *************************** */
-const void askParams(options &, const int, const std::string &,
-                     const std::vector<std::string> &);
-
-} // namespace askparams
 
 static std::ios_base::fmtflags cout_default_flags(std::cout.flags());
 

@@ -112,39 +112,36 @@ const static void usage(const std::string &name) {
             << "Example: " << name << " 1 2 100 1 2 100 " << std::endl;
 }
 
-const static bool check_number(const options &options) {
-  return (options.number >= 1 && options.number <= MAX_THREADS);
+const bool options::check_number() {
+  return (this->number >= 1 && this->number <= MAX_THREADS);
 }
 
-const static bool check_method(const options &options) {
-  return (options.method == METH_GAUSS_SEIDEL || options.method == METH_JACOBI);
+const bool options::check_method() {
+  return (this->method == METH_GAUSS_SEIDEL || this->method == METH_JACOBI);
 }
 
-const static bool check_interlines(const options &options) {
-  return (options.interlines <= MAX_INTERLINES);
+const bool options::check_interlines() {
+  return (this->interlines <= MAX_INTERLINES);
 }
 
-const static bool check_inf_func(const options &options) {
-  return (options.inf_func == FUNC_F0 || options.inf_func == FUNC_FPISIN);
+const bool options::check_inf_func() {
+  return (this->inf_func == FUNC_F0 || this->inf_func == FUNC_FPISIN);
 }
 
-const static bool check_termination(const options &options) {
-  return (options.termination == TERM_PREC || options.termination == TERM_ITER);
+const bool options::check_termination() {
+  return (this->termination == TERM_PREC || this->termination == TERM_ITER);
 }
 
-const static bool check_term_precision(const options &options) {
-  return (options.term_precision >= 1e-20 && options.term_precision <= 1e-4);
+const bool options::check_term_precision() {
+  return (this->term_precision >= 1e-20 && this->term_precision <= 1e-4);
 }
 
-const static bool check_term_iteration(const options &options) {
-  return (options.term_iteration >= 1 &&
-          options.term_iteration <= MAX_ITERATION);
+const bool options::check_term_iteration() {
+  return (this->term_iteration >= 1 && this->term_iteration <= MAX_ITERATION);
 }
 
-const void
-partdiff::askparams::askParams(options &options, const int argc,
-                               const std::string &name,
-                               const std::vector<std::string> &args) {
+const void options::askParams(const int argc, const std::string &name,
+                              const std::vector<std::string> &args) {
   /*
   printf("============================================================\n");
   printf("Program for calculation of partial differential equations.  \n");
@@ -169,12 +166,12 @@ partdiff::askparams::askParams(options &options, const int argc,
       try {
         std::string input;
         getline(std::cin, input);
-        options.number = std::stol(input);
+        this->number = std::stol(input);
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
-    } while (!valid_input || !check_number(options));
+    } while (!valid_input || !this->check_number());
 
     do {
       std::cout << std::endl
@@ -187,12 +184,12 @@ partdiff::askparams::askParams(options &options, const int argc,
       try {
         std::string input;
         getline(std::cin, input);
-        options.method = std::stol(input);
+        this->method = std::stol(input);
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
-    } while (!valid_input || !check_method(options));
+    } while (!valid_input || !this->check_method());
 
     do {
       std::cout << std::endl
@@ -201,12 +198,12 @@ partdiff::askparams::askParams(options &options, const int argc,
       try {
         std::string input;
         getline(std::cin, input);
-        options.interlines = std::stol(input);
+        this->interlines = std::stol(input);
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
-    } while (!valid_input || !check_interlines(options));
+    } while (!valid_input || !this->check_interlines());
 
     do {
       std::cout << std::endl
@@ -218,12 +215,12 @@ partdiff::askparams::askParams(options &options, const int argc,
       try {
         std::string input;
         getline(std::cin, input);
-        options.inf_func = std::stol(input);
+        this->inf_func = std::stol(input);
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
-    } while (!valid_input || !check_inf_func(options));
+    } while (!valid_input || !this->check_inf_func());
 
     do {
       std::cout << std::endl
@@ -236,14 +233,14 @@ partdiff::askparams::askParams(options &options, const int argc,
       try {
         std::string input;
         getline(std::cin, input);
-        options.termination = std::stol(input);
+        this->termination = std::stol(input);
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
-    } while (!valid_input || !check_termination(options));
+    } while (!valid_input || !this->check_termination());
 
-    if (options.termination == TERM_PREC) {
+    if (this->termination == TERM_PREC) {
       do {
         std::cout << std::endl
                   << "Select precision:" << std::endl
@@ -252,15 +249,15 @@ partdiff::askparams::askParams(options &options, const int argc,
         try {
           std::string input;
           getline(std::cin, input);
-          options.term_precision = std::stod(input);
+          this->term_precision = std::stod(input);
           valid_input = true;
         } catch (std::logic_error &) {
           valid_input = false;
         }
-      } while (!valid_input || !check_term_precision(options));
+      } while (!valid_input || !this->check_term_precision());
 
-      options.term_iteration = MAX_ITERATION;
-    } else if (options.termination == TERM_ITER) {
+      this->term_iteration = MAX_ITERATION;
+    } else if (this->termination == TERM_ITER) {
       do {
         std::cout << std::endl
                   << "Select number of iterations:" << std::endl
@@ -270,14 +267,14 @@ partdiff::askparams::askParams(options &options, const int argc,
         try {
           std::string input;
           getline(std::cin, input);
-          options.term_iteration = std::stol(input);
+          this->term_iteration = std::stol(input);
           valid_input = true;
         } catch (std::logic_error &) {
           valid_input = false;
         }
-      } while (!valid_input || !check_term_iteration(options));
+      } while (!valid_input || !this->check_term_iteration());
 
-      options.term_precision = 0;
+      this->term_precision = 0;
     }
   } else {
     if (argc < 7 || args[0] == "-h" || args[0] == "-?") {
@@ -286,70 +283,70 @@ partdiff::askparams::askParams(options &options, const int argc,
     }
 
     try {
-      options.number = std::stol(args[0]);
+      this->number = std::stol(args[0]);
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
     }
-    if (!valid_input || !check_number(options)) {
+    if (!valid_input || !this->check_number()) {
       usage(name);
       exit(EXIT_FAILURE);
     }
 
     try {
-      options.method = std::stol(args[1]);
+      this->method = std::stol(args[1]);
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
     }
-    if (!valid_input || !check_method(options)) {
+    if (!valid_input || !this->check_method()) {
       usage(name);
       exit(EXIT_FAILURE);
     }
 
     try {
-      options.interlines = std::stol(args[2]);
+      this->interlines = std::stol(args[2]);
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
     }
-    if (!valid_input || !check_interlines(options)) {
+    if (!valid_input || !this->check_interlines()) {
       usage(name);
       exit(EXIT_FAILURE);
     }
 
     try {
-      options.inf_func = std::stol(args[3]);
+      this->inf_func = std::stol(args[3]);
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
     }
-    if (!valid_input || !check_inf_func(options)) {
+    if (!valid_input || !this->check_inf_func()) {
       usage(name);
       exit(EXIT_FAILURE);
     }
 
     try {
-      options.termination = std::stol(args[4]);
+      this->termination = std::stol(args[4]);
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
     }
-    if (!valid_input || !check_termination(options)) {
+    if (!valid_input || !this->check_termination()) {
       usage(name);
       exit(EXIT_FAILURE);
     }
 
-    if (options.termination == TERM_PREC) {
+    if (this->termination == TERM_PREC) {
 
       try {
-        options.term_precision = std::stod(args[5]);
-        options.term_iteration = MAX_ITERATION;
+        this->term_precision = std::stod(args[5]);
+        this->term_iteration = MAX_ITERATION;
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
-      if (!valid_input || !check_term_precision(options)) {
+      if (!valid_input || !this->check_term_precision()) {
         usage(name);
         exit(EXIT_FAILURE);
       }
@@ -357,16 +354,21 @@ partdiff::askparams::askParams(options &options, const int argc,
     } else {
 
       try {
-        options.term_iteration = std::stol(args[5]);
-        options.term_precision = 0;
+        this->term_iteration = std::stol(args[5]);
+        this->term_precision = 0;
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
-      if (!valid_input || !check_term_iteration(options)) {
+      if (!valid_input || !this->check_term_iteration()) {
         usage(name);
         exit(EXIT_FAILURE);
       }
     }
   }
+}
+
+options::options(const int argc, const std::string &name,
+                 const std::vector<std::string> &args) {
+  this->askParams(argc, name, args);
 }
