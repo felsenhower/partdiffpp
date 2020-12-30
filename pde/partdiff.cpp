@@ -20,11 +20,7 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include <inttypes.h>
-#include <malloc.h>
-#include <math.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <sys/time.h>
 
 #include "partdiff.h"
