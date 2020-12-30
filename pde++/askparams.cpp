@@ -74,6 +74,7 @@
 
 #define _POSIX_C_SOURCE 200809L
 
+#include <iostream>
 #include <cinttypes>
 #include <cstdio>
 #include <cstring>
@@ -81,27 +82,25 @@
 #include "partdiff.h"
 
 static void usage(char *name) {
-  printf("Usage: %s [num] [method] [lines] [func] [term] [prec/iter]\n", name);
-  printf("\n");
-  printf("  - num:       number of threads (1 .. %d)\n", MAX_THREADS);
-  printf("  - method:    calculation method (1 .. 2)\n");
-  printf("                 %1d: Gauß-Seidel\n", METH_GAUSS_SEIDEL);
-  printf("                 %1d: Jacobi\n", METH_JACOBI);
-  printf("  - lines:     number of interlines (0 .. %d)\n", MAX_INTERLINES);
-  printf("                 matrixsize = (interlines * 8) + 9\n");
-  printf("  - func:      interference function (1 .. 2)\n");
-  printf("                 %1d: f(x,y) = 0\n", FUNC_F0);
-  printf(
-      "                 %1d: f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)\n",
-      FUNC_FPISIN);
-  printf("  - term:      termination condition ( 1.. 2)\n");
-  printf("                 %1d: sufficient precision\n", TERM_PREC);
-  printf("                 %1d: number of iterations\n", TERM_ITER);
-  printf("  - prec/iter: depending on term:\n");
-  printf("                 precision:  1e-4 .. 1e-20\n");
-  printf("                 iterations:    1 .. %d\n", MAX_ITERATION);
-  printf("\n");
-  printf("Example: %s 1 2 100 1 2 100 \n", name);
+  std::cout << "Usage: " << name << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl;
+  std::cout << std::endl;
+  std::cout << "  - num:       number of threads (1 .. " << (unsigned long)MAX_THREADS << ")" << std::endl;
+  std::cout << "  - method:    calculation method (1 .. 2)" << std::endl;
+  std::cout << "                 " << (unsigned short)METH_GAUSS_SEIDEL << ": Gauß-Seidel" << std::endl;
+  std::cout << "                 " << (unsigned short)METH_JACOBI << ": Jacobi" << std::endl;
+  std::cout << "  - lines:     number of interlines (0 .. " << (unsigned long)MAX_INTERLINES << ")" << std::endl;
+  std::cout << "                 matrixsize = (interlines * 8) + 9" << std::endl;
+  std::cout << "  - func:      interference function (1 .. 2)" << std::endl;
+  std::cout << "                 " << (unsigned short)FUNC_F0 << ": f(x,y) = 0" << std::endl;
+  std::cout << "                 " << (unsigned short)FUNC_FPISIN << ": f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)" << std::endl;
+  std::cout << "  - term:      termination condition ( 1.. 2)" << std::endl;
+  std::cout << "                 " << (unsigned short)TERM_PREC << ": sufficient precision" << std::endl;
+  std::cout << "                 " << (unsigned short)TERM_ITER << ": number of iterations" << std::endl;
+  std::cout << "  - prec/iter: depending on term:" << std::endl;
+  std::cout << "                 precision:  1e-4 .. 1e-20" << std::endl;
+  std::cout << "                 iterations:    1 .. " << MAX_ITERATION << std::endl;
+  std::cout << std::endl;
+  std::cout << "Example: " << name << " 1 2 100 1 2 100 " << std::endl;
 }
 
 static int check_number(struct options *options) {
@@ -154,9 +153,9 @@ void askParams(struct options *options, int argc, char **argv) {
     /* Get input: method, interlines, func, precision. */
     /* ----------------------------------------------- */
     do {
-      printf("\n");
-      printf("Select number of threads:\n");
-      printf("Number> ");
+      std::cout << std::endl;
+      std::cout << "Select number of threads:" << std::endl;
+      std::cout << "Number> ";
       fflush(stdout);
       ret = scanf("%" SCNu64, &(options->number));
       while (getchar() != '\n')
@@ -164,11 +163,11 @@ void askParams(struct options *options, int argc, char **argv) {
     } while (ret != 1 || !check_number(options));
 
     do {
-      printf("\n");
-      printf("Select calculation method:\n");
-      printf("  %1d: Gauß-Seidel.\n", METH_GAUSS_SEIDEL);
-      printf("  %1d: Jacobi.\n", METH_JACOBI);
-      printf("method> ");
+      std::cout << std::endl;
+      std::cout << "Select calculation method:" << std::endl;
+      std::cout << "  " << (unsigned short)METH_GAUSS_SEIDEL << ": Gauß-Seidel." << std::endl;
+      std::cout << "  " << (unsigned short)METH_JACOBI << ": Jacobi." << std::endl;
+      std::cout << "method> ";
       fflush(stdout);
       ret = scanf("%" SCNu64, &(options->method));
       while (getchar() != '\n')
@@ -176,9 +175,9 @@ void askParams(struct options *options, int argc, char **argv) {
     } while (ret != 1 || !check_method(options));
 
     do {
-      printf("\n");
-      printf("Matrixsize = Interlines*8+9\n");
-      printf("Interlines> ");
+      std::cout << std::endl;
+      std::cout << "Matrixsize = Interlines*8+9" << std::endl;
+      std::cout << "Interlines> ";
       fflush(stdout);
       ret = scanf("%" SCNu64, &(options->interlines));
       while (getchar() != '\n')
@@ -186,11 +185,11 @@ void askParams(struct options *options, int argc, char **argv) {
     } while (ret != 1 || !check_interlines(options));
 
     do {
-      printf("\n");
-      printf("Select interference function:\n");
-      printf(" %1d: f(x,y)=0.\n", FUNC_F0);
-      printf(" %1d: f(x,y)=2pi^2*sin(pi*x)sin(pi*y).\n", FUNC_FPISIN);
-      printf("interference function> ");
+      std::cout << std::endl;
+      std::cout << "Select interference function:" << std::endl;
+      std::cout << " " << (unsigned short)FUNC_F0 << ": f(x,y)=0." << std::endl;
+      std::cout << " " << (unsigned short)FUNC_FPISIN << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl;
+      std::cout << "interference function> ";
       fflush(stdout);
       ret = scanf("%" SCNu64, &(options->inf_func));
       while (getchar() != '\n')
@@ -198,11 +197,11 @@ void askParams(struct options *options, int argc, char **argv) {
     } while (ret != 1 || !check_inf_func(options));
 
     do {
-      printf("\n");
-      printf("Select termination:\n");
-      printf(" %1d: sufficient precision.\n", TERM_PREC);
-      printf(" %1d: number of iterations.\n", TERM_ITER);
-      printf("termination> ");
+      std::cout << std::endl;
+      std::cout << "Select termination:" << std::endl;
+      std::cout << " " << (unsigned short)TERM_PREC << ": sufficient precision." << std::endl;
+      std::cout << " " << (unsigned short)TERM_ITER << ": number of iterations." << std::endl;
+      std::cout << "termination> ";
       fflush(stdout);
       ret = scanf("%" SCNu64, &(options->termination));
       while (getchar() != '\n')
@@ -211,10 +210,10 @@ void askParams(struct options *options, int argc, char **argv) {
 
     if (options->termination == TERM_PREC) {
       do {
-        printf("\n");
-        printf("Select precision:\n");
-        printf("  Range: 1e-4 .. 1e-20.\n");
-        printf("precision> ");
+        std::cout << std::endl;
+        std::cout << "Select precision:" << std::endl;
+        std::cout << "  Range: 1e-4 .. 1e-20." << std::endl;
+        std::cout << "precision> ";
         fflush(stdout);
         ret = scanf("%lf", &(options->term_precision));
         while (getchar() != '\n')
@@ -224,10 +223,10 @@ void askParams(struct options *options, int argc, char **argv) {
       options->term_iteration = MAX_ITERATION;
     } else if (options->termination == TERM_ITER) {
       do {
-        printf("\n");
-        printf("Select number of iterations:\n");
-        printf("  Range: 1 .. %d.\n", MAX_ITERATION);
-        printf("Iterations> ");
+        std::cout << std::endl;
+        std::cout << "Select number of iterations:" << std::endl;
+        std::cout << "  Range: 1 .. " << (unsigned long)MAX_ITERATION << "." << std::endl;
+        std::cout << "Iterations> ";
         fflush(stdout);
         ret = scanf("%" SCNu64, &(options->term_iteration));
         while (getchar() != '\n')

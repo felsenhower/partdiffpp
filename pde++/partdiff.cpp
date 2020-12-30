@@ -19,6 +19,8 @@
 /* ************************************************************************ */
 #define _POSIX_C_SOURCE 200809L
 
+#include <iostream>
+#include <iomanip>
 #include <cinttypes>
 #include <cstdio>
 #include <sys/time.h>
@@ -84,7 +86,7 @@ static void *allocateMemory(size_t size) {
   void *p;
 
   if ((p = malloc(size)) == NULL) {
-    printf("Speicherprobleme! (%" PRIu64 " Bytes angefordert)\n", size);
+    std::cout << "Speicherprobleme! " << size << " Bytes angefordert" << std::endl;
     exit(1);
   }
 
@@ -249,41 +251,45 @@ static void displayStatistics(struct calculation_arguments const *arguments,
   double time = (comp_time.tv_sec - start_time.tv_sec) +
                 (comp_time.tv_usec - start_time.tv_usec) * 1e-6;
 
-  printf("Berechnungszeit:    %f s\n", time);
-  printf("Speicherbedarf:     %f MiB\n", (N + 1) * (N + 1) * sizeof(double) *
+  std::cout << "Berechnungszeit:    " << time << " s" << std::endl;
+  double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
                                              arguments->num_matrices / 1024.0 /
-                                             1024.0);
-  printf("Berechnungsmethode: ");
+                                             1024.0;
+  std::cout << "Speicherbedarf:     " << std::fixed << std::setprecision(6)
+            << memory_consumption << " MiB" << std::endl;
+  std::cout.flags(cout_default_flags);
+  std::cout << "Berechnungsmethode: ";
 
   if (options->method == METH_GAUSS_SEIDEL) {
-    printf("Gauß-Seidel");
+    std::cout << "Gauß-Seidel";
   } else if (options->method == METH_JACOBI) {
-    printf("Jacobi");
+    std::cout << "Jacobi";
   }
 
-  printf("\n");
-  printf("Interlines:         %" PRIu64 "\n", options->interlines);
-  printf("Stoerfunktion:      ");
+  std::cout << std::endl;
+  std::cout << "Interlines:         " << options->interlines << std::endl;
+  std::cout << "Stoerfunktion:      ";
 
   if (options->inf_func == FUNC_F0) {
-    printf("f(x,y) = 0");
+    std::cout << "f(x,y) = 0";
   } else if (options->inf_func == FUNC_FPISIN) {
-    printf("f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)");
+    std::cout << "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)";
   }
 
-  printf("\n");
-  printf("Terminierung:       ");
+  std::cout << std::endl;
+  std::cout << "Terminierung:       ";
 
   if (options->termination == TERM_PREC) {
-    printf("Hinreichende Genaugkeit");
+    std::cout << "Hinreichende Genaugkeit";
   } else if (options->termination == TERM_ITER) {
-    printf("Anzahl der Iterationen");
+    std::cout << "Anzahl der Iterationen";
   }
 
-  printf("\n");
-  printf("Anzahl Iterationen: %" PRIu64 "\n", results->stat_iteration);
-  printf("Norm des Fehlers:   %e\n", results->stat_precision);
-  printf("\n");
+  std::cout << std::endl;
+  std::cout << "Anzahl Iterationen: " << results->stat_iteration << std::endl;
+  std::cout << "Norm des Fehlers:   " << std::scientific << results->stat_precision << std::endl;
+  std::cout.flags(cout_default_flags);
+  std::cout << std::endl;
 }
 
 /****************************************************************************/
@@ -305,16 +311,16 @@ static void displayMatrix(struct calculation_arguments *arguments,
 
   int const interlines = options->interlines;
 
-  printf("Matrix:\n");
+  std::cout << "Matrix:" << std::endl;
 
+  std::cout << std::fixed << std::internal << std::setprecision(4);
   for (y = 0; y < 9; y++) {
     for (x = 0; x < 9; x++) {
-      printf("%7.4f", Matrix[y * (interlines + 1)][x * (interlines + 1)]);
+      std::cout << " " << Matrix[y * (interlines + 1)][x * (interlines + 1)];
     }
-
-    printf("\n");
+    std::cout << std::endl;
   }
-
+  std::cout.flags(cout_default_flags);
   fflush(stdout);
 }
 

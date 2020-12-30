@@ -11,9 +11,12 @@
 /****************************************************************************/
 /****************************************************************************/
 
+#pragma once
+
 /* *********************************** */
 /* Include some standard header files. */
 /* *********************************** */
+#include <ios>
 #include <cmath>
 #include <cstdint>
 
@@ -52,3 +55,5 @@ struct options {
 /* - displaymatrix.c           */
 /* *************************** */
 void askParams(struct options *, int, char **);
+
+static std::ios_base::fmtflags cout_default_flags(std::cout.flags());
