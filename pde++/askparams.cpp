@@ -113,33 +113,33 @@ const static void usage(const char *name) {
   std::cout << "Example: " << name << " 1 2 100 1 2 100 " << std::endl;
 }
 
-const static int check_number(const options *options) {
+const static bool check_number(const options *options) {
   return (options->number >= 1 && options->number <= MAX_THREADS);
 }
 
-const static int check_method(const options *options) {
+const static bool check_method(const options *options) {
   return (options->method == METH_GAUSS_SEIDEL ||
           options->method == METH_JACOBI);
 }
 
-const static int check_interlines(const options *options) {
+const static bool check_interlines(const options *options) {
   return (options->interlines <= MAX_INTERLINES);
 }
 
-const static int check_inf_func(const options *options) {
+const static bool check_inf_func(const options *options) {
   return (options->inf_func == FUNC_F0 || options->inf_func == FUNC_FPISIN);
 }
 
-const static int check_termination(const options *options) {
+const static bool check_termination(const options *options) {
   return (options->termination == TERM_PREC ||
           options->termination == TERM_ITER);
 }
 
-const static int check_term_precision(const options *options) {
+const static bool check_term_precision(const options *options) {
   return (options->term_precision >= 1e-20 && options->term_precision <= 1e-4);
 }
 
-const static int check_term_iteration(const options *options) {
+const static bool check_term_iteration(const options *options) {
   return (options->term_iteration >= 1 &&
           options->term_iteration <= MAX_ITERATION);
 }
