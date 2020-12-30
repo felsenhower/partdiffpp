@@ -30,7 +30,7 @@ test: partdiff
 	@echo 'All tests completed!'
 
 testmem: partdiff
-	valgrind --leak-check=full ./partdiff 1 2 0 2 2 85
+	valgrind --leak-check=full ./partdiff 1 2 0 2 2 85 > /dev/null
 
 beautify: partdiff.c partdiff.h askparams.c
 	clang-format -i partdiff.c
