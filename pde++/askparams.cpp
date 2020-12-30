@@ -156,11 +156,11 @@ void askParams(struct options *options, int argc, char const *argv[]) {
   printf("\n");
   */
 
+  int ret = 0;
   if (argc < 2) {
     /* ----------------------------------------------- */
     /* Get input: method, interlines, func, precision. */
     /* ----------------------------------------------- */
-    int ret = 0;
     do {
       std::cout << std::endl;
       std::cout << "Select number of threads:" << std::endl;
