@@ -80,7 +80,7 @@
 
 #include "partdiff.h"
 
-static void usage(char *name) {
+static void usage(const char *name) {
   std::cout << "Usage: " << name
             << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl;
   std::cout << std::endl;
@@ -144,9 +144,7 @@ static int check_term_iteration(struct options *options) {
           options->term_iteration <= MAX_ITERATION);
 }
 
-void askParams(struct options *options, int argc, char **argv) {
-  int ret;
-
+void askParams(struct options *options, int argc, char const *argv[]) {
   /*
   printf("============================================================\n");
   printf("Program for calculation of partial differential equations.  \n");
@@ -162,6 +160,7 @@ void askParams(struct options *options, int argc, char **argv) {
     /* ----------------------------------------------- */
     /* Get input: method, interlines, func, precision. */
     /* ----------------------------------------------- */
+    int ret = 0;
     do {
       std::cout << std::endl;
       std::cout << "Select number of threads:" << std::endl;
@@ -247,42 +246,42 @@ void askParams(struct options *options, int argc, char **argv) {
   } else {
     if (argc < 7 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "-?") == 0) {
       usage(argv[0]);
-      exit(0);
+      exit(EXIT_SUCCESS);
     }
 
     ret = sscanf(argv[1], "%" SCNu64, &(options->number));
 
     if (ret != 1 || !check_number(options)) {
       usage(argv[0]);
-      exit(1);
+      exit(EXIT_FAILURE);
     }
 
     ret = sscanf(argv[2], "%" SCNu64, &(options->method));
 
     if (ret != 1 || !check_method(options)) {
       usage(argv[0]);
-      exit(1);
+      exit(EXIT_FAILURE);
     }
 
     ret = sscanf(argv[3], "%" SCNu64, &(options->interlines));
 
     if (ret != 1 || !check_interlines(options)) {
       usage(argv[0]);
-      exit(1);
+      exit(EXIT_FAILURE);
     }
 
     ret = sscanf(argv[4], "%" SCNu64, &(options->inf_func));
 
     if (ret != 1 || !check_inf_func(options)) {
       usage(argv[0]);
-      exit(1);
+      exit(EXIT_FAILURE);
     }
 
     ret = sscanf(argv[5], "%" SCNu64, &(options->termination));
 
     if (ret != 1 || !check_termination(options)) {
       usage(argv[0]);
-      exit(1);
+      exit(EXIT_FAILURE);
     }
 
     if (options->termination == TERM_PREC) {
@@ -291,7 +290,7 @@ void askParams(struct options *options, int argc, char **argv) {
 
       if (ret != 1 || !check_term_precision(options)) {
         usage(argv[0]);
-        exit(1);
+        exit(EXIT_FAILURE);
       }
     } else {
       ret = sscanf(argv[6], "%" SCNu64, &(options->term_iteration));
@@ -299,7 +298,7 @@ void askParams(struct options *options, int argc, char **argv) {
 
       if (ret != 1 || !check_term_iteration(options)) {
         usage(argv[0]);
-        exit(1);
+        exit(EXIT_FAILURE);
       }
     }
   }
