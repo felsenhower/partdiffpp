@@ -18,6 +18,7 @@
 /* *********************************** */
 #include <cmath>
 #include <ios>
+#include <vector>
 
 namespace partdiff {
 
@@ -57,7 +58,8 @@ namespace askparams {
 /* - askparams.c               */
 /* - displaymatrix.c           */
 /* *************************** */
-const void askParams(options &, const int, const char *[]);
+const void askParams(options &, const int, const std::string &,
+                     const std::vector<std::string> &);
 
 } // namespace askparams
 

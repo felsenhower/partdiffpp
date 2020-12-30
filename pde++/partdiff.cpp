@@ -308,8 +308,10 @@ const static void displayMatrix(const calculation_arguments &arguments,
 /*  main                                                                    */
 /* ************************************************************************ */
 int main(const int argc, char const *argv[]) {
+  const std::string name(argv[0]);
+  const std::vector<std::string> args(argv + 1, argv + argc);
   options options = {};
-  askparams::askParams(options, argc, argv);
+  askparams::askParams(options, argc, name, args);
 
   calculation_arguments arguments = {};
   calculation_results results = {};

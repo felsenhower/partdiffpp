@@ -75,14 +75,13 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include <cinttypes>
-#include <cstring>
 #include <iostream>
 
 #include "partdiff.h"
 
 using namespace partdiff;
 
-const static void usage(const char *name) {
+const static void usage(const std::string &name) {
   std::cout << "Usage: " << name
             << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl
             << std::endl
@@ -143,8 +142,10 @@ const static bool check_term_iteration(const options &options) {
           options.term_iteration <= MAX_ITERATION);
 }
 
-const void partdiff::askparams::askParams(options &options, const int argc,
-                                          const char *argv[]) {
+const void
+partdiff::askparams::askParams(options &options, const int argc,
+                               const std::string &name,
+                               const std::vector<std::string> &args) {
   /*
   printf("============================================================\n");
   printf("Program for calculation of partial differential equations.  \n");
@@ -245,60 +246,60 @@ const void partdiff::askparams::askParams(options &options, const int argc,
       options.term_precision = 0;
     }
   } else {
-    if (argc < 7 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "-?") == 0) {
-      usage(argv[0]);
+    if (argc < 7 || args[0] == "-h" || args[0] == "-?") {
+      usage(name);
       exit(EXIT_SUCCESS);
     }
 
-    ret = sscanf(argv[1], "%" SCNu64, &(options.number));
+    ret = sscanf(args[0].c_str(), "%" SCNu64, &(options.number));
 
     if (ret != 1 || !check_number(options)) {
-      usage(argv[0]);
+      usage(name);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(argv[2], "%" SCNu64, &(options.method));
+    ret = sscanf(args[1].c_str(), "%" SCNu64, &(options.method));
 
     if (ret != 1 || !check_method(options)) {
-      usage(argv[0]);
+      usage(name);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(argv[3], "%" SCNu64, &(options.interlines));
+    ret = sscanf(args[2].c_str(), "%" SCNu64, &(options.interlines));
 
     if (ret != 1 || !check_interlines(options)) {
-      usage(argv[0]);
+      usage(name);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(argv[4], "%" SCNu64, &(options.inf_func));
+    ret = sscanf(args[3].c_str(), "%" SCNu64, &(options.inf_func));
 
     if (ret != 1 || !check_inf_func(options)) {
-      usage(argv[0]);
+      usage(name);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(argv[5], "%" SCNu64, &(options.termination));
+    ret = sscanf(args[4].c_str(), "%" SCNu64, &(options.termination));
 
     if (ret != 1 || !check_termination(options)) {
-      usage(argv[0]);
+      usage(name);
       exit(EXIT_FAILURE);
     }
 
     if (options.termination == TERM_PREC) {
-      ret = sscanf(argv[6], "%lf", &(options.term_precision));
+      ret = sscanf(args[5].c_str(), "%lf", &(options.term_precision));
       options.term_iteration = MAX_ITERATION;
 
       if (ret != 1 || !check_term_precision(options)) {
-        usage(argv[0]);
+        usage(name);
         exit(EXIT_FAILURE);
       }
     } else {
-      ret = sscanf(argv[6], "%" SCNu64, &(options.term_iteration));
+      ret = sscanf(args[5].c_str(), "%" SCNu64, &(options.term_iteration));
       options.term_precision = 0;
 
       if (ret != 1 || !check_term_iteration(options)) {
-        usage(argv[0]);
+        usage(name);
         exit(EXIT_FAILURE);
       }
     }
