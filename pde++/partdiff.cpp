@@ -19,9 +19,9 @@
 /* ************************************************************************ */
 #define _POSIX_C_SOURCE 200809L
 
-#include <iostream>
-#include <iomanip>
 #include <cinttypes>
+#include <iomanip>
+#include <iostream>
 #include <sys/time.h>
 
 #include "partdiff.h"
@@ -85,7 +85,8 @@ static void *allocateMemory(size_t size) {
   void *p;
 
   if ((p = malloc(size)) == NULL) {
-    std::cout << "Speicherprobleme! " << size << " Bytes angefordert" << std::endl;
+    std::cout << "Speicherprobleme! " << size << " Bytes angefordert"
+              << std::endl;
     exit(1);
   }
 
@@ -252,8 +253,7 @@ static void displayStatistics(struct calculation_arguments const *arguments,
 
   std::cout << "Berechnungszeit:    " << time << " s" << std::endl;
   double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
-                                             arguments->num_matrices / 1024.0 /
-                                             1024.0;
+                              arguments->num_matrices / 1024.0 / 1024.0;
   std::cout << "Speicherbedarf:     " << std::fixed << std::setprecision(6)
             << memory_consumption << " MiB" << std::endl;
   std::cout.flags(cout_default_flags);
@@ -286,7 +286,8 @@ static void displayStatistics(struct calculation_arguments const *arguments,
 
   std::cout << std::endl;
   std::cout << "Anzahl Iterationen: " << results->stat_iteration << std::endl;
-  std::cout << "Norm des Fehlers:   " << std::scientific << results->stat_precision << std::endl;
+  std::cout << "Norm des Fehlers:   " << std::scientific
+            << results->stat_precision << std::endl;
   std::cout.flags(cout_default_flags);
   std::cout << std::endl;
 }
