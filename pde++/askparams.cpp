@@ -76,7 +76,6 @@
 
 #include <iostream>
 #include <cinttypes>
-#include <cstdio>
 #include <cstring>
 
 #include "partdiff.h"
@@ -155,8 +154,7 @@ void askParams(struct options *options, int argc, char **argv) {
     do {
       std::cout << std::endl;
       std::cout << "Select number of threads:" << std::endl;
-      std::cout << "Number> ";
-      fflush(stdout);
+      std::cout << "Number> " << std::flush;
       ret = scanf("%" SCNu64, &(options->number));
       while (getchar() != '\n')
         ;
@@ -167,8 +165,7 @@ void askParams(struct options *options, int argc, char **argv) {
       std::cout << "Select calculation method:" << std::endl;
       std::cout << "  " << (unsigned short)METH_GAUSS_SEIDEL << ": Gauß-Seidel." << std::endl;
       std::cout << "  " << (unsigned short)METH_JACOBI << ": Jacobi." << std::endl;
-      std::cout << "method> ";
-      fflush(stdout);
+      std::cout << "method> " << std::flush;
       ret = scanf("%" SCNu64, &(options->method));
       while (getchar() != '\n')
         ;
@@ -177,8 +174,7 @@ void askParams(struct options *options, int argc, char **argv) {
     do {
       std::cout << std::endl;
       std::cout << "Matrixsize = Interlines*8+9" << std::endl;
-      std::cout << "Interlines> ";
-      fflush(stdout);
+      std::cout << "Interlines> " << std::flush;
       ret = scanf("%" SCNu64, &(options->interlines));
       while (getchar() != '\n')
         ;
@@ -189,8 +185,7 @@ void askParams(struct options *options, int argc, char **argv) {
       std::cout << "Select interference function:" << std::endl;
       std::cout << " " << (unsigned short)FUNC_F0 << ": f(x,y)=0." << std::endl;
       std::cout << " " << (unsigned short)FUNC_FPISIN << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl;
-      std::cout << "interference function> ";
-      fflush(stdout);
+      std::cout << "interference function> " << std::flush;
       ret = scanf("%" SCNu64, &(options->inf_func));
       while (getchar() != '\n')
         ;
@@ -201,8 +196,7 @@ void askParams(struct options *options, int argc, char **argv) {
       std::cout << "Select termination:" << std::endl;
       std::cout << " " << (unsigned short)TERM_PREC << ": sufficient precision." << std::endl;
       std::cout << " " << (unsigned short)TERM_ITER << ": number of iterations." << std::endl;
-      std::cout << "termination> ";
-      fflush(stdout);
+      std::cout << "termination> " << std::flush;
       ret = scanf("%" SCNu64, &(options->termination));
       while (getchar() != '\n')
         ;
@@ -213,8 +207,7 @@ void askParams(struct options *options, int argc, char **argv) {
         std::cout << std::endl;
         std::cout << "Select precision:" << std::endl;
         std::cout << "  Range: 1e-4 .. 1e-20." << std::endl;
-        std::cout << "precision> ";
-        fflush(stdout);
+        std::cout << "precision> " << std::flush;
         ret = scanf("%lf", &(options->term_precision));
         while (getchar() != '\n')
           ;
@@ -226,8 +219,7 @@ void askParams(struct options *options, int argc, char **argv) {
         std::cout << std::endl;
         std::cout << "Select number of iterations:" << std::endl;
         std::cout << "  Range: 1 .. " << (unsigned long)MAX_ITERATION << "." << std::endl;
-        std::cout << "Iterations> ";
-        fflush(stdout);
+        std::cout << "Iterations> " << std::flush;
         ret = scanf("%" SCNu64, &(options->term_iteration));
         while (getchar() != '\n')
           ;

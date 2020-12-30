@@ -22,7 +22,6 @@
 #include <iostream>
 #include <iomanip>
 #include <cinttypes>
-#include <cstdio>
 #include <sys/time.h>
 
 #include "partdiff.h"
@@ -320,8 +319,8 @@ static void displayMatrix(struct calculation_arguments *arguments,
     }
     std::cout << std::endl;
   }
+  std::cout << std::flush;
   std::cout.flags(cout_default_flags);
-  fflush(stdout);
 }
 
 /* ************************************************************************ */
