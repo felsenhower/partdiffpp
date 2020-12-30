@@ -158,6 +158,7 @@ partdiff::askparams::askParams(options &options, const int argc,
   */
 
   int ret = 0;
+  bool valid_input = false;
   if (argc < 2) {
     /* ----------------------------------------------- */
     /* Get input: method, interlines, func, precision. */
@@ -166,10 +167,15 @@ partdiff::askparams::askParams(options &options, const int argc,
       std::cout << std::endl
                 << "Select number of threads:" << std::endl
                 << "Number> " << std::flush;
-      ret = scanf("%" SCNu64, &(options.number));
-      while (getchar() != '\n')
-        ;
-    } while (ret != 1 || !check_number(options));
+      try {
+        std::string input;
+        getline(std::cin, input);
+        options.number = std::stoi(input);
+        valid_input = true;
+      } catch (std::logic_error &) {
+        valid_input = false;
+      }
+    } while (!valid_input || !check_number(options));
 
     do {
       std::cout << std::endl
@@ -179,19 +185,28 @@ partdiff::askparams::askParams(options &options, const int argc,
                 << "  " << (unsigned short)METH_JACOBI << ": Jacobi."
                 << std::endl
                 << "method> " << std::flush;
-      ret = scanf("%" SCNu64, &(options.method));
-      while (getchar() != '\n')
-        ;
-    } while (ret != 1 || !check_method(options));
-
+      try {
+        std::string input;
+        getline(std::cin, input);
+        options.method = std::stoi(input);
+        valid_input = true;
+      } catch (std::logic_error &) {
+        valid_input = false;
+      }
+    } while (!valid_input || !check_method(options));
     do {
       std::cout << std::endl
                 << "Matrixsize = Interlines*8+9" << std::endl
                 << "Interlines> " << std::flush;
-      ret = scanf("%" SCNu64, &(options.interlines));
-      while (getchar() != '\n')
-        ;
-    } while (ret != 1 || !check_interlines(options));
+      try {
+        std::string input;
+        getline(std::cin, input);
+        options.interlines = std::stoi(input);
+        valid_input = true;
+      } catch (std::logic_error &) {
+        valid_input = false;
+      }
+    } while (!valid_input || !check_interlines(options));
 
     do {
       std::cout << std::endl
@@ -200,10 +215,15 @@ partdiff::askparams::askParams(options &options, const int argc,
                 << " " << (unsigned short)FUNC_FPISIN
                 << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl
                 << "interference function> " << std::flush;
-      ret = scanf("%" SCNu64, &(options.inf_func));
-      while (getchar() != '\n')
-        ;
-    } while (ret != 1 || !check_inf_func(options));
+      try {
+        std::string input;
+        getline(std::cin, input);
+        options.inf_func = std::stoi(input);
+        valid_input = true;
+      } catch (std::logic_error &) {
+        valid_input = false;
+      }
+    } while (!valid_input || !check_inf_func(options));
 
     do {
       std::cout << std::endl
@@ -213,11 +233,15 @@ partdiff::askparams::askParams(options &options, const int argc,
                 << " " << (unsigned short)TERM_ITER << ": number of iterations."
                 << std::endl
                 << "termination> " << std::flush;
-      ret = scanf("%" SCNu64, &(options.termination));
-      while (getchar() != '\n') {
-        /* nothing */
-      };
-    } while (ret != 1 || !check_termination(options));
+      try {
+        std::string input;
+        getline(std::cin, input);
+        options.termination = std::stoi(input);
+        valid_input = true;
+      } catch (std::logic_error &) {
+        valid_input = false;
+      }
+    } while (!valid_input || !check_termination(options));
 
     if (options.termination == TERM_PREC) {
       do {
@@ -225,10 +249,15 @@ partdiff::askparams::askParams(options &options, const int argc,
                   << "Select precision:" << std::endl
                   << "  Range: 1e-4 .. 1e-20." << std::endl
                   << "precision> " << std::flush;
-        ret = scanf("%lf", &(options.term_precision));
-        while (getchar() != '\n')
-          ;
-      } while (ret != 1 || !check_term_precision(options));
+        try {
+          std::string input;
+          getline(std::cin, input);
+          options.term_precision = std::stoi(input);
+          valid_input = true;
+        } catch (std::logic_error &) {
+          valid_input = false;
+        }
+      } while (!valid_input || !check_term_precision(options));
 
       options.term_iteration = MAX_ITERATION;
     } else if (options.termination == TERM_ITER) {
@@ -238,10 +267,15 @@ partdiff::askparams::askParams(options &options, const int argc,
                   << "  Range: 1 .. " << (unsigned long)MAX_ITERATION << "."
                   << std::endl
                   << "Iterations> " << std::flush;
-        ret = scanf("%" SCNu64, &(options.term_iteration));
-        while (getchar() != '\n')
-          ;
-      } while (ret != 1 || !check_term_iteration(options));
+        try {
+          std::string input;
+          getline(std::cin, input);
+          options.term_iteration = std::stoi(input);
+          valid_input = true;
+        } catch (std::logic_error &) {
+          valid_input = false;
+        }
+      } while (!valid_input || !check_term_iteration(options));
 
       options.term_precision = 0;
     }

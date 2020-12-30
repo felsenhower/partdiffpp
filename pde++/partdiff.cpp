@@ -82,7 +82,7 @@ const static void freeMatrices(const calculation_arguments &arguments) {
 const static uint8_t *allocateMemory(const std::size_t size) {
   try {
     return new uint8_t[size];
-  } catch (std::bad_alloc e) {
+  } catch (std::bad_alloc &) {
     std::cout << "Speicherprobleme! " << size << " Bytes angefordert"
               << std::endl;
     exit(EXIT_FAILURE);
