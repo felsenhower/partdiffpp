@@ -14,8 +14,8 @@
 /* *********************************** */
 /* Include some standard header files. */
 /* *********************************** */
-#include <math.h>
-#include <stdint.h>
+#include <cmath>
+#include <cstdint>
 
 /* ************* */
 /* Some defines. */

@@ -74,9 +74,9 @@
 
 #define _POSIX_C_SOURCE 200809L
 
-#include <inttypes.h>
-#include <stdio.h>
-#include <string.h>
+#include <cinttypes>
+#include <cstdio>
+#include <cstring>
 
 #include "partdiff.h"
 
