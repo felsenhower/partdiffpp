@@ -20,6 +20,8 @@
 #include <cstdint>
 #include <ios>
 
+namespace partdiff {
+
 /* ************* */
 /* Some defines. */
 /* ************* */
@@ -47,6 +49,8 @@ struct options {
   double term_precision;   /* terminate if precision reached                 */
 };
 
+namespace askparams {
+
 /* *************************** */
 /* Some function declarations. */
 /* *************************** */
@@ -56,4 +60,8 @@ struct options {
 /* *************************** */
 const void askParams(options &, const int, const char *[]);
 
+} // namespace askparams
+
 static std::ios_base::fmtflags cout_default_flags(std::cout.flags());
+
+} // namespace partdiff

@@ -80,6 +80,8 @@
 
 #include "partdiff.h"
 
+using namespace partdiff;
+
 const static void usage(const char *name) {
   std::cout << "Usage: " << name
             << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl;
@@ -142,7 +144,8 @@ const static bool check_term_iteration(const options &options) {
           options.term_iteration <= MAX_ITERATION);
 }
 
-const void askParams(options &options, const int argc, const char *argv[]) {
+const void partdiff::askparams::askParams(options &options, const int argc,
+                                          const char *argv[]) {
   /*
   printf("============================================================\n");
   printf("Program for calculation of partial differential equations.  \n");

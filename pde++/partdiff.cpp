@@ -26,6 +26,8 @@
 
 #include "partdiff.h"
 
+using namespace partdiff;
+
 struct calculation_arguments {
   uint64_t N;            /* number of spaces between lines (lines=N+1)     */
   uint64_t num_matrices; /* number of matrices                             */
@@ -309,7 +311,7 @@ const static void displayMatrix(const calculation_arguments &arguments,
 /* ************************************************************************ */
 int main(const int argc, char const *argv[]) {
   options options = {};
-  askParams(options, argc, argv);
+  askparams::askParams(options, argc, argv);
 
   calculation_arguments arguments = {};
   calculation_results results = {};
