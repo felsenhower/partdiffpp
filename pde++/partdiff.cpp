@@ -27,20 +27,6 @@
 
 using namespace partdiff;
 
-struct calculation_arguments {
-  uint64_t N;            /* number of spaces between lines (lines=N+1)     */
-  uint64_t num_matrices; /* number of matrices                             */
-  double h;              /* length of a space between two lines            */
-  double ***Matrix;      /* index matrix used for addressing M             */
-  double *M;             /* two matrices with real values                  */
-};
-
-struct calculation_results {
-  uint64_t m;
-  uint64_t stat_iteration; /* number of current iteration                    */
-  double stat_precision;   /* actual precision of all slaves in iteration    */
-};
-
 /* ************************************************************************ */
 /* Global variables                                                         */
 /* ************************************************************************ */
@@ -49,31 +35,32 @@ struct calculation_results {
 timeval start_time = {}; /* time when program started                      */
 timeval comp_time = {};  /* time when calculation completed                */
 
-/* ************************************************************************ */
-/* initVariables: Initializes some global variables                         */
-/* ************************************************************************ */
-const static void initVariables(calculation_arguments &arguments,
-                                calculation_results &results,
-                                const options &options) {
-  arguments.N = (options.interlines * 8) + 9 - 1;
-  arguments.num_matrices = (options.method == METH_JACOBI) ? 2 : 1;
-  arguments.h = 1.0 / arguments.N;
-
-  results.m = 0;
-  results.stat_iteration = 0;
-  results.stat_precision = 0;
+calculation_results::calculation_results(const options &options) {
+  this->m = 0;
+  this->stat_iteration = 0;
+  this->stat_precision = 0;
 }
 
 /* ************************************************************************ */
 /* freeMatrices: frees memory for matrices                                  */
 /* ************************************************************************ */
-const static void freeMatrices(const calculation_arguments &arguments) {
-  for (uint64_t i = 0; i < arguments.num_matrices; i++) {
-    delete[] arguments.Matrix[i];
+const void calculation_arguments::freeMatrices() {
+  for (uint64_t i = 0; i < this->num_matrices; i++) {
+    delete[] this->Matrix[i];
   }
-  delete[] arguments.Matrix;
-  delete[] arguments.M;
+  delete[] this->Matrix;
+  delete[] this->M;
 }
+
+calculation_arguments::calculation_arguments(const options &options) {
+  this->N = (options.interlines * 8) + 9 - 1;
+  this->num_matrices = (options.method == METH_JACOBI) ? 2 : 1;
+  this->h = 1.0 / this->N;
+  this->allocateMatrices();
+  this->initMatrices(options);
+}
+
+calculation_arguments::~calculation_arguments() { this->freeMatrices(); }
 
 /* ************************************************************************ */
 /* allocateMemory ()                                                        */
@@ -92,20 +79,19 @@ const static uint8_t *allocateMemory(const std::size_t size) {
 /* ************************************************************************ */
 /* allocateMatrices: allocates memory for matrices                          */
 /* ************************************************************************ */
-const static void allocateMatrices(calculation_arguments &arguments) {
-  const uint64_t N = arguments.N;
+const void calculation_arguments::allocateMatrices() {
+  const uint64_t N = this->N;
 
-  arguments.M = (double *)allocateMemory(arguments.num_matrices * (N + 1) *
-                                         (N + 1) * sizeof(double));
-  arguments.Matrix =
-      (double ***)allocateMemory(arguments.num_matrices * sizeof(double **));
+  this->M = (double *)allocateMemory(this->num_matrices * (N + 1) * (N + 1) *
+                                     sizeof(double));
+  this->Matrix =
+      (double ***)allocateMemory(this->num_matrices * sizeof(double **));
 
-  for (uint64_t i = 0; i < arguments.num_matrices; i++) {
-    arguments.Matrix[i] = (double **)allocateMemory((N + 1) * sizeof(double *));
+  for (uint64_t i = 0; i < this->num_matrices; i++) {
+    this->Matrix[i] = (double **)allocateMemory((N + 1) * sizeof(double *));
 
     for (uint64_t j = 0; j <= N; j++) {
-      arguments.Matrix[i][j] =
-          arguments.M + (i * (N + 1) * (N + 1)) + (j * (N + 1));
+      this->Matrix[i][j] = this->M + (i * (N + 1) * (N + 1)) + (j * (N + 1));
     }
   }
 }
@@ -113,14 +99,13 @@ const static void allocateMatrices(calculation_arguments &arguments) {
 /* ************************************************************************ */
 /* initMatrices: Initialize matrix/matrices and some global variables       */
 /* ************************************************************************ */
-const static void initMatrices(const calculation_arguments &arguments,
-                               const options &options) {
-  const uint64_t N = arguments.N;
-  const double h = arguments.h;
-  double ***Matrix = arguments.Matrix;
+const void calculation_arguments::initMatrices(const options &options) {
+  const uint64_t N = this->N;
+  const double h = this->h;
+  double ***Matrix = this->Matrix;
 
   /* initialize matrix/matrices with zeros */
-  for (uint64_t g = 0; g < arguments.num_matrices; g++) {
+  for (uint64_t g = 0; g < this->num_matrices; g++) {
     for (uint64_t i = 0; i <= N; i++) {
       for (uint64_t j = 0; j <= N; j++) {
         Matrix[g][i][j] = 0.0;
@@ -130,7 +115,7 @@ const static void initMatrices(const calculation_arguments &arguments,
 
   /* initialize borders, depending on function (function 2: nothing to do) */
   if (options.inf_func == FUNC_F0) {
-    for (uint64_t g = 0; g < arguments.num_matrices; g++) {
+    for (uint64_t g = 0; g < this->num_matrices; g++) {
       for (uint64_t i = 0; i <= N; i++) {
         Matrix[g][i][0] = 1.0 - (h * i);
         Matrix[g][i][N] = h * i;
@@ -313,12 +298,8 @@ int main(const int argc, char const *argv[]) {
   options options = {};
   askparams::askParams(options, argc, name, args);
 
-  calculation_arguments arguments = {};
-  calculation_results results = {};
-  initVariables(arguments, results, options);
-
-  allocateMatrices(arguments);
-  initMatrices(arguments, options);
+  calculation_arguments arguments(options);
+  calculation_results results(options);
 
   gettimeofday(&start_time, nullptr);
   calculate(arguments, results, options);
@@ -326,8 +307,6 @@ int main(const int argc, char const *argv[]) {
 
   displayStatistics(arguments, results, options);
   displayMatrix(arguments, results, options);
-
-  freeMatrices(arguments);
 
   return EXIT_SUCCESS;
 }

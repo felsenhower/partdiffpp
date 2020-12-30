@@ -49,6 +49,26 @@ struct options {
   double term_precision;   /* terminate if precision reached                 */
 };
 
+struct calculation_arguments {
+  uint64_t N;            /* number of spaces between lines (lines=N+1)     */
+  uint64_t num_matrices; /* number of matrices                             */
+  double h;              /* length of a space between two lines            */
+  double ***Matrix;      /* index matrix used for addressing M             */
+  double *M;             /* two matrices with real values                  */
+  calculation_arguments(const options &options);
+  ~calculation_arguments();
+  const void allocateMatrices();
+  const void initMatrices(const options &options);
+  const void freeMatrices();
+};
+
+struct calculation_results {
+  uint64_t m;
+  uint64_t stat_iteration; /* number of current iteration                    */
+  double stat_precision;   /* actual precision of all slaves in iteration    */
+  calculation_results(const options &options);
+};
+
 namespace askparams {
 
 /* *************************** */
