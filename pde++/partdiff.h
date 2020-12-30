@@ -17,7 +17,6 @@
 /* Include some standard header files. */
 /* *********************************** */
 #include <cmath>
-#include <cstdint>
 #include <ios>
 
 namespace partdiff {

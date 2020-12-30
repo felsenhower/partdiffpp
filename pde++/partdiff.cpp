@@ -19,7 +19,6 @@
 /* ************************************************************************ */
 #define _POSIX_C_SOURCE 200809L
 
-#include <cinttypes>
 #include <iomanip>
 #include <iostream>
 #include <sys/time.h>
@@ -182,7 +181,7 @@ const static void calculate(const calculation_arguments &arguments,
       double fpisin_i = 0.0;
 
       if (options.inf_func == FUNC_FPISIN) {
-        fpisin_i = fpisin * sin(pih * (double)i);
+        fpisin_i = fpisin * std::sin(pih * (double)i);
       }
 
       /* over all columns */
@@ -191,7 +190,7 @@ const static void calculate(const calculation_arguments &arguments,
                               Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
 
         if (options.inf_func == FUNC_FPISIN) {
-          star += fpisin_i * sin(pih * (double)j);
+          star += fpisin_i * std::sin(pih * (double)j);
         }
 
         if (options.termination == TERM_PREC || term_iteration == 1) {
