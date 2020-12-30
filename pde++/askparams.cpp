@@ -84,35 +84,34 @@ using namespace partdiff;
 
 const static void usage(const char *name) {
   std::cout << "Usage: " << name
-            << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl;
-  std::cout << std::endl;
-  std::cout << "  - num:       number of threads (1 .. "
-            << (unsigned long)MAX_THREADS << ")" << std::endl;
-  std::cout << "  - method:    calculation method (1 .. 2)" << std::endl;
-  std::cout << "                 " << (unsigned short)METH_GAUSS_SEIDEL
-            << ": Gauß-Seidel" << std::endl;
-  std::cout << "                 " << (unsigned short)METH_JACOBI << ": Jacobi"
-            << std::endl;
-  std::cout << "  - lines:     number of interlines (0 .. "
-            << (unsigned long)MAX_INTERLINES << ")" << std::endl;
-  std::cout << "                 matrixsize = (interlines * 8) + 9"
-            << std::endl;
-  std::cout << "  - func:      interference function (1 .. 2)" << std::endl;
-  std::cout << "                 " << (unsigned short)FUNC_F0 << ": f(x,y) = 0"
-            << std::endl;
-  std::cout << "                 " << (unsigned short)FUNC_FPISIN
-            << ": f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)" << std::endl;
-  std::cout << "  - term:      termination condition ( 1.. 2)" << std::endl;
-  std::cout << "                 " << (unsigned short)TERM_PREC
-            << ": sufficient precision" << std::endl;
-  std::cout << "                 " << (unsigned short)TERM_ITER
-            << ": number of iterations" << std::endl;
-  std::cout << "  - prec/iter: depending on term:" << std::endl;
-  std::cout << "                 precision:  1e-4 .. 1e-20" << std::endl;
-  std::cout << "                 iterations:    1 .. " << MAX_ITERATION
-            << std::endl;
-  std::cout << std::endl;
-  std::cout << "Example: " << name << " 1 2 100 1 2 100 " << std::endl;
+            << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl
+            << std::endl
+            << "  - num:       number of threads (1 .. "
+            << (unsigned long)MAX_THREADS << ")" << std::endl
+            << "  - method:    calculation method (1 .. 2)" << std::endl
+            << "                 " << (unsigned short)METH_GAUSS_SEIDEL
+            << ": Gauß-Seidel" << std::endl
+            << "                 " << (unsigned short)METH_JACOBI << ": Jacobi"
+            << std::endl
+            << "  - lines:     number of interlines (0 .. "
+            << (unsigned long)MAX_INTERLINES << ")" << std::endl
+            << "                 matrixsize = (interlines * 8) + 9" << std::endl
+            << "  - func:      interference function (1 .. 2)" << std::endl
+            << "                 " << (unsigned short)FUNC_F0 << ": f(x,y) = 0"
+            << std::endl
+            << "                 " << (unsigned short)FUNC_FPISIN
+            << ": f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)" << std::endl
+            << "  - term:      termination condition ( 1.. 2)" << std::endl
+            << "                 " << (unsigned short)TERM_PREC
+            << ": sufficient precision" << std::endl
+            << "                 " << (unsigned short)TERM_ITER
+            << ": number of iterations" << std::endl
+            << "  - prec/iter: depending on term:" << std::endl
+            << "                 precision:  1e-4 .. 1e-20" << std::endl
+            << "                 iterations:    1 .. " << MAX_ITERATION
+            << std::endl
+            << std::endl
+            << "Example: " << name << " 1 2 100 1 2 100 " << std::endl;
 }
 
 const static bool check_number(const options &options) {
@@ -163,67 +162,68 @@ const void partdiff::askparams::askParams(options &options, const int argc,
     /* Get input: method, interlines, func, precision. */
     /* ----------------------------------------------- */
     do {
-      std::cout << std::endl;
-      std::cout << "Select number of threads:" << std::endl;
-      std::cout << "Number> " << std::flush;
+      std::cout << std::endl
+                << "Select number of threads:" << std::endl
+                << "Number> " << std::flush;
       ret = scanf("%" SCNu64, &(options.number));
       while (getchar() != '\n')
         ;
     } while (ret != 1 || !check_number(options));
 
     do {
-      std::cout << std::endl;
-      std::cout << "Select calculation method:" << std::endl;
-      std::cout << "  " << (unsigned short)METH_GAUSS_SEIDEL << ": Gauß-Seidel."
-                << std::endl;
-      std::cout << "  " << (unsigned short)METH_JACOBI << ": Jacobi."
-                << std::endl;
-      std::cout << "method> " << std::flush;
+      std::cout << std::endl
+                << "Select calculation method:" << std::endl
+                << "  " << (unsigned short)METH_GAUSS_SEIDEL << ": Gauß-Seidel."
+                << std::endl
+                << "  " << (unsigned short)METH_JACOBI << ": Jacobi."
+                << std::endl
+                << "method> " << std::flush;
       ret = scanf("%" SCNu64, &(options.method));
       while (getchar() != '\n')
         ;
     } while (ret != 1 || !check_method(options));
 
     do {
-      std::cout << std::endl;
-      std::cout << "Matrixsize = Interlines*8+9" << std::endl;
-      std::cout << "Interlines> " << std::flush;
+      std::cout << std::endl
+                << "Matrixsize = Interlines*8+9" << std::endl
+                << "Interlines> " << std::flush;
       ret = scanf("%" SCNu64, &(options.interlines));
       while (getchar() != '\n')
         ;
     } while (ret != 1 || !check_interlines(options));
 
     do {
-      std::cout << std::endl;
-      std::cout << "Select interference function:" << std::endl;
-      std::cout << " " << (unsigned short)FUNC_F0 << ": f(x,y)=0." << std::endl;
-      std::cout << " " << (unsigned short)FUNC_FPISIN
-                << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl;
-      std::cout << "interference function> " << std::flush;
+      std::cout << std::endl
+                << "Select interference function:" << std::endl
+                << " " << (unsigned short)FUNC_F0 << ": f(x,y)=0." << std::endl
+                << " " << (unsigned short)FUNC_FPISIN
+                << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl
+                << "interference function> " << std::flush;
       ret = scanf("%" SCNu64, &(options.inf_func));
       while (getchar() != '\n')
         ;
     } while (ret != 1 || !check_inf_func(options));
 
     do {
-      std::cout << std::endl;
-      std::cout << "Select termination:" << std::endl;
-      std::cout << " " << (unsigned short)TERM_PREC << ": sufficient precision."
-                << std::endl;
-      std::cout << " " << (unsigned short)TERM_ITER << ": number of iterations."
-                << std::endl;
-      std::cout << "termination> " << std::flush;
+      std::cout << std::endl
+                << "Select termination:" << std::endl
+                << " " << (unsigned short)TERM_PREC << ": sufficient precision."
+                << std::endl
+                << " " << (unsigned short)TERM_ITER << ": number of iterations."
+                << std::endl
+                << "termination> " << std::flush;
       ret = scanf("%" SCNu64, &(options.termination));
-      while (getchar() != '\n')
-        ;
+      while (getchar() != '\n') {
+        /* nothing */
+      };
     } while (ret != 1 || !check_termination(options));
 
     if (options.termination == TERM_PREC) {
       do {
-        std::cout << std::endl;
-        std::cout << "Select precision:" << std::endl;
-        std::cout << "  Range: 1e-4 .. 1e-20." << std::endl;
-        std::cout << "precision> " << std::flush;
+        std::cout << std::endl
+                  << "Select precision:" << std::endl
+                  << "  Range: 1e-4 .. 1e-20." << std::endl
+                  << "precision> " << std::flush;
         ret = scanf("%lf", &(options.term_precision));
         while (getchar() != '\n')
           ;
@@ -232,11 +232,11 @@ const void partdiff::askparams::askParams(options &options, const int argc,
       options.term_iteration = MAX_ITERATION;
     } else if (options.termination == TERM_ITER) {
       do {
-        std::cout << std::endl;
-        std::cout << "Select number of iterations:" << std::endl;
-        std::cout << "  Range: 1 .. " << (unsigned long)MAX_ITERATION << "."
-                  << std::endl;
-        std::cout << "Iterations> " << std::flush;
+        std::cout << std::endl
+                  << "Select number of iterations:" << std::endl
+                  << "  Range: 1 .. " << (unsigned long)MAX_ITERATION << "."
+                  << std::endl
+                  << "Iterations> " << std::flush;
         ret = scanf("%" SCNu64, &(options.term_iteration));
         while (getchar() != '\n')
           ;

@@ -235,13 +235,13 @@ const static void displayStatistics(const calculation_arguments &arguments,
   const double time = (comp_time.tv_sec - start_time.tv_sec) +
                       (comp_time.tv_usec - start_time.tv_usec) * 1e-6;
 
-  std::cout << "Berechnungszeit:    " << time << " s" << std::endl;
   const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
                                     arguments.num_matrices / 1024.0 / 1024.0;
-  std::cout << "Speicherbedarf:     " << std::fixed << std::setprecision(6)
-            << memory_consumption << " MiB" << std::endl;
+  std::cout << "Berechnungszeit:    " << time << " s" << std::endl
+            << "Speicherbedarf:     " << std::fixed << std::setprecision(6)
+            << memory_consumption << " MiB" << std::endl
+            << "Berechnungsmethode: ";
   std::cout.flags(cout_default_flags);
-  std::cout << "Berechnungsmethode: ";
 
   if (options.method == METH_GAUSS_SEIDEL) {
     std::cout << "Gauß-Seidel";
@@ -249,9 +249,9 @@ const static void displayStatistics(const calculation_arguments &arguments,
     std::cout << "Jacobi";
   }
 
-  std::cout << std::endl;
-  std::cout << "Interlines:         " << options.interlines << std::endl;
-  std::cout << "Stoerfunktion:      ";
+  std::cout << std::endl
+            << "Interlines:         " << options.interlines << std::endl
+            << "Stoerfunktion:      ";
 
   if (options.inf_func == FUNC_F0) {
     std::cout << "f(x,y) = 0";
@@ -259,8 +259,7 @@ const static void displayStatistics(const calculation_arguments &arguments,
     std::cout << "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)";
   }
 
-  std::cout << std::endl;
-  std::cout << "Terminierung:       ";
+  std::cout << std::endl << "Terminierung:       ";
 
   if (options.termination == TERM_PREC) {
     std::cout << "Hinreichende Genaugkeit";
@@ -268,12 +267,12 @@ const static void displayStatistics(const calculation_arguments &arguments,
     std::cout << "Anzahl der Iterationen";
   }
 
-  std::cout << std::endl;
-  std::cout << "Anzahl Iterationen: " << results.stat_iteration << std::endl;
-  std::cout << "Norm des Fehlers:   " << std::scientific
-            << results.stat_precision << std::endl;
+  std::cout << std::endl
+            << "Anzahl Iterationen: " << results.stat_iteration << std::endl
+            << "Norm des Fehlers:   " << std::scientific
+            << results.stat_precision << std::endl
+            << std::endl;
   std::cout.flags(cout_default_flags);
-  std::cout << std::endl;
 }
 
 /****************************************************************************/
