@@ -195,8 +195,8 @@ const static void calculate(const calculation_arguments &arguments,
 
         if (options.termination == TERM_PREC || term_iteration == 1) {
           double residuum = Matrix_In[i][j] - star;
-          residuum = (residuum < 0) ? -residuum : residuum;
-          maxresiduum = (residuum < maxresiduum) ? maxresiduum : residuum;
+          residuum = std::fabs(residuum);
+          maxresiduum = std::max(residuum, maxresiduum);
         }
 
         Matrix_Out[i][j] = star;
