@@ -28,3 +28,6 @@ test: partdiff
 	bash -c 'diff <(./partdiff 1 1 0 1 2 47 | grep -A9 Matrix) <(cat referenz/GaussSeidel.f1 | grep -A9 Matrix)'
 	bash -c 'diff <(./partdiff 1 1 0 1 1 8.7e-5 | grep -A9 Matrix) <(cat referenz/GaussSeidel.f1 | grep -A9 Matrix)'
 	@echo 'All tests completed!'
+
+testmem: partdiff
+	valgrind --leak-check=full ./partdiff 1 2 0 2 2 85

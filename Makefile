@@ -22,4 +22,5 @@ test:
 	bash -c 'diff <(pde/partdiff 1 1 0 2 1 9.2e-5 | grep -v Berechnungszeit) <(pde++/partdiff 1 1 0 2 1 9.2e-5 | grep -v Berechnungszeit)'
 	bash -c 'diff <(pde/partdiff 1 1 0 1 2 47 | grep -v Berechnungszeit) <(pde++/partdiff 1 1 0 1 2 47 | grep -v Berechnungszeit)'
 	bash -c 'diff <(pde/partdiff 1 1 0 1 1 8.7e-5 | grep -v Berechnungszeit) <(pde++/partdiff 1 1 0 1 1 8.7e-5 | grep -v Berechnungszeit)'
-	@echo 'All tests completed!'
+	@echo 'All output tests completed!'
+	$(MAKE) -C pde++ testmem
