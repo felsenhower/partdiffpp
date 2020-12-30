@@ -103,13 +103,14 @@ static void allocateMatrices(struct calculation_arguments *arguments) {
 
   uint64_t const N = arguments->N;
 
-  arguments->M = allocateMemory(arguments->num_matrices * (N + 1) * (N + 1) *
-                                sizeof(double));
+  arguments->M = (double *)allocateMemory(arguments->num_matrices * (N + 1) *
+                                          (N + 1) * sizeof(double));
   arguments->Matrix =
-      allocateMemory(arguments->num_matrices * sizeof(double **));
+      (double ***)allocateMemory(arguments->num_matrices * sizeof(double **));
 
   for (i = 0; i < arguments->num_matrices; i++) {
-    arguments->Matrix[i] = allocateMemory((N + 1) * sizeof(double *));
+    arguments->Matrix[i] =
+        (double **)allocateMemory((N + 1) * sizeof(double *));
 
     for (j = 0; j <= N; j++) {
       arguments->Matrix[i][j] =

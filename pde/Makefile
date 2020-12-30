@@ -1,8 +1,8 @@
 # Common definitions
-CC = gcc
+CC = g++
 
 # Compiler flags, paths and libraries
-CFLAGS  = -std=c11 -Wall -Wextra -Wpedantic -O3 -g
+CFLAGS  = -std=c++20 -Wall -Wextra -Wpedantic -O3 -g
 LDFLAGS = $(CFLAGS)
 LDLIBS  = -lm
 
