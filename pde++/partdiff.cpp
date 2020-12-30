@@ -51,9 +51,9 @@ timeval comp_time = {};  /* time when calculation completed                */
 /* ************************************************************************ */
 /* initVariables: Initializes some global variables                         */
 /* ************************************************************************ */
-static void initVariables(calculation_arguments *arguments,
-                          calculation_results *results,
-                          options const *options) {
+const static void initVariables(calculation_arguments *arguments,
+                                calculation_results *results,
+                                const options *options) {
   arguments->N = (options->interlines * 8) + 9 - 1;
   arguments->num_matrices = (options->method == METH_JACOBI) ? 2 : 1;
   arguments->h = 1.0 / arguments->N;
@@ -66,7 +66,7 @@ static void initVariables(calculation_arguments *arguments,
 /* ************************************************************************ */
 /* freeMatrices: frees memory for matrices                                  */
 /* ************************************************************************ */
-static void freeMatrices(calculation_arguments *arguments) {
+const static void freeMatrices(const calculation_arguments *arguments) {
   for (uint64_t i = 0; i < arguments->num_matrices; i++) {
     delete[] arguments->Matrix[i];
   }
@@ -78,7 +78,7 @@ static void freeMatrices(calculation_arguments *arguments) {
 /* allocateMemory ()                                                        */
 /* allocates memory and quits if there was a memory allocation problem      */
 /* ************************************************************************ */
-static uint8_t *allocateMemory(std::size_t size) {
+const static uint8_t *allocateMemory(const std::size_t size) {
   try {
     return new uint8_t[size];
   } catch (std::bad_alloc e) {
@@ -91,8 +91,8 @@ static uint8_t *allocateMemory(std::size_t size) {
 /* ************************************************************************ */
 /* allocateMatrices: allocates memory for matrices                          */
 /* ************************************************************************ */
-static void allocateMatrices(calculation_arguments *arguments) {
-  uint64_t const N = arguments->N;
+const static void allocateMatrices(calculation_arguments *arguments) {
+  const uint64_t N = arguments->N;
 
   arguments->M = (double *)allocateMemory(arguments->num_matrices * (N + 1) *
                                           (N + 1) * sizeof(double));
@@ -113,10 +113,10 @@ static void allocateMatrices(calculation_arguments *arguments) {
 /* ************************************************************************ */
 /* initMatrices: Initialize matrix/matrices and some global variables       */
 /* ************************************************************************ */
-static void initMatrices(calculation_arguments *arguments,
-                         options const *options) {
-  uint64_t const N = arguments->N;
-  double const h = arguments->h;
+const static void initMatrices(const calculation_arguments *arguments,
+                               const options *options) {
+  const uint64_t N = arguments->N;
+  const double h = arguments->h;
   double ***Matrix = arguments->Matrix;
 
   /* initialize matrix/matrices with zeros */
@@ -147,12 +147,12 @@ static void initMatrices(calculation_arguments *arguments,
 /* ************************************************************************ */
 /* calculate: solves the equation                                           */
 /* ************************************************************************ */
-static void calculate(calculation_arguments const *arguments,
-                      calculation_results *results,
-                      options const *options) {
+const static void calculate(const calculation_arguments *arguments,
+                            calculation_results *results,
+                            const options *options) {
 
-  int const N = arguments->N;
-  double const h = arguments->h;
+  const int N = arguments->N;
+  const double h = arguments->h;
 
   double pih = 0.0;
   double fpisin = 0.0;
@@ -187,7 +187,7 @@ static void calculate(calculation_arguments const *arguments,
       /* over all columns */
       for (int j = 1; j < N; j++) {
         double star = 0.25 * (Matrix_In[i - 1][j] + Matrix_In[i][j - 1] +
-                       Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
+                              Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
 
         if (options->inf_func == FUNC_FPISIN) {
           star += fpisin_i * sin(pih * (double)j);
@@ -207,7 +207,7 @@ static void calculate(calculation_arguments const *arguments,
     results->stat_precision = maxresiduum;
 
     /* exchange m1 and m2 */
-    int temp = m1;
+    const int temp = m1;
     m1 = m2;
     m2 = temp;
 
@@ -227,16 +227,16 @@ static void calculate(calculation_arguments const *arguments,
 /* ************************************************************************ */
 /*  displayStatistics: displays some statistics about the calculation       */
 /* ************************************************************************ */
-static void displayStatistics(calculation_arguments const *arguments,
-                              calculation_results const *results,
-                              options const *options) {
-  int N = arguments->N;
-  double time = (comp_time.tv_sec - start_time.tv_sec) +
-                (comp_time.tv_usec - start_time.tv_usec) * 1e-6;
+const static void displayStatistics(const calculation_arguments *arguments,
+                                    const calculation_results *results,
+                                    const options *options) {
+  const int N = arguments->N;
+  const double time = (comp_time.tv_sec - start_time.tv_sec) +
+                      (comp_time.tv_usec - start_time.tv_usec) * 1e-6;
 
   std::cout << "Berechnungszeit:    " << time << " s" << std::endl;
-  double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
-                              arguments->num_matrices / 1024.0 / 1024.0;
+  const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
+                                    arguments->num_matrices / 1024.0 / 1024.0;
   std::cout << "Speicherbedarf:     " << std::fixed << std::setprecision(6)
             << memory_consumption << " MiB" << std::endl;
   std::cout.flags(cout_default_flags);
@@ -285,12 +285,12 @@ static void displayStatistics(calculation_arguments const *arguments,
 /** ausgegeben wird. Aus der Matrix werden die Randzeilen/-spalten sowie   **/
 /** sieben Zwischenzeilen ausgegeben.                                      **/
 /****************************************************************************/
-static void displayMatrix(calculation_arguments *arguments,
-                          calculation_results *results,
-                          options *options) {
+const static void displayMatrix(const calculation_arguments *arguments,
+                                const calculation_results *results,
+                                const options *options) {
   double **Matrix = arguments->Matrix[results->m];
 
-  int const interlines = options->interlines;
+  const int interlines = options->interlines;
 
   std::cout << "Matrix:" << std::endl;
 
@@ -308,7 +308,7 @@ static void displayMatrix(calculation_arguments *arguments,
 /* ************************************************************************ */
 /*  main                                                                    */
 /* ************************************************************************ */
-int main(int argc, char const *argv[]) {
+int main(const int argc, char const *argv[]) {
   options options = {};
   askParams(&options, argc, argv);
 
