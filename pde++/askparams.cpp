@@ -74,7 +74,6 @@
 
 #define _POSIX_C_SOURCE 200809L
 
-#include <cinttypes>
 #include <iostream>
 
 #include "partdiff.h"
@@ -157,12 +156,12 @@ partdiff::askparams::askParams(options &options, const int argc,
   printf("\n");
   */
 
-  int ret = 0;
   bool valid_input = false;
   if (argc < 2) {
     /* ----------------------------------------------- */
     /* Get input: method, interlines, func, precision. */
     /* ----------------------------------------------- */
+
     do {
       std::cout << std::endl
                 << "Select number of threads:" << std::endl
@@ -170,7 +169,7 @@ partdiff::askparams::askParams(options &options, const int argc,
       try {
         std::string input;
         getline(std::cin, input);
-        options.number = std::stoi(input);
+        options.number = std::stol(input);
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
@@ -188,12 +187,13 @@ partdiff::askparams::askParams(options &options, const int argc,
       try {
         std::string input;
         getline(std::cin, input);
-        options.method = std::stoi(input);
+        options.method = std::stol(input);
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
     } while (!valid_input || !check_method(options));
+
     do {
       std::cout << std::endl
                 << "Matrixsize = Interlines*8+9" << std::endl
@@ -201,7 +201,7 @@ partdiff::askparams::askParams(options &options, const int argc,
       try {
         std::string input;
         getline(std::cin, input);
-        options.interlines = std::stoi(input);
+        options.interlines = std::stol(input);
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
@@ -218,7 +218,7 @@ partdiff::askparams::askParams(options &options, const int argc,
       try {
         std::string input;
         getline(std::cin, input);
-        options.inf_func = std::stoi(input);
+        options.inf_func = std::stol(input);
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
@@ -236,7 +236,7 @@ partdiff::askparams::askParams(options &options, const int argc,
       try {
         std::string input;
         getline(std::cin, input);
-        options.termination = std::stoi(input);
+        options.termination = std::stol(input);
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
@@ -252,7 +252,7 @@ partdiff::askparams::askParams(options &options, const int argc,
         try {
           std::string input;
           getline(std::cin, input);
-          options.term_precision = std::stoi(input);
+          options.term_precision = std::stod(input);
           valid_input = true;
         } catch (std::logic_error &) {
           valid_input = false;
@@ -270,7 +270,7 @@ partdiff::askparams::askParams(options &options, const int argc,
         try {
           std::string input;
           getline(std::cin, input);
-          options.term_iteration = std::stoi(input);
+          options.term_iteration = std::stol(input);
           valid_input = true;
         } catch (std::logic_error &) {
           valid_input = false;
@@ -285,54 +285,85 @@ partdiff::askparams::askParams(options &options, const int argc,
       exit(EXIT_SUCCESS);
     }
 
-    ret = sscanf(args[0].c_str(), "%" SCNu64, &(options.number));
-
-    if (ret != 1 || !check_number(options)) {
+    try {
+      options.number = std::stol(args[0]);
+      valid_input = true;
+    } catch (std::logic_error &) {
+      valid_input = false;
+    }
+    if (!valid_input || !check_number(options)) {
       usage(name);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(args[1].c_str(), "%" SCNu64, &(options.method));
-
-    if (ret != 1 || !check_method(options)) {
+    try {
+      options.method = std::stol(args[1]);
+      valid_input = true;
+    } catch (std::logic_error &) {
+      valid_input = false;
+    }
+    if (!valid_input || !check_method(options)) {
       usage(name);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(args[2].c_str(), "%" SCNu64, &(options.interlines));
-
-    if (ret != 1 || !check_interlines(options)) {
+    try {
+      options.interlines = std::stol(args[2]);
+      valid_input = true;
+    } catch (std::logic_error &) {
+      valid_input = false;
+    }
+    if (!valid_input || !check_interlines(options)) {
       usage(name);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(args[3].c_str(), "%" SCNu64, &(options.inf_func));
-
-    if (ret != 1 || !check_inf_func(options)) {
+    try {
+      options.inf_func = std::stol(args[3]);
+      valid_input = true;
+    } catch (std::logic_error &) {
+      valid_input = false;
+    }
+    if (!valid_input || !check_inf_func(options)) {
       usage(name);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(args[4].c_str(), "%" SCNu64, &(options.termination));
-
-    if (ret != 1 || !check_termination(options)) {
+    try {
+      options.termination = std::stol(args[4]);
+      valid_input = true;
+    } catch (std::logic_error &) {
+      valid_input = false;
+    }
+    if (!valid_input || !check_termination(options)) {
       usage(name);
       exit(EXIT_FAILURE);
     }
 
     if (options.termination == TERM_PREC) {
-      ret = sscanf(args[5].c_str(), "%lf", &(options.term_precision));
-      options.term_iteration = MAX_ITERATION;
 
-      if (ret != 1 || !check_term_precision(options)) {
+      try {
+        options.term_precision = std::stod(args[5]);
+        options.term_iteration = MAX_ITERATION;
+        valid_input = true;
+      } catch (std::logic_error &) {
+        valid_input = false;
+      }
+      if (!valid_input || !check_term_precision(options)) {
         usage(name);
         exit(EXIT_FAILURE);
       }
-    } else {
-      ret = sscanf(args[5].c_str(), "%" SCNu64, &(options.term_iteration));
-      options.term_precision = 0;
 
-      if (ret != 1 || !check_term_iteration(options)) {
+    } else {
+
+      try {
+        options.term_iteration = std::stol(args[5]);
+        options.term_precision = 0;
+        valid_input = true;
+      } catch (std::logic_error &) {
+        valid_input = false;
+      }
+      if (!valid_input || !check_term_iteration(options)) {
         usage(name);
         exit(EXIT_FAILURE);
       }
