@@ -31,3 +31,8 @@ test: partdiff
 
 testmem: partdiff
 	valgrind --leak-check=full ./partdiff 1 2 0 2 2 85
+
+beautify: partdiff.cpp partdiff.h askparams.cpp
+	clang-format -i partdiff.cpp
+	clang-format -i partdiff.h
+	clang-format -i askparams.cpp

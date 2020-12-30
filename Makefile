@@ -1,4 +1,6 @@
-all: partdiffpp partdiff
+default: all
+
+all: beautify partdiffpp partdiff test testmem
 
 partdiff:
 	$(MAKE) -C pde
@@ -23,4 +25,12 @@ test:
 	bash -c 'diff <(pde/partdiff 1 1 0 1 2 47 | grep -v Berechnungszeit) <(pde++/partdiff 1 1 0 1 2 47 | grep -v Berechnungszeit)'
 	bash -c 'diff <(pde/partdiff 1 1 0 1 1 8.7e-5 | grep -v Berechnungszeit) <(pde++/partdiff 1 1 0 1 1 8.7e-5 | grep -v Berechnungszeit)'
 	@echo 'All output tests completed!'
+
+testmem:
 	$(MAKE) -C pde++ testmem
+	# $(MAKE) -C pde testmem
+
+beautify:
+	$(MAKE) -C pde++ beautify
+	# $(MAKE) -C pde beautify
+
