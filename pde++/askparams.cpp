@@ -113,38 +113,38 @@ static void usage(const char *name) {
   std::cout << "Example: " << name << " 1 2 100 1 2 100 " << std::endl;
 }
 
-static int check_number(struct options *options) {
+static int check_number(options *options) {
   return (options->number >= 1 && options->number <= MAX_THREADS);
 }
 
-static int check_method(struct options *options) {
+static int check_method(options *options) {
   return (options->method == METH_GAUSS_SEIDEL ||
           options->method == METH_JACOBI);
 }
 
-static int check_interlines(struct options *options) {
+static int check_interlines(options *options) {
   return (options->interlines <= MAX_INTERLINES);
 }
 
-static int check_inf_func(struct options *options) {
+static int check_inf_func(options *options) {
   return (options->inf_func == FUNC_F0 || options->inf_func == FUNC_FPISIN);
 }
 
-static int check_termination(struct options *options) {
+static int check_termination(options *options) {
   return (options->termination == TERM_PREC ||
           options->termination == TERM_ITER);
 }
 
-static int check_term_precision(struct options *options) {
+static int check_term_precision(options *options) {
   return (options->term_precision >= 1e-20 && options->term_precision <= 1e-4);
 }
 
-static int check_term_iteration(struct options *options) {
+static int check_term_iteration(options *options) {
   return (options->term_iteration >= 1 &&
           options->term_iteration <= MAX_ITERATION);
 }
 
-void askParams(struct options *options, int argc, char const *argv[]) {
+void askParams(options *options, int argc, char const *argv[]) {
   /*
   printf("============================================================\n");
   printf("Program for calculation of partial differential equations.  \n");

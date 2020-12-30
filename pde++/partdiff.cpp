@@ -45,15 +45,15 @@ struct calculation_results {
 /* ************************************************************************ */
 
 /* time measurement variables */
-struct timeval start_time = {}; /* time when program started                      */
-struct timeval comp_time = {};  /* time when calculation completed                */
+timeval start_time = {}; /* time when program started                      */
+timeval comp_time = {};  /* time when calculation completed                */
 
 /* ************************************************************************ */
 /* initVariables: Initializes some global variables                         */
 /* ************************************************************************ */
-static void initVariables(struct calculation_arguments *arguments,
-                          struct calculation_results *results,
-                          struct options const *options) {
+static void initVariables(calculation_arguments *arguments,
+                          calculation_results *results,
+                          options const *options) {
   arguments->N = (options->interlines * 8) + 9 - 1;
   arguments->num_matrices = (options->method == METH_JACOBI) ? 2 : 1;
   arguments->h = 1.0 / arguments->N;
@@ -66,7 +66,7 @@ static void initVariables(struct calculation_arguments *arguments,
 /* ************************************************************************ */
 /* freeMatrices: frees memory for matrices                                  */
 /* ************************************************************************ */
-static void freeMatrices(struct calculation_arguments *arguments) {
+static void freeMatrices(calculation_arguments *arguments) {
   for (uint64_t i = 0; i < arguments->num_matrices; i++) {
     delete[] arguments->Matrix[i];
   }
@@ -91,7 +91,7 @@ static uint8_t *allocateMemory(std::size_t size) {
 /* ************************************************************************ */
 /* allocateMatrices: allocates memory for matrices                          */
 /* ************************************************************************ */
-static void allocateMatrices(struct calculation_arguments *arguments) {
+static void allocateMatrices(calculation_arguments *arguments) {
   uint64_t const N = arguments->N;
 
   arguments->M = (double *)allocateMemory(arguments->num_matrices * (N + 1) *
@@ -113,8 +113,8 @@ static void allocateMatrices(struct calculation_arguments *arguments) {
 /* ************************************************************************ */
 /* initMatrices: Initialize matrix/matrices and some global variables       */
 /* ************************************************************************ */
-static void initMatrices(struct calculation_arguments *arguments,
-                         struct options const *options) {
+static void initMatrices(calculation_arguments *arguments,
+                         options const *options) {
   uint64_t const N = arguments->N;
   double const h = arguments->h;
   double ***Matrix = arguments->Matrix;
@@ -147,9 +147,9 @@ static void initMatrices(struct calculation_arguments *arguments,
 /* ************************************************************************ */
 /* calculate: solves the equation                                           */
 /* ************************************************************************ */
-static void calculate(struct calculation_arguments const *arguments,
-                      struct calculation_results *results,
-                      struct options const *options) {
+static void calculate(calculation_arguments const *arguments,
+                      calculation_results *results,
+                      options const *options) {
 
   int const N = arguments->N;
   double const h = arguments->h;
@@ -227,9 +227,9 @@ static void calculate(struct calculation_arguments const *arguments,
 /* ************************************************************************ */
 /*  displayStatistics: displays some statistics about the calculation       */
 /* ************************************************************************ */
-static void displayStatistics(struct calculation_arguments const *arguments,
-                              struct calculation_results const *results,
-                              struct options const *options) {
+static void displayStatistics(calculation_arguments const *arguments,
+                              calculation_results const *results,
+                              options const *options) {
   int N = arguments->N;
   double time = (comp_time.tv_sec - start_time.tv_sec) +
                 (comp_time.tv_usec - start_time.tv_usec) * 1e-6;
@@ -285,9 +285,9 @@ static void displayStatistics(struct calculation_arguments const *arguments,
 /** ausgegeben wird. Aus der Matrix werden die Randzeilen/-spalten sowie   **/
 /** sieben Zwischenzeilen ausgegeben.                                      **/
 /****************************************************************************/
-static void displayMatrix(struct calculation_arguments *arguments,
-                          struct calculation_results *results,
-                          struct options *options) {
+static void displayMatrix(calculation_arguments *arguments,
+                          calculation_results *results,
+                          options *options) {
   double **Matrix = arguments->Matrix[results->m];
 
   int const interlines = options->interlines;
@@ -309,11 +309,11 @@ static void displayMatrix(struct calculation_arguments *arguments,
 /*  main                                                                    */
 /* ************************************************************************ */
 int main(int argc, char const *argv[]) {
-  struct options options = {};
+  options options = {};
   askParams(&options, argc, argv);
 
-  struct calculation_arguments arguments = {};
-  struct calculation_results results = {};
+  calculation_arguments arguments = {};
+  calculation_results results = {};
   initVariables(&arguments, &results, &options);
 
   allocateMatrices(&arguments);
