@@ -67,30 +67,25 @@ static void initVariables(struct calculation_arguments *arguments,
 /* freeMatrices: frees memory for matrices                                  */
 /* ************************************************************************ */
 static void freeMatrices(struct calculation_arguments *arguments) {
-  uint64_t i;
-
-  for (i = 0; i < arguments->num_matrices; i++) {
-    free(arguments->Matrix[i]);
+  for (uint64_t i = 0; i < arguments->num_matrices; i++) {
+    delete[] arguments->Matrix[i];
   }
-
-  free(arguments->Matrix);
-  free(arguments->M);
+  delete[] arguments->Matrix;
+  delete[] arguments->M;
 }
 
 /* ************************************************************************ */
 /* allocateMemory ()                                                        */
 /* allocates memory and quits if there was a memory allocation problem      */
 /* ************************************************************************ */
-static void *allocateMemory(size_t size) {
-  void *p;
-
-  if ((p = malloc(size)) == NULL) {
+static uint8_t *allocateMemory(std::size_t size) {
+  try {
+    return new uint8_t[size];
+  } catch (std::bad_alloc e) {
     std::cout << "Speicherprobleme! " << size << " Bytes angefordert"
               << std::endl;
-    exit(1);
+    exit(EXIT_FAILURE);
   }
-
-  return p;
 }
 
 /* ************************************************************************ */
