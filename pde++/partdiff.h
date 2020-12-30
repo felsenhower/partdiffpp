@@ -54,6 +54,6 @@ struct options {
 /* - askparams.c               */
 /* - displaymatrix.c           */
 /* *************************** */
-const void askParams(options *, const int, const char *[]);
+const void askParams(options &, const int, const char *[]);
 
 static std::ios_base::fmtflags cout_default_flags(std::cout.flags());

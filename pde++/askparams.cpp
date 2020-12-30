@@ -113,38 +113,36 @@ const static void usage(const char *name) {
   std::cout << "Example: " << name << " 1 2 100 1 2 100 " << std::endl;
 }
 
-const static bool check_number(const options *options) {
-  return (options->number >= 1 && options->number <= MAX_THREADS);
+const static bool check_number(const options &options) {
+  return (options.number >= 1 && options.number <= MAX_THREADS);
 }
 
-const static bool check_method(const options *options) {
-  return (options->method == METH_GAUSS_SEIDEL ||
-          options->method == METH_JACOBI);
+const static bool check_method(const options &options) {
+  return (options.method == METH_GAUSS_SEIDEL || options.method == METH_JACOBI);
 }
 
-const static bool check_interlines(const options *options) {
-  return (options->interlines <= MAX_INTERLINES);
+const static bool check_interlines(const options &options) {
+  return (options.interlines <= MAX_INTERLINES);
 }
 
-const static bool check_inf_func(const options *options) {
-  return (options->inf_func == FUNC_F0 || options->inf_func == FUNC_FPISIN);
+const static bool check_inf_func(const options &options) {
+  return (options.inf_func == FUNC_F0 || options.inf_func == FUNC_FPISIN);
 }
 
-const static bool check_termination(const options *options) {
-  return (options->termination == TERM_PREC ||
-          options->termination == TERM_ITER);
+const static bool check_termination(const options &options) {
+  return (options.termination == TERM_PREC || options.termination == TERM_ITER);
 }
 
-const static bool check_term_precision(const options *options) {
-  return (options->term_precision >= 1e-20 && options->term_precision <= 1e-4);
+const static bool check_term_precision(const options &options) {
+  return (options.term_precision >= 1e-20 && options.term_precision <= 1e-4);
 }
 
-const static bool check_term_iteration(const options *options) {
-  return (options->term_iteration >= 1 &&
-          options->term_iteration <= MAX_ITERATION);
+const static bool check_term_iteration(const options &options) {
+  return (options.term_iteration >= 1 &&
+          options.term_iteration <= MAX_ITERATION);
 }
 
-const void askParams(options *options, const int argc, const char *argv[]) {
+const void askParams(options &options, const int argc, const char *argv[]) {
   /*
   printf("============================================================\n");
   printf("Program for calculation of partial differential equations.  \n");
@@ -165,7 +163,7 @@ const void askParams(options *options, const int argc, const char *argv[]) {
       std::cout << std::endl;
       std::cout << "Select number of threads:" << std::endl;
       std::cout << "Number> " << std::flush;
-      ret = scanf("%" SCNu64, &(options->number));
+      ret = scanf("%" SCNu64, &(options.number));
       while (getchar() != '\n')
         ;
     } while (ret != 1 || !check_number(options));
@@ -178,7 +176,7 @@ const void askParams(options *options, const int argc, const char *argv[]) {
       std::cout << "  " << (unsigned short)METH_JACOBI << ": Jacobi."
                 << std::endl;
       std::cout << "method> " << std::flush;
-      ret = scanf("%" SCNu64, &(options->method));
+      ret = scanf("%" SCNu64, &(options.method));
       while (getchar() != '\n')
         ;
     } while (ret != 1 || !check_method(options));
@@ -187,7 +185,7 @@ const void askParams(options *options, const int argc, const char *argv[]) {
       std::cout << std::endl;
       std::cout << "Matrixsize = Interlines*8+9" << std::endl;
       std::cout << "Interlines> " << std::flush;
-      ret = scanf("%" SCNu64, &(options->interlines));
+      ret = scanf("%" SCNu64, &(options.interlines));
       while (getchar() != '\n')
         ;
     } while (ret != 1 || !check_interlines(options));
@@ -199,7 +197,7 @@ const void askParams(options *options, const int argc, const char *argv[]) {
       std::cout << " " << (unsigned short)FUNC_FPISIN
                 << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl;
       std::cout << "interference function> " << std::flush;
-      ret = scanf("%" SCNu64, &(options->inf_func));
+      ret = scanf("%" SCNu64, &(options.inf_func));
       while (getchar() != '\n')
         ;
     } while (ret != 1 || !check_inf_func(options));
@@ -212,36 +210,36 @@ const void askParams(options *options, const int argc, const char *argv[]) {
       std::cout << " " << (unsigned short)TERM_ITER << ": number of iterations."
                 << std::endl;
       std::cout << "termination> " << std::flush;
-      ret = scanf("%" SCNu64, &(options->termination));
+      ret = scanf("%" SCNu64, &(options.termination));
       while (getchar() != '\n')
         ;
     } while (ret != 1 || !check_termination(options));
 
-    if (options->termination == TERM_PREC) {
+    if (options.termination == TERM_PREC) {
       do {
         std::cout << std::endl;
         std::cout << "Select precision:" << std::endl;
         std::cout << "  Range: 1e-4 .. 1e-20." << std::endl;
         std::cout << "precision> " << std::flush;
-        ret = scanf("%lf", &(options->term_precision));
+        ret = scanf("%lf", &(options.term_precision));
         while (getchar() != '\n')
           ;
       } while (ret != 1 || !check_term_precision(options));
 
-      options->term_iteration = MAX_ITERATION;
-    } else if (options->termination == TERM_ITER) {
+      options.term_iteration = MAX_ITERATION;
+    } else if (options.termination == TERM_ITER) {
       do {
         std::cout << std::endl;
         std::cout << "Select number of iterations:" << std::endl;
         std::cout << "  Range: 1 .. " << (unsigned long)MAX_ITERATION << "."
                   << std::endl;
         std::cout << "Iterations> " << std::flush;
-        ret = scanf("%" SCNu64, &(options->term_iteration));
+        ret = scanf("%" SCNu64, &(options.term_iteration));
         while (getchar() != '\n')
           ;
       } while (ret != 1 || !check_term_iteration(options));
 
-      options->term_precision = 0;
+      options.term_precision = 0;
     }
   } else {
     if (argc < 7 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "-?") == 0) {
@@ -249,52 +247,52 @@ const void askParams(options *options, const int argc, const char *argv[]) {
       exit(EXIT_SUCCESS);
     }
 
-    ret = sscanf(argv[1], "%" SCNu64, &(options->number));
+    ret = sscanf(argv[1], "%" SCNu64, &(options.number));
 
     if (ret != 1 || !check_number(options)) {
       usage(argv[0]);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(argv[2], "%" SCNu64, &(options->method));
+    ret = sscanf(argv[2], "%" SCNu64, &(options.method));
 
     if (ret != 1 || !check_method(options)) {
       usage(argv[0]);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(argv[3], "%" SCNu64, &(options->interlines));
+    ret = sscanf(argv[3], "%" SCNu64, &(options.interlines));
 
     if (ret != 1 || !check_interlines(options)) {
       usage(argv[0]);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(argv[4], "%" SCNu64, &(options->inf_func));
+    ret = sscanf(argv[4], "%" SCNu64, &(options.inf_func));
 
     if (ret != 1 || !check_inf_func(options)) {
       usage(argv[0]);
       exit(EXIT_FAILURE);
     }
 
-    ret = sscanf(argv[5], "%" SCNu64, &(options->termination));
+    ret = sscanf(argv[5], "%" SCNu64, &(options.termination));
 
     if (ret != 1 || !check_termination(options)) {
       usage(argv[0]);
       exit(EXIT_FAILURE);
     }
 
-    if (options->termination == TERM_PREC) {
-      ret = sscanf(argv[6], "%lf", &(options->term_precision));
-      options->term_iteration = MAX_ITERATION;
+    if (options.termination == TERM_PREC) {
+      ret = sscanf(argv[6], "%lf", &(options.term_precision));
+      options.term_iteration = MAX_ITERATION;
 
       if (ret != 1 || !check_term_precision(options)) {
         usage(argv[0]);
         exit(EXIT_FAILURE);
       }
     } else {
-      ret = sscanf(argv[6], "%" SCNu64, &(options->term_iteration));
-      options->term_precision = 0;
+      ret = sscanf(argv[6], "%" SCNu64, &(options.term_iteration));
+      options.term_precision = 0;
 
       if (ret != 1 || !check_term_iteration(options)) {
         usage(argv[0]);

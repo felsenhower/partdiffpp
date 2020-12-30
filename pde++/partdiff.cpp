@@ -51,27 +51,27 @@ timeval comp_time = {};  /* time when calculation completed                */
 /* ************************************************************************ */
 /* initVariables: Initializes some global variables                         */
 /* ************************************************************************ */
-const static void initVariables(calculation_arguments *arguments,
-                                calculation_results *results,
-                                const options *options) {
-  arguments->N = (options->interlines * 8) + 9 - 1;
-  arguments->num_matrices = (options->method == METH_JACOBI) ? 2 : 1;
-  arguments->h = 1.0 / arguments->N;
+const static void initVariables(calculation_arguments &arguments,
+                                calculation_results &results,
+                                const options &options) {
+  arguments.N = (options.interlines * 8) + 9 - 1;
+  arguments.num_matrices = (options.method == METH_JACOBI) ? 2 : 1;
+  arguments.h = 1.0 / arguments.N;
 
-  results->m = 0;
-  results->stat_iteration = 0;
-  results->stat_precision = 0;
+  results.m = 0;
+  results.stat_iteration = 0;
+  results.stat_precision = 0;
 }
 
 /* ************************************************************************ */
 /* freeMatrices: frees memory for matrices                                  */
 /* ************************************************************************ */
-const static void freeMatrices(const calculation_arguments *arguments) {
-  for (uint64_t i = 0; i < arguments->num_matrices; i++) {
-    delete[] arguments->Matrix[i];
+const static void freeMatrices(const calculation_arguments &arguments) {
+  for (uint64_t i = 0; i < arguments.num_matrices; i++) {
+    delete[] arguments.Matrix[i];
   }
-  delete[] arguments->Matrix;
-  delete[] arguments->M;
+  delete[] arguments.Matrix;
+  delete[] arguments.M;
 }
 
 /* ************************************************************************ */
@@ -91,21 +91,20 @@ const static uint8_t *allocateMemory(const std::size_t size) {
 /* ************************************************************************ */
 /* allocateMatrices: allocates memory for matrices                          */
 /* ************************************************************************ */
-const static void allocateMatrices(calculation_arguments *arguments) {
-  const uint64_t N = arguments->N;
+const static void allocateMatrices(calculation_arguments &arguments) {
+  const uint64_t N = arguments.N;
 
-  arguments->M = (double *)allocateMemory(arguments->num_matrices * (N + 1) *
-                                          (N + 1) * sizeof(double));
-  arguments->Matrix =
-      (double ***)allocateMemory(arguments->num_matrices * sizeof(double **));
+  arguments.M = (double *)allocateMemory(arguments.num_matrices * (N + 1) *
+                                         (N + 1) * sizeof(double));
+  arguments.Matrix =
+      (double ***)allocateMemory(arguments.num_matrices * sizeof(double **));
 
-  for (uint64_t i = 0; i < arguments->num_matrices; i++) {
-    arguments->Matrix[i] =
-        (double **)allocateMemory((N + 1) * sizeof(double *));
+  for (uint64_t i = 0; i < arguments.num_matrices; i++) {
+    arguments.Matrix[i] = (double **)allocateMemory((N + 1) * sizeof(double *));
 
     for (uint64_t j = 0; j <= N; j++) {
-      arguments->Matrix[i][j] =
-          arguments->M + (i * (N + 1) * (N + 1)) + (j * (N + 1));
+      arguments.Matrix[i][j] =
+          arguments.M + (i * (N + 1) * (N + 1)) + (j * (N + 1));
     }
   }
 }
@@ -113,14 +112,14 @@ const static void allocateMatrices(calculation_arguments *arguments) {
 /* ************************************************************************ */
 /* initMatrices: Initialize matrix/matrices and some global variables       */
 /* ************************************************************************ */
-const static void initMatrices(const calculation_arguments *arguments,
-                               const options *options) {
-  const uint64_t N = arguments->N;
-  const double h = arguments->h;
-  double ***Matrix = arguments->Matrix;
+const static void initMatrices(const calculation_arguments &arguments,
+                               const options &options) {
+  const uint64_t N = arguments.N;
+  const double h = arguments.h;
+  double ***Matrix = arguments.Matrix;
 
   /* initialize matrix/matrices with zeros */
-  for (uint64_t g = 0; g < arguments->num_matrices; g++) {
+  for (uint64_t g = 0; g < arguments.num_matrices; g++) {
     for (uint64_t i = 0; i <= N; i++) {
       for (uint64_t j = 0; j <= N; j++) {
         Matrix[g][i][j] = 0.0;
@@ -129,8 +128,8 @@ const static void initMatrices(const calculation_arguments *arguments,
   }
 
   /* initialize borders, depending on function (function 2: nothing to do) */
-  if (options->inf_func == FUNC_F0) {
-    for (uint64_t g = 0; g < arguments->num_matrices; g++) {
+  if (options.inf_func == FUNC_F0) {
+    for (uint64_t g = 0; g < arguments.num_matrices; g++) {
       for (uint64_t i = 0; i <= N; i++) {
         Matrix[g][i][0] = 1.0 - (h * i);
         Matrix[g][i][N] = h * i;
@@ -147,23 +146,23 @@ const static void initMatrices(const calculation_arguments *arguments,
 /* ************************************************************************ */
 /* calculate: solves the equation                                           */
 /* ************************************************************************ */
-const static void calculate(const calculation_arguments *arguments,
-                            calculation_results *results,
-                            const options *options) {
+const static void calculate(const calculation_arguments &arguments,
+                            calculation_results &results,
+                            const options &options) {
 
-  const int N = arguments->N;
-  const double h = arguments->h;
+  const int N = arguments.N;
+  const double h = arguments.h;
 
   double pih = 0.0;
   double fpisin = 0.0;
 
-  int term_iteration = options->term_iteration;
+  int term_iteration = options.term_iteration;
 
   /* initialize m1 and m2 depending on algorithm */
   int m1 = 0;
-  int m2 = (options->method == METH_JACOBI) ? 1 : 0;
+  int m2 = (options.method == METH_JACOBI) ? 1 : 0;
 
-  if (options->inf_func == FUNC_FPISIN) {
+  if (options.inf_func == FUNC_FPISIN) {
     pih = PI * h;
     fpisin = 0.25 * TWO_PI_SQUARE * h * h;
   }
@@ -171,8 +170,8 @@ const static void calculate(const calculation_arguments *arguments,
   double maxresiduum = 0.0;
 
   while (term_iteration > 0) {
-    double **Matrix_Out = arguments->Matrix[m1];
-    double **Matrix_In = arguments->Matrix[m2];
+    double **Matrix_Out = arguments.Matrix[m1];
+    double **Matrix_In = arguments.Matrix[m2];
 
     maxresiduum = 0.0;
 
@@ -180,7 +179,7 @@ const static void calculate(const calculation_arguments *arguments,
     for (int i = 1; i < N; i++) {
       double fpisin_i = 0.0;
 
-      if (options->inf_func == FUNC_FPISIN) {
+      if (options.inf_func == FUNC_FPISIN) {
         fpisin_i = fpisin * sin(pih * (double)i);
       }
 
@@ -189,11 +188,11 @@ const static void calculate(const calculation_arguments *arguments,
         double star = 0.25 * (Matrix_In[i - 1][j] + Matrix_In[i][j - 1] +
                               Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
 
-        if (options->inf_func == FUNC_FPISIN) {
+        if (options.inf_func == FUNC_FPISIN) {
           star += fpisin_i * sin(pih * (double)j);
         }
 
-        if (options->termination == TERM_PREC || term_iteration == 1) {
+        if (options.termination == TERM_PREC || term_iteration == 1) {
           double residuum = Matrix_In[i][j] - star;
           residuum = (residuum < 0) ? -residuum : residuum;
           maxresiduum = (residuum < maxresiduum) ? maxresiduum : residuum;
@@ -203,8 +202,8 @@ const static void calculate(const calculation_arguments *arguments,
       }
     }
 
-    results->stat_iteration++;
-    results->stat_precision = maxresiduum;
+    results.stat_iteration++;
+    results.stat_precision = maxresiduum;
 
     /* exchange m1 and m2 */
     const int temp = m1;
@@ -212,65 +211,65 @@ const static void calculate(const calculation_arguments *arguments,
     m2 = temp;
 
     /* check for stopping calculation depending on termination method */
-    if (options->termination == TERM_PREC) {
-      if (maxresiduum < options->term_precision) {
+    if (options.termination == TERM_PREC) {
+      if (maxresiduum < options.term_precision) {
         term_iteration = 0;
       }
-    } else if (options->termination == TERM_ITER) {
+    } else if (options.termination == TERM_ITER) {
       term_iteration--;
     }
   }
 
-  results->m = m2;
+  results.m = m2;
 }
 
 /* ************************************************************************ */
 /*  displayStatistics: displays some statistics about the calculation       */
 /* ************************************************************************ */
-const static void displayStatistics(const calculation_arguments *arguments,
-                                    const calculation_results *results,
-                                    const options *options) {
-  const int N = arguments->N;
+const static void displayStatistics(const calculation_arguments &arguments,
+                                    const calculation_results &results,
+                                    const options &options) {
+  const int N = arguments.N;
   const double time = (comp_time.tv_sec - start_time.tv_sec) +
                       (comp_time.tv_usec - start_time.tv_usec) * 1e-6;
 
   std::cout << "Berechnungszeit:    " << time << " s" << std::endl;
   const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
-                                    arguments->num_matrices / 1024.0 / 1024.0;
+                                    arguments.num_matrices / 1024.0 / 1024.0;
   std::cout << "Speicherbedarf:     " << std::fixed << std::setprecision(6)
             << memory_consumption << " MiB" << std::endl;
   std::cout.flags(cout_default_flags);
   std::cout << "Berechnungsmethode: ";
 
-  if (options->method == METH_GAUSS_SEIDEL) {
+  if (options.method == METH_GAUSS_SEIDEL) {
     std::cout << "Gauß-Seidel";
-  } else if (options->method == METH_JACOBI) {
+  } else if (options.method == METH_JACOBI) {
     std::cout << "Jacobi";
   }
 
   std::cout << std::endl;
-  std::cout << "Interlines:         " << options->interlines << std::endl;
+  std::cout << "Interlines:         " << options.interlines << std::endl;
   std::cout << "Stoerfunktion:      ";
 
-  if (options->inf_func == FUNC_F0) {
+  if (options.inf_func == FUNC_F0) {
     std::cout << "f(x,y) = 0";
-  } else if (options->inf_func == FUNC_FPISIN) {
+  } else if (options.inf_func == FUNC_FPISIN) {
     std::cout << "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)";
   }
 
   std::cout << std::endl;
   std::cout << "Terminierung:       ";
 
-  if (options->termination == TERM_PREC) {
+  if (options.termination == TERM_PREC) {
     std::cout << "Hinreichende Genaugkeit";
-  } else if (options->termination == TERM_ITER) {
+  } else if (options.termination == TERM_ITER) {
     std::cout << "Anzahl der Iterationen";
   }
 
   std::cout << std::endl;
-  std::cout << "Anzahl Iterationen: " << results->stat_iteration << std::endl;
+  std::cout << "Anzahl Iterationen: " << results.stat_iteration << std::endl;
   std::cout << "Norm des Fehlers:   " << std::scientific
-            << results->stat_precision << std::endl;
+            << results.stat_precision << std::endl;
   std::cout.flags(cout_default_flags);
   std::cout << std::endl;
 }
@@ -285,12 +284,12 @@ const static void displayStatistics(const calculation_arguments *arguments,
 /** ausgegeben wird. Aus der Matrix werden die Randzeilen/-spalten sowie   **/
 /** sieben Zwischenzeilen ausgegeben.                                      **/
 /****************************************************************************/
-const static void displayMatrix(const calculation_arguments *arguments,
-                                const calculation_results *results,
-                                const options *options) {
-  double **Matrix = arguments->Matrix[results->m];
+const static void displayMatrix(const calculation_arguments &arguments,
+                                const calculation_results &results,
+                                const options &options) {
+  double **Matrix = arguments.Matrix[results.m];
 
-  const int interlines = options->interlines;
+  const int interlines = options.interlines;
 
   std::cout << "Matrix:" << std::endl;
 
@@ -310,23 +309,23 @@ const static void displayMatrix(const calculation_arguments *arguments,
 /* ************************************************************************ */
 int main(const int argc, char const *argv[]) {
   options options = {};
-  askParams(&options, argc, argv);
+  askParams(options, argc, argv);
 
   calculation_arguments arguments = {};
   calculation_results results = {};
-  initVariables(&arguments, &results, &options);
+  initVariables(arguments, results, options);
 
-  allocateMatrices(&arguments);
-  initMatrices(&arguments, &options);
+  allocateMatrices(arguments);
+  initMatrices(arguments, options);
 
   gettimeofday(&start_time, nullptr);
-  calculate(&arguments, &results, &options);
+  calculate(arguments, results, options);
   gettimeofday(&comp_time, nullptr);
 
-  displayStatistics(&arguments, &results, &options);
-  displayMatrix(&arguments, &results, &options);
+  displayStatistics(arguments, results, options);
+  displayMatrix(arguments, results, options);
 
-  freeMatrices(&arguments);
+  freeMatrices(arguments);
 
   return EXIT_SUCCESS;
 }
