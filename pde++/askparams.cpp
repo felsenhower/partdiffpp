@@ -75,6 +75,7 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include <iostream>
+#include <sstream>
 
 #include "partdiff.h"
 
@@ -171,14 +172,10 @@ const void options::askParams() {
       std::cout << std::endl
                 << "Select number of threads:" << std::endl
                 << "Number> " << std::flush;
-      try {
-        std::string input;
-        getline(std::cin, input);
-        this->number = std::stol(input);
-        valid_input = true;
-      } catch (std::logic_error &) {
-        valid_input = false;
-      }
+      std::string input;
+      getline(std::cin, input);
+      valid_input =
+          static_cast<bool>(std::istringstream(input) >> this->number);
     } while (!valid_input || !this->check_number());
 
     do {
@@ -189,28 +186,21 @@ const void options::askParams() {
                 << "  " << to_underlying(calculation_method::jacobi)
                 << ": Jacobi." << std::endl
                 << "method> " << std::flush;
-      try {
-        std::string input;
-        getline(std::cin, input);
-        this->method = static_cast<calculation_method>(std::stol(input));
-        valid_input = true;
-      } catch (std::logic_error &) {
-        valid_input = false;
-      }
+      std::string input;
+      getline(std::cin, input);
+      std::underlying_type_t<calculation_method> n;
+      valid_input = static_cast<bool>(std::istringstream(input) >> n);
+      this->method = static_cast<calculation_method>(n);
     } while (!valid_input || !this->check_method());
 
     do {
       std::cout << std::endl
                 << "Matrixsize = Interlines*8+9" << std::endl
                 << "Interlines> " << std::flush;
-      try {
-        std::string input;
-        getline(std::cin, input);
-        this->interlines = std::stol(input);
-        valid_input = true;
-      } catch (std::logic_error &) {
-        valid_input = false;
-      }
+      std::string input;
+      getline(std::cin, input);
+      valid_input =
+          static_cast<bool>(std::istringstream(input) >> this->interlines);
     } while (!valid_input || !this->check_interlines());
 
     do {
@@ -221,14 +211,11 @@ const void options::askParams() {
                 << " " << to_underlying(interference_function::fpisin)
                 << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl
                 << "interference function> " << std::flush;
-      try {
-        std::string input;
-        getline(std::cin, input);
-        this->inf_func = static_cast<interference_function>(std::stol(input));
-        valid_input = true;
-      } catch (std::logic_error &) {
-        valid_input = false;
-      }
+      std::string input;
+      getline(std::cin, input);
+      std::underlying_type_t<interference_function> n;
+      valid_input = static_cast<bool>(std::istringstream(input) >> n);
+      this->inf_func = static_cast<interference_function>(n);
     } while (!valid_input || !this->check_inf_func());
 
     do {
@@ -239,15 +226,11 @@ const void options::askParams() {
                 << " " << to_underlying(termination_condidion::iterations)
                 << ": number of iterations." << std::endl
                 << "termination> " << std::flush;
-      try {
-        std::string input;
-        getline(std::cin, input);
-        this->termination =
-            static_cast<termination_condidion>(std::stol(input));
-        valid_input = true;
-      } catch (std::logic_error &) {
-        valid_input = false;
-      }
+      std::string input;
+      getline(std::cin, input);
+      std::underlying_type_t<termination_condidion> n;
+      valid_input = static_cast<bool>(std::istringstream(input) >> n);
+      this->termination = static_cast<termination_condidion>(n);
     } while (!valid_input || !this->check_termination());
 
     if (this->termination == termination_condidion::precision) {
@@ -256,14 +239,10 @@ const void options::askParams() {
                   << "Select precision:" << std::endl
                   << "  Range: 1e-4 .. 1e-20." << std::endl
                   << "precision> " << std::flush;
-        try {
-          std::string input;
-          getline(std::cin, input);
-          this->term_precision = std::stod(input);
-          valid_input = true;
-        } catch (std::logic_error &) {
-          valid_input = false;
-        }
+        std::string input;
+        getline(std::cin, input);
+        valid_input = static_cast<bool>(std::istringstream(input) >>
+                                        this->term_precision);
       } while (!valid_input || !this->check_term_precision());
 
       this->term_iteration = MAX_ITERATION;
@@ -274,14 +253,10 @@ const void options::askParams() {
                   << "  Range: 1 .. " << (unsigned long)MAX_ITERATION << "."
                   << std::endl
                   << "Iterations> " << std::flush;
-        try {
-          std::string input;
-          getline(std::cin, input);
-          this->term_iteration = std::stol(input);
-          valid_input = true;
-        } catch (std::logic_error &) {
-          valid_input = false;
-        }
+        std::string input;
+        getline(std::cin, input);
+        valid_input = static_cast<bool>(std::istringstream(input) >>
+                                        this->term_iteration);
       } while (!valid_input || !this->check_term_iteration());
 
       this->term_precision = 0;
@@ -292,57 +267,48 @@ const void options::askParams() {
       exit(EXIT_SUCCESS);
     }
 
-    try {
-      this->number = std::stol(this->args[0]);
-      valid_input = true;
-    } catch (std::logic_error &) {
-      valid_input = false;
+    {
+      valid_input =
+          static_cast<bool>(std::istringstream(this->args[0]) >> this->number);
     }
     if (!valid_input || !this->check_number()) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    try {
-      this->method = static_cast<calculation_method>(std::stol(this->args[1]));
-      valid_input = true;
-    } catch (std::logic_error &) {
-      valid_input = false;
+    {
+      std::underlying_type_t<calculation_method> n;
+      valid_input = static_cast<bool>(std::istringstream(this->args[1]) >> n);
+      this->method = static_cast<calculation_method>(n);
     }
     if (!valid_input || !this->check_method()) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    try {
-      this->interlines = std::stol(this->args[2]);
-      valid_input = true;
-    } catch (std::logic_error &) {
-      valid_input = false;
+    {
+      valid_input = static_cast<bool>(std::istringstream(this->args[2]) >>
+                                      this->interlines);
     }
     if (!valid_input || !this->check_interlines()) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    try {
-      this->inf_func =
-          static_cast<interference_function>(std::stol(this->args[3]));
-      valid_input = true;
-    } catch (std::logic_error &) {
-      valid_input = false;
+    {
+      std::underlying_type_t<interference_function> n;
+      valid_input = static_cast<bool>(std::istringstream(this->args[3]) >> n);
+      this->inf_func = static_cast<interference_function>(n);
     }
     if (!valid_input || !this->check_inf_func()) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    try {
-      this->termination =
-          static_cast<termination_condidion>(std::stol(this->args[4]));
-      valid_input = true;
-    } catch (std::logic_error &) {
-      valid_input = false;
+    {
+      std::underlying_type_t<termination_condidion> n;
+      valid_input = static_cast<bool>(std::istringstream(this->args[4]) >> n);
+      this->termination = static_cast<termination_condidion>(n);
     }
     if (!valid_input || !this->check_termination()) {
       usage();
@@ -351,13 +317,11 @@ const void options::askParams() {
 
     if (this->termination == termination_condidion::precision) {
 
-      try {
-        this->term_precision = std::stod(this->args[5]);
-        this->term_iteration = MAX_ITERATION;
-        valid_input = true;
-      } catch (std::logic_error &) {
-        valid_input = false;
+      {
+        valid_input = static_cast<bool>(std::istringstream(this->args[5]) >>
+                                        this->term_precision);
       }
+      this->term_iteration = MAX_ITERATION;
       if (!valid_input || !this->check_term_precision()) {
         usage();
         exit(EXIT_FAILURE);
@@ -365,13 +329,11 @@ const void options::askParams() {
 
     } else {
 
-      try {
-        this->term_iteration = std::stol(this->args[5]);
-        this->term_precision = 0;
-        valid_input = true;
-      } catch (std::logic_error &) {
-        valid_input = false;
+      {
+        valid_input = static_cast<bool>(std::istringstream(this->args[5]) >>
+                                        this->term_iteration);
       }
+      this->term_precision = 0;
       if (!valid_input || !this->check_term_iteration()) {
         usage();
         exit(EXIT_FAILURE);
