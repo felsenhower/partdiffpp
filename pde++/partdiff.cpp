@@ -53,7 +53,7 @@ calculation_results::calculation_results() {
 /* ************************************************************************ */
 /* freeMatrices: frees memory for matrices                                  */
 /* ************************************************************************ */
-const void calculation_arguments::freeMatrices() {
+void calculation_arguments::freeMatrices() {
   for (uint64_t i = 0; i < this->num_matrices; i++) {
     delete[] this->Matrix[i];
   }
@@ -76,7 +76,7 @@ calculation_arguments::~calculation_arguments() { this->freeMatrices(); }
 /* allocateMemory ()                                                        */
 /* allocates memory and quits if there was a memory allocation problem      */
 /* ************************************************************************ */
-const static uint8_t *allocateMemory(const std::size_t size) {
+static const uint8_t *allocateMemory(const std::size_t size) {
   try {
     return new uint8_t[size];
   } catch (std::bad_alloc &) {
@@ -89,7 +89,7 @@ const static uint8_t *allocateMemory(const std::size_t size) {
 /* ************************************************************************ */
 /* allocateMatrices: allocates memory for matrices                          */
 /* ************************************************************************ */
-const void calculation_arguments::allocateMatrices() {
+void calculation_arguments::allocateMatrices() {
   const uint64_t N = this->N;
 
   this->M = (double *)allocateMemory(this->num_matrices * (N + 1) * (N + 1) *
@@ -109,7 +109,7 @@ const void calculation_arguments::allocateMatrices() {
 /* ************************************************************************ */
 /* initMatrices: Initialize matrix/matrices and some global variables       */
 /* ************************************************************************ */
-const void calculation_arguments::initMatrices() {
+void calculation_arguments::initMatrices() {
   const uint64_t N = this->N;
   const double h = this->h;
   double ***Matrix = this->Matrix;
@@ -142,9 +142,8 @@ const void calculation_arguments::initMatrices() {
 /* ************************************************************************ */
 /* calculate: solves the equation                                           */
 /* ************************************************************************ */
-const static void calculate(const calculation_arguments &arguments,
-                            calculation_results &results,
-                            const options &options) {
+static void calculate(const calculation_arguments &arguments,
+                      calculation_results &results, const options &options) {
 
   const int N = arguments.N;
   const double h = arguments.h;
@@ -223,9 +222,9 @@ const static void calculate(const calculation_arguments &arguments,
 /* ************************************************************************ */
 /*  displayStatistics: displays some statistics about the calculation       */
 /* ************************************************************************ */
-const static void displayStatistics(const calculation_arguments &arguments,
-                                    const calculation_results &results,
-                                    const options &options) {
+static void displayStatistics(const calculation_arguments &arguments,
+                              const calculation_results &results,
+                              const options &options) {
   const int N = arguments.N;
   const double time = (comp_time.tv_sec - start_time.tv_sec) +
                       (comp_time.tv_usec - start_time.tv_usec) * 1e-6;
@@ -280,9 +279,9 @@ const static void displayStatistics(const calculation_arguments &arguments,
 /** ausgegeben wird. Aus der Matrix werden die Randzeilen/-spalten sowie   **/
 /** sieben Zwischenzeilen ausgegeben.                                      **/
 /****************************************************************************/
-const static void displayMatrix(const calculation_arguments &arguments,
-                                const calculation_results &results,
-                                const options &options) {
+static void displayMatrix(const calculation_arguments &arguments,
+                          const calculation_results &results,
+                          const options &options) {
   double **Matrix = arguments.Matrix[results.m];
 
   const int interlines = options.interlines;

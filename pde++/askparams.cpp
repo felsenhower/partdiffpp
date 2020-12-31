@@ -83,7 +83,7 @@ using options = partdiff::askparams::options;
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
 
-const void options::usage() {
+void options::usage() const {
   std::cout << "Usage: " << this->name
             << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl
             << std::endl
@@ -119,39 +119,39 @@ const void options::usage() {
             << "Example: " << name << " 1 2 100 1 2 100 " << std::endl;
 }
 
-const bool options::check_number() {
+bool options::check_number() const {
   return (this->number >= 1 && this->number <= partdiff::max_threads);
 }
 
-const bool options::check_method() {
+bool options::check_method() const {
   return (this->method == calculation_method::gauss_seidel ||
           this->method == calculation_method::jacobi);
 }
 
-const bool options::check_interlines() {
+bool options::check_interlines() const {
   return (this->interlines <= partdiff::max_interlines);
 }
 
-const bool options::check_inf_func() {
+bool options::check_inf_func() const {
   return (this->inf_func == interference_function::f0 ||
           this->inf_func == interference_function::fpisin);
 }
 
-const bool options::check_termination() {
+bool options::check_termination() const {
   return (this->termination == termination_condidion::precision ||
           this->termination == termination_condidion::iterations);
 }
 
-const bool options::check_term_precision() {
+bool options::check_term_precision() const {
   return (this->term_precision >= 1e-20 && this->term_precision <= 1e-4);
 }
 
-const bool options::check_term_iteration() {
+bool options::check_term_iteration() const {
   return (this->term_iteration >= 1 &&
           this->term_iteration <= partdiff::max_iteration);
 }
 
-const void options::askParams() {
+void options::askParams() {
   /*
   printf("============================================================\n");
   printf("Program for calculation of partial differential equations.  \n");

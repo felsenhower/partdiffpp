@@ -2,7 +2,7 @@
 
 CC = g++
 CXX = $(CC)
-CFLAGS  = -std=c++20 #-Wall -Wextra -Wpedantic -O3 -g
+CFLAGS  = -std=c++20 -Wall -Wextra -Wpedantic -O3 -g
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = $(CXXFLAGS)
 LDLIBS  = -lm

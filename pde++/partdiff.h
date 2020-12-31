@@ -46,15 +46,15 @@ private:
   int argc;
   std::string name;
   std::vector<std::string> args;
-  const void askParams();
-  const bool check_number();
-  const bool check_method();
-  const bool check_interlines();
-  const bool check_inf_func();
-  const bool check_termination();
-  const bool check_term_precision();
-  const bool check_term_iteration();
-  const void usage();
+  void askParams();
+  bool check_number() const;
+  bool check_method() const;
+  bool check_interlines() const;
+  bool check_inf_func() const;
+  bool check_termination() const;
+  bool check_term_precision() const;
+  bool check_term_iteration() const;
+  void usage() const;
 };
 
 } // namespace askparams
@@ -70,9 +70,9 @@ struct calculation_arguments {
 
 private:
   interference_function inf_func;
-  const void allocateMatrices();
-  const void initMatrices();
-  const void freeMatrices();
+  void allocateMatrices();
+  void initMatrices();
+  void freeMatrices();
 };
 
 struct calculation_results {
