@@ -1,15 +1,14 @@
-# Common definitions
-CC = g++
+.PHONY: default all clean test testout testmem beautify
 
-# Compiler flags, paths and libraries
+CC = g++
 CFLAGS  = -std=c++20 -Wall -Wextra -Wpedantic -O3 -g
 LDFLAGS = $(CFLAGS)
 LDLIBS  = -lm
-
 OBJS = partdiff.o askparams.o
 
-# Targets
-all: partdiff
+default: all
+
+all: beautify partdiff
 
 partdiff: $(OBJS)
 
@@ -18,7 +17,9 @@ clean:
 	$(RM) *.o
 	$(RM) *~
 
-test: partdiff
+test: testout testmem
+
+testout: default
 	bash -c 'diff <(./partdiff 1 2 0 2 2 85 | grep -A9 Matrix) <(cat referenz/Jacobi.f2 | grep -A9 Matrix)'
 	bash -c 'diff <(./partdiff 1 2 0 2 1 1e-4 | grep -A9 Matrix) <(cat referenz/Jacobi.f2 | grep -A9 Matrix)'
 	bash -c 'diff <(./partdiff 1 2 0 1 2 82 | grep -A9 Matrix) <(cat referenz/Jacobi.f1 | grep -A9 Matrix)'
@@ -29,7 +30,7 @@ test: partdiff
 	bash -c 'diff <(./partdiff 1 1 0 1 1 8.7e-5 | grep -A9 Matrix) <(cat referenz/GaussSeidel.f1 | grep -A9 Matrix)'
 	@echo 'All tests completed!'
 
-testmem: partdiff
+testmem: default
 	valgrind --leak-check=full ./partdiff 1 2 0 2 2 85 > /dev/null
 
 beautify: partdiff.cpp partdiff.h askparams.cpp

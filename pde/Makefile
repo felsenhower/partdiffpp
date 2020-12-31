@@ -1,14 +1,13 @@
-# Common definitions
-CC = gcc
+.PHONY: default all clean test testout testmem beautify
 
-# Compiler flags, paths and libraries
+CC = gcc
 CFLAGS  = -std=c11 -Wall -Wextra -Wpedantic -O3 -g
 LDFLAGS = $(CFLAGS)
 LDLIBS  = -lm
-
 OBJS = partdiff.o askparams.o
 
-# Targets
+default: all
+
 all: partdiff
 
 partdiff: $(OBJS)
@@ -18,7 +17,9 @@ clean:
 	$(RM) *.o
 	$(RM) *~
 
-test: partdiff
+test: testout testmem
+
+testout: partdiff
 	bash -c 'diff <(./partdiff 1 2 0 2 2 85 | grep -A9 Matrix) <(cat referenz/Jacobi.f2 | grep -A9 Matrix)'
 	bash -c 'diff <(./partdiff 1 2 0 2 1 1e-4 | grep -A9 Matrix) <(cat referenz/Jacobi.f2 | grep -A9 Matrix)'
 	bash -c 'diff <(./partdiff 1 2 0 1 2 82 | grep -A9 Matrix) <(cat referenz/Jacobi.f1 | grep -A9 Matrix)'
