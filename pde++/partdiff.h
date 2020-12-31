@@ -86,7 +86,7 @@ struct calculation_results {
   uint64_t m;
   uint64_t stat_iteration; /* number of current iteration                    */
   double stat_precision;   /* actual precision of all slaves in iteration    */
-  calculation_results(const askparams::options &);
+  calculation_results();
 };
 
 } // namespace partdiff

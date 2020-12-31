@@ -40,7 +40,7 @@ using term_cond = partdiff::termination_condidion;
 timeval start_time = {}; /* time when program started                      */
 timeval comp_time = {};  /* time when calculation completed                */
 
-calculation_results::calculation_results(const options &options) {
+calculation_results::calculation_results() {
   this->m = 0;
   this->stat_iteration = 0;
   this->stat_precision = 0;
@@ -306,7 +306,7 @@ int main(const int argc, char const *argv[]) {
 
   options options(argc, name, args);
   calculation_arguments arguments(options);
-  calculation_results results(options);
+  calculation_results results;
 
   gettimeofday(&start_time, nullptr);
   calculate(arguments, results, options);
