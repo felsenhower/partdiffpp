@@ -19,6 +19,7 @@
 /* ************************************************************************ */
 #define _POSIX_C_SOURCE 200809L
 
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <sys/time.h>
@@ -31,6 +32,9 @@ using calculation_results = partdiff::calculation_results;
 using calc_meth = partdiff::calculation_method;
 using inf_func = partdiff::interference_function;
 using term_cond = partdiff::termination_condidion;
+
+static constexpr double pi = std::numbers::pi;
+static constexpr double two_pi_square = (2 * pi * pi);
 
 /* ************************************************************************ */
 /* Global variables                                                         */
@@ -155,8 +159,8 @@ const static void calculate(const calculation_arguments &arguments,
   int m2 = (options.method == calc_meth::jacobi) ? 1 : 0;
 
   if (options.inf_func == inf_func::fpisin) {
-    pih = PI * h;
-    fpisin = 0.25 * TWO_PI_SQUARE * h * h;
+    pih = pi * h;
+    fpisin = 0.25 * two_pi_square * h * h;
   }
 
   double maxresiduum = 0.0;

@@ -88,7 +88,7 @@ const void options::usage() {
             << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl
             << std::endl
             << "  - num:       number of threads (1 .. "
-            << (unsigned long)MAX_THREADS << ")" << std::endl
+            << (unsigned long)partdiff::max_threads << ")" << std::endl
             << "  - method:    calculation method (1 .. 2)" << std::endl
             << "                 "
             << to_underlying(calculation_method::gauss_seidel)
@@ -96,7 +96,7 @@ const void options::usage() {
             << "                 " << to_underlying(calculation_method::jacobi)
             << ": Jacobi" << std::endl
             << "  - lines:     number of interlines (0 .. "
-            << (unsigned long)MAX_INTERLINES << ")" << std::endl
+            << (unsigned long)partdiff::max_interlines << ")" << std::endl
             << "                 matrixsize = (interlines * 8) + 9" << std::endl
             << "  - func:      interference function (1 .. 2)" << std::endl
             << "                 " << to_underlying(interference_function::f0)
@@ -113,14 +113,14 @@ const void options::usage() {
             << ": number of iterations" << std::endl
             << "  - prec/iter: depending on term:" << std::endl
             << "                 precision:  1e-4 .. 1e-20" << std::endl
-            << "                 iterations:    1 .. " << MAX_ITERATION
-            << std::endl
+            << "                 iterations:    1 .. "
+            << partdiff::max_iteration << std::endl
             << std::endl
             << "Example: " << name << " 1 2 100 1 2 100 " << std::endl;
 }
 
 const bool options::check_number() {
-  return (this->number >= 1 && this->number <= MAX_THREADS);
+  return (this->number >= 1 && this->number <= partdiff::max_threads);
 }
 
 const bool options::check_method() {
@@ -129,7 +129,7 @@ const bool options::check_method() {
 }
 
 const bool options::check_interlines() {
-  return (this->interlines <= MAX_INTERLINES);
+  return (this->interlines <= partdiff::max_interlines);
 }
 
 const bool options::check_inf_func() {
@@ -147,7 +147,8 @@ const bool options::check_term_precision() {
 }
 
 const bool options::check_term_iteration() {
-  return (this->term_iteration >= 1 && this->term_iteration <= MAX_ITERATION);
+  return (this->term_iteration >= 1 &&
+          this->term_iteration <= partdiff::max_iteration);
 }
 
 const void options::askParams() {
@@ -245,13 +246,13 @@ const void options::askParams() {
                                         this->term_precision);
       } while (!valid_input || !this->check_term_precision());
 
-      this->term_iteration = MAX_ITERATION;
+      this->term_iteration = partdiff::max_iteration;
     } else if (this->termination == termination_condidion::iterations) {
       do {
         std::cout << std::endl
                   << "Select number of iterations:" << std::endl
-                  << "  Range: 1 .. " << (unsigned long)MAX_ITERATION << "."
-                  << std::endl
+                  << "  Range: 1 .. " << (unsigned long)partdiff::max_iteration
+                  << "." << std::endl
                   << "Iterations> " << std::flush;
         std::string input;
         getline(std::cin, input);
@@ -321,7 +322,7 @@ const void options::askParams() {
         valid_input = static_cast<bool>(std::istringstream(this->args[5]) >>
                                         this->term_precision);
       }
-      this->term_iteration = MAX_ITERATION;
+      this->term_iteration = partdiff::max_iteration;
       if (!valid_input || !this->check_term_precision()) {
         usage();
         exit(EXIT_FAILURE);

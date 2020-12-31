@@ -16,22 +16,15 @@
 /* *********************************** */
 /* Include some standard header files. */
 /* *********************************** */
-#include <cmath>
 #include <ios>
+#include <numbers>
 #include <vector>
 
 namespace partdiff {
 
-/* ************* */
-/* Some defines. */
-/* ************* */
-#ifndef PI
-#define PI 3.141592653589793
-#endif
-#define TWO_PI_SQUARE (2 * PI * PI)
-#define MAX_INTERLINES 10240
-#define MAX_ITERATION 200000
-#define MAX_THREADS 1024
+static constexpr uint64_t max_interlines = 10240;
+static constexpr uint64_t max_iteration = 200000;
+static constexpr uint64_t max_threads = 1024;
 
 enum class calculation_method : uint64_t { gauss_seidel = 1, jacobi = 2 };
 enum class interference_function : uint64_t { f0 = 1, fpisin = 2 };
