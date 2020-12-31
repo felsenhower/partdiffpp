@@ -54,12 +54,13 @@ const void calculation_arguments::freeMatrices() {
   delete[] this->M;
 }
 
-calculation_arguments::calculation_arguments(const options &options) {
+calculation_arguments::calculation_arguments(const options &options)
+    : inf_func(options.inf_func) {
   this->N = (options.interlines * 8) + 9 - 1;
   this->num_matrices = (options.method == METH_JACOBI) ? 2 : 1;
   this->h = 1.0 / this->N;
   this->allocateMatrices();
-  this->initMatrices(options);
+  this->initMatrices();
 }
 
 calculation_arguments::~calculation_arguments() { this->freeMatrices(); }
@@ -101,7 +102,7 @@ const void calculation_arguments::allocateMatrices() {
 /* ************************************************************************ */
 /* initMatrices: Initialize matrix/matrices and some global variables       */
 /* ************************************************************************ */
-const void calculation_arguments::initMatrices(const options &options) {
+const void calculation_arguments::initMatrices() {
   const uint64_t N = this->N;
   const double h = this->h;
   double ***Matrix = this->Matrix;
@@ -116,7 +117,7 @@ const void calculation_arguments::initMatrices(const options &options) {
   }
 
   /* initialize borders, depending on function (function 2: nothing to do) */
-  if (options.inf_func == FUNC_F0) {
+  if (this->inf_func == FUNC_F0) {
     for (uint64_t g = 0; g < this->num_matrices; g++) {
       for (uint64_t i = 0; i <= N; i++) {
         Matrix[g][i][0] = 1.0 - (h * i);

@@ -78,8 +78,9 @@ struct calculation_arguments {
   ~calculation_arguments();
 
 private:
+  uint64_t inf_func;
   const void allocateMatrices();
-  const void initMatrices(const askparams::options &);
+  const void initMatrices();
   const void freeMatrices();
 };
 
