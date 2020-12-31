@@ -88,7 +88,7 @@ const void options::usage() {
             << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl
             << std::endl
             << "  - num:       number of threads (1 .. "
-            << (unsigned long)partdiff::max_threads << ")" << std::endl
+            << partdiff::max_threads << ")" << std::endl
             << "  - method:    calculation method (1 .. 2)" << std::endl
             << "                 "
             << to_underlying(calculation_method::gauss_seidel)
@@ -96,7 +96,7 @@ const void options::usage() {
             << "                 " << to_underlying(calculation_method::jacobi)
             << ": Jacobi" << std::endl
             << "  - lines:     number of interlines (0 .. "
-            << (unsigned long)partdiff::max_interlines << ")" << std::endl
+            << partdiff::max_interlines << ")" << std::endl
             << "                 matrixsize = (interlines * 8) + 9" << std::endl
             << "  - func:      interference function (1 .. 2)" << std::endl
             << "                 " << to_underlying(interference_function::f0)
@@ -251,8 +251,8 @@ const void options::askParams() {
       do {
         std::cout << std::endl
                   << "Select number of iterations:" << std::endl
-                  << "  Range: 1 .. " << (unsigned long)partdiff::max_iteration
-                  << "." << std::endl
+                  << "  Range: 1 .. " << partdiff::max_iteration << "."
+                  << std::endl
                   << "Iterations> " << std::flush;
         std::string input;
         getline(std::cin, input);
