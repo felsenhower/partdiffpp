@@ -1,8 +1,10 @@
 .PHONY: default all clean test testout testmem beautify
 
 CC = g++
+CXX = $(CC)
 CFLAGS  = -std=c++20 -Wall -Wextra -Wpedantic -O3 -g
-LDFLAGS = $(CFLAGS)
+CXXFLAGS = $(CFLAGS)
+LDFLAGS = $(CXXFLAGS)
 LDLIBS  = -lm
 OBJS = partdiff.o askparams.o
 
