@@ -28,6 +28,9 @@
 using options = partdiff::askparams::options;
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
+using calc_meth = partdiff::calculation_method;
+using inf_func = partdiff::interference_function;
+using term_cond = partdiff::termination_condidion;
 
 /* ************************************************************************ */
 /* Global variables                                                         */
@@ -57,7 +60,7 @@ const void calculation_arguments::freeMatrices() {
 calculation_arguments::calculation_arguments(const options &options)
     : inf_func(options.inf_func) {
   this->N = (options.interlines * 8) + 9 - 1;
-  this->num_matrices = (options.method == METH_JACOBI) ? 2 : 1;
+  this->num_matrices = (options.method == calc_meth::jacobi) ? 2 : 1;
   this->h = 1.0 / this->N;
   this->allocateMatrices();
   this->initMatrices();
@@ -117,7 +120,7 @@ const void calculation_arguments::initMatrices() {
   }
 
   /* initialize borders, depending on function (function 2: nothing to do) */
-  if (this->inf_func == FUNC_F0) {
+  if (this->inf_func == inf_func::f0) {
     for (uint64_t g = 0; g < this->num_matrices; g++) {
       for (uint64_t i = 0; i <= N; i++) {
         Matrix[g][i][0] = 1.0 - (h * i);
@@ -149,9 +152,9 @@ const static void calculate(const calculation_arguments &arguments,
 
   /* initialize m1 and m2 depending on algorithm */
   int m1 = 0;
-  int m2 = (options.method == METH_JACOBI) ? 1 : 0;
+  int m2 = (options.method == calc_meth::jacobi) ? 1 : 0;
 
-  if (options.inf_func == FUNC_FPISIN) {
+  if (options.inf_func == inf_func::fpisin) {
     pih = PI * h;
     fpisin = 0.25 * TWO_PI_SQUARE * h * h;
   }
@@ -168,7 +171,7 @@ const static void calculate(const calculation_arguments &arguments,
     for (int i = 1; i < N; i++) {
       double fpisin_i = 0.0;
 
-      if (options.inf_func == FUNC_FPISIN) {
+      if (options.inf_func == inf_func::fpisin) {
         fpisin_i = fpisin * std::sin(pih * (double)i);
       }
 
@@ -177,11 +180,12 @@ const static void calculate(const calculation_arguments &arguments,
         double star = 0.25 * (Matrix_In[i - 1][j] + Matrix_In[i][j - 1] +
                               Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
 
-        if (options.inf_func == FUNC_FPISIN) {
+        if (options.inf_func == inf_func::fpisin) {
           star += fpisin_i * std::sin(pih * (double)j);
         }
 
-        if (options.termination == TERM_PREC || term_iteration == 1) {
+        if (options.termination == term_cond::precision ||
+            term_iteration == 1) {
           double residuum = Matrix_In[i][j] - star;
           residuum = std::fabs(residuum);
           maxresiduum = std::max(residuum, maxresiduum);
@@ -200,11 +204,11 @@ const static void calculate(const calculation_arguments &arguments,
     m2 = temp;
 
     /* check for stopping calculation depending on termination method */
-    if (options.termination == TERM_PREC) {
+    if (options.termination == term_cond::precision) {
       if (maxresiduum < options.term_precision) {
         term_iteration = 0;
       }
-    } else if (options.termination == TERM_ITER) {
+    } else if (options.termination == term_cond::iterations) {
       term_iteration--;
     }
   }
@@ -228,11 +232,11 @@ const static void displayStatistics(const calculation_arguments &arguments,
             << "Speicherbedarf:     " << std::fixed << std::setprecision(6)
             << memory_consumption << " MiB" << std::endl
             << "Berechnungsmethode: ";
-  std::cout.flags(partdiff::cout_default_flags);
+  std::cout.flags(cout_default_flags);
 
-  if (options.method == METH_GAUSS_SEIDEL) {
+  if (options.method == calc_meth::gauss_seidel) {
     std::cout << "Gauß-Seidel";
-  } else if (options.method == METH_JACOBI) {
+  } else if (options.method == calc_meth::jacobi) {
     std::cout << "Jacobi";
   }
 
@@ -240,17 +244,17 @@ const static void displayStatistics(const calculation_arguments &arguments,
             << "Interlines:         " << options.interlines << std::endl
             << "Stoerfunktion:      ";
 
-  if (options.inf_func == FUNC_F0) {
+  if (options.inf_func == inf_func::f0) {
     std::cout << "f(x,y) = 0";
-  } else if (options.inf_func == FUNC_FPISIN) {
+  } else if (options.inf_func == inf_func::fpisin) {
     std::cout << "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)";
   }
 
   std::cout << std::endl << "Terminierung:       ";
 
-  if (options.termination == TERM_PREC) {
+  if (options.termination == term_cond::precision) {
     std::cout << "Hinreichende Genaugkeit";
-  } else if (options.termination == TERM_ITER) {
+  } else if (options.termination == term_cond::iterations) {
     std::cout << "Anzahl der Iterationen";
   }
 
@@ -259,7 +263,7 @@ const static void displayStatistics(const calculation_arguments &arguments,
             << "Norm des Fehlers:   " << std::scientific
             << results.stat_precision << std::endl
             << std::endl;
-  std::cout.flags(partdiff::cout_default_flags);
+  std::cout.flags(cout_default_flags);
 }
 
 /****************************************************************************/
@@ -289,7 +293,7 @@ const static void displayMatrix(const calculation_arguments &arguments,
     std::cout << std::endl;
   }
   std::cout << std::flush;
-  std::cout.flags(partdiff::cout_default_flags);
+  std::cout.flags(cout_default_flags);
 }
 
 /* ************************************************************************ */

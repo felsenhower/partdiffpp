@@ -32,23 +32,21 @@ namespace partdiff {
 #define MAX_INTERLINES 10240
 #define MAX_ITERATION 200000
 #define MAX_THREADS 1024
-#define METH_GAUSS_SEIDEL 1
-#define METH_JACOBI 2
-#define FUNC_F0 1
-#define FUNC_FPISIN 2
-#define TERM_PREC 1
-#define TERM_ITER 2
+
+enum class calculation_method : uint64_t { gauss_seidel = 1, jacobi = 2 };
+enum class interference_function : uint64_t { f0 = 1, fpisin = 2 };
+enum class termination_condidion : uint64_t { precision = 1, iterations = 2 };
 
 namespace askparams {
 
 struct options {
-  uint64_t number;         /* Number of threads                              */
-  uint64_t method;         /* Gauss Seidel or Jacobi method of iteration     */
-  uint64_t interlines;     /* matrix size = interlines*8+9                   */
-  uint64_t inf_func;       /* inference function                             */
-  uint64_t termination;    /* termination condition                          */
-  uint64_t term_iteration; /* terminate if iteration number reached          */
-  double term_precision;   /* terminate if precision reached                 */
+  uint64_t number;           /* Number of threads */
+  uint64_t interlines;       /* matrix size = interlines*8+9 */
+  calculation_method method; /* Gauss Seidel or Jacobi method of iteration */
+  interference_function inf_func;    /* inference function */
+  termination_condidion termination; /* termination condition */
+  uint64_t term_iteration;           /* terminate if iteration number reached */
+  double term_precision;             /* terminate if precision reached */
   options(const int, const std::string &, const std::vector<std::string> &);
 
 private:
@@ -78,7 +76,7 @@ struct calculation_arguments {
   ~calculation_arguments();
 
 private:
-  uint64_t inf_func;
+  interference_function inf_func;
   const void allocateMatrices();
   const void initMatrices();
   const void freeMatrices();
@@ -91,6 +89,11 @@ struct calculation_results {
   calculation_results(const askparams::options &);
 };
 
+} // namespace partdiff
+
 static std::ios_base::fmtflags cout_default_flags(std::cout.flags());
 
-} // namespace partdiff
+template <typename T, typename U = std::underlying_type_t<T>>
+U to_underlying(T v) {
+  return static_cast<U>(v);
+}

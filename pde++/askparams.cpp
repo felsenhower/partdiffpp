@@ -89,22 +89,26 @@ const void options::usage() {
             << "  - num:       number of threads (1 .. "
             << (unsigned long)MAX_THREADS << ")" << std::endl
             << "  - method:    calculation method (1 .. 2)" << std::endl
-            << "                 " << (unsigned short)METH_GAUSS_SEIDEL
+            << "                 "
+            << to_underlying(calculation_method::gauss_seidel)
             << ": Gauß-Seidel" << std::endl
-            << "                 " << (unsigned short)METH_JACOBI << ": Jacobi"
-            << std::endl
+            << "                 " << to_underlying(calculation_method::jacobi)
+            << ": Jacobi" << std::endl
             << "  - lines:     number of interlines (0 .. "
             << (unsigned long)MAX_INTERLINES << ")" << std::endl
             << "                 matrixsize = (interlines * 8) + 9" << std::endl
             << "  - func:      interference function (1 .. 2)" << std::endl
-            << "                 " << (unsigned short)FUNC_F0 << ": f(x,y) = 0"
-            << std::endl
-            << "                 " << (unsigned short)FUNC_FPISIN
+            << "                 " << to_underlying(interference_function::f0)
+            << ": f(x,y) = 0" << std::endl
+            << "                 "
+            << to_underlying(interference_function::fpisin)
             << ": f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)" << std::endl
             << "  - term:      termination condition ( 1.. 2)" << std::endl
-            << "                 " << (unsigned short)TERM_PREC
+            << "                 "
+            << to_underlying(termination_condidion::precision)
             << ": sufficient precision" << std::endl
-            << "                 " << (unsigned short)TERM_ITER
+            << "                 "
+            << to_underlying(termination_condidion::iterations)
             << ": number of iterations" << std::endl
             << "  - prec/iter: depending on term:" << std::endl
             << "                 precision:  1e-4 .. 1e-20" << std::endl
@@ -119,7 +123,8 @@ const bool options::check_number() {
 }
 
 const bool options::check_method() {
-  return (this->method == METH_GAUSS_SEIDEL || this->method == METH_JACOBI);
+  return (this->method == calculation_method::gauss_seidel ||
+          this->method == calculation_method::jacobi);
 }
 
 const bool options::check_interlines() {
@@ -127,11 +132,13 @@ const bool options::check_interlines() {
 }
 
 const bool options::check_inf_func() {
-  return (this->inf_func == FUNC_F0 || this->inf_func == FUNC_FPISIN);
+  return (this->inf_func == interference_function::f0 ||
+          this->inf_func == interference_function::fpisin);
 }
 
 const bool options::check_termination() {
-  return (this->termination == TERM_PREC || this->termination == TERM_ITER);
+  return (this->termination == termination_condidion::precision ||
+          this->termination == termination_condidion::iterations);
 }
 
 const bool options::check_term_precision() {
@@ -177,15 +184,15 @@ const void options::askParams() {
     do {
       std::cout << std::endl
                 << "Select calculation method:" << std::endl
-                << "  " << (unsigned short)METH_GAUSS_SEIDEL << ": Gauß-Seidel."
-                << std::endl
-                << "  " << (unsigned short)METH_JACOBI << ": Jacobi."
-                << std::endl
+                << "  " << to_underlying(calculation_method::gauss_seidel)
+                << ": Gauß-Seidel." << std::endl
+                << "  " << to_underlying(calculation_method::jacobi)
+                << ": Jacobi." << std::endl
                 << "method> " << std::flush;
       try {
         std::string input;
         getline(std::cin, input);
-        this->method = std::stol(input);
+        this->method = static_cast<calculation_method>(std::stol(input));
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
@@ -209,14 +216,15 @@ const void options::askParams() {
     do {
       std::cout << std::endl
                 << "Select interference function:" << std::endl
-                << " " << (unsigned short)FUNC_F0 << ": f(x,y)=0." << std::endl
-                << " " << (unsigned short)FUNC_FPISIN
+                << " " << to_underlying(interference_function::f0)
+                << ": f(x,y)=0." << std::endl
+                << " " << to_underlying(interference_function::fpisin)
                 << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl
                 << "interference function> " << std::flush;
       try {
         std::string input;
         getline(std::cin, input);
-        this->inf_func = std::stol(input);
+        this->inf_func = static_cast<interference_function>(std::stol(input));
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
@@ -226,22 +234,23 @@ const void options::askParams() {
     do {
       std::cout << std::endl
                 << "Select termination:" << std::endl
-                << " " << (unsigned short)TERM_PREC << ": sufficient precision."
-                << std::endl
-                << " " << (unsigned short)TERM_ITER << ": number of iterations."
-                << std::endl
+                << " " << to_underlying(termination_condidion::precision)
+                << ": sufficient precision." << std::endl
+                << " " << to_underlying(termination_condidion::iterations)
+                << ": number of iterations." << std::endl
                 << "termination> " << std::flush;
       try {
         std::string input;
         getline(std::cin, input);
-        this->termination = std::stol(input);
+        this->termination =
+            static_cast<termination_condidion>(std::stol(input));
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
     } while (!valid_input || !this->check_termination());
 
-    if (this->termination == TERM_PREC) {
+    if (this->termination == termination_condidion::precision) {
       do {
         std::cout << std::endl
                   << "Select precision:" << std::endl
@@ -258,7 +267,7 @@ const void options::askParams() {
       } while (!valid_input || !this->check_term_precision());
 
       this->term_iteration = MAX_ITERATION;
-    } else if (this->termination == TERM_ITER) {
+    } else if (this->termination == termination_condidion::iterations) {
       do {
         std::cout << std::endl
                   << "Select number of iterations:" << std::endl
@@ -295,7 +304,7 @@ const void options::askParams() {
     }
 
     try {
-      this->method = std::stol(this->args[1]);
+      this->method = static_cast<calculation_method>(std::stol(this->args[1]));
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
@@ -317,7 +326,8 @@ const void options::askParams() {
     }
 
     try {
-      this->inf_func = std::stol(this->args[3]);
+      this->inf_func =
+          static_cast<interference_function>(std::stol(this->args[3]));
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
@@ -328,7 +338,8 @@ const void options::askParams() {
     }
 
     try {
-      this->termination = std::stol(this->args[4]);
+      this->termination =
+          static_cast<termination_condidion>(std::stol(this->args[4]));
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
@@ -338,7 +349,7 @@ const void options::askParams() {
       exit(EXIT_FAILURE);
     }
 
-    if (this->termination == TERM_PREC) {
+    if (this->termination == termination_condidion::precision) {
 
       try {
         this->term_precision = std::stod(this->args[5]);
