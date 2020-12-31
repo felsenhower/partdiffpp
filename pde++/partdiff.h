@@ -50,8 +50,10 @@ struct options {
   options(const int, const std::string &, const std::vector<std::string> &);
 
 private:
-  const void askParams(const int, const std::string &,
-                       const std::vector<std::string> &);
+  int argc;
+  std::string name;
+  std::vector<std::string> args;
+  const void askParams();
   const bool check_number();
   const bool check_method();
   const bool check_interlines();
@@ -59,6 +61,7 @@ private:
   const bool check_termination();
   const bool check_term_precision();
   const bool check_term_iteration();
+  const void usage();
 };
 
 struct calculation_arguments {

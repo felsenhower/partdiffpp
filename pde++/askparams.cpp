@@ -80,8 +80,8 @@
 
 using namespace partdiff;
 
-const static void usage(const std::string &name) {
-  std::cout << "Usage: " << name
+const void options::usage() {
+  std::cout << "Usage: " << this->name
             << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl
             << std::endl
             << "  - num:       number of threads (1 .. "
@@ -140,8 +140,7 @@ const bool options::check_term_iteration() {
   return (this->term_iteration >= 1 && this->term_iteration <= MAX_ITERATION);
 }
 
-const void options::askParams(const int argc, const std::string &name,
-                              const std::vector<std::string> &args) {
+const void options::askParams() {
   /*
   printf("============================================================\n");
   printf("Program for calculation of partial differential equations.  \n");
@@ -154,7 +153,7 @@ const void options::askParams(const int argc, const std::string &name,
   */
 
   bool valid_input = false;
-  if (argc < 2) {
+  if (this->argc < 2) {
     /* ----------------------------------------------- */
     /* Get input: method, interlines, func, precision. */
     /* ----------------------------------------------- */
@@ -277,91 +276,91 @@ const void options::askParams(const int argc, const std::string &name,
       this->term_precision = 0;
     }
   } else {
-    if (argc < 7 || args[0] == "-h" || args[0] == "-?") {
-      usage(name);
+    if (this->argc < 7 || this->args[0] == "-h" || this->args[0] == "-?") {
+      usage();
       exit(EXIT_SUCCESS);
     }
 
     try {
-      this->number = std::stol(args[0]);
+      this->number = std::stol(this->args[0]);
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
     }
     if (!valid_input || !this->check_number()) {
-      usage(name);
+      usage();
       exit(EXIT_FAILURE);
     }
 
     try {
-      this->method = std::stol(args[1]);
+      this->method = std::stol(this->args[1]);
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
     }
     if (!valid_input || !this->check_method()) {
-      usage(name);
+      usage();
       exit(EXIT_FAILURE);
     }
 
     try {
-      this->interlines = std::stol(args[2]);
+      this->interlines = std::stol(this->args[2]);
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
     }
     if (!valid_input || !this->check_interlines()) {
-      usage(name);
+      usage();
       exit(EXIT_FAILURE);
     }
 
     try {
-      this->inf_func = std::stol(args[3]);
+      this->inf_func = std::stol(this->args[3]);
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
     }
     if (!valid_input || !this->check_inf_func()) {
-      usage(name);
+      usage();
       exit(EXIT_FAILURE);
     }
 
     try {
-      this->termination = std::stol(args[4]);
+      this->termination = std::stol(this->args[4]);
       valid_input = true;
     } catch (std::logic_error &) {
       valid_input = false;
     }
     if (!valid_input || !this->check_termination()) {
-      usage(name);
+      usage();
       exit(EXIT_FAILURE);
     }
 
     if (this->termination == TERM_PREC) {
 
       try {
-        this->term_precision = std::stod(args[5]);
+        this->term_precision = std::stod(this->args[5]);
         this->term_iteration = MAX_ITERATION;
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
       if (!valid_input || !this->check_term_precision()) {
-        usage(name);
+        usage();
         exit(EXIT_FAILURE);
       }
 
     } else {
 
       try {
-        this->term_iteration = std::stol(args[5]);
+        this->term_iteration = std::stol(this->args[5]);
         this->term_precision = 0;
         valid_input = true;
       } catch (std::logic_error &) {
         valid_input = false;
       }
       if (!valid_input || !this->check_term_iteration()) {
-        usage(name);
+        usage();
         exit(EXIT_FAILURE);
       }
     }
@@ -369,6 +368,7 @@ const void options::askParams(const int argc, const std::string &name,
 }
 
 options::options(const int argc, const std::string &name,
-                 const std::vector<std::string> &args) {
-  this->askParams(argc, name, args);
+                 const std::vector<std::string> &args)
+    : argc(argc), name(name), args(args) {
+  this->askParams();
 }
