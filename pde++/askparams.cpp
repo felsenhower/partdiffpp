@@ -78,7 +78,9 @@
 
 #include "partdiff.h"
 
-using namespace partdiff;
+using options = partdiff::askparams::options;
+using calculation_arguments = partdiff::calculation_arguments;
+using calculation_results = partdiff::calculation_results;
 
 const void options::usage() {
   std::cout << "Usage: " << this->name

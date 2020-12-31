@@ -39,6 +39,8 @@ namespace partdiff {
 #define TERM_PREC 1
 #define TERM_ITER 2
 
+namespace askparams {
+
 struct options {
   uint64_t number;         /* Number of threads                              */
   uint64_t method;         /* Gauss Seidel or Jacobi method of iteration     */
@@ -64,18 +66,20 @@ private:
   const void usage();
 };
 
+} // namespace askparams
+
 struct calculation_arguments {
   uint64_t N;            /* number of spaces between lines (lines=N+1)     */
   uint64_t num_matrices; /* number of matrices                             */
   double h;              /* length of a space between two lines            */
   double ***Matrix;      /* index matrix used for addressing M             */
   double *M;             /* two matrices with real values                  */
-  calculation_arguments(const options &);
+  calculation_arguments(const askparams::options &);
   ~calculation_arguments();
 
 private:
   const void allocateMatrices();
-  const void initMatrices(const options &);
+  const void initMatrices(const askparams::options &);
   const void freeMatrices();
 };
 
@@ -83,7 +87,7 @@ struct calculation_results {
   uint64_t m;
   uint64_t stat_iteration; /* number of current iteration                    */
   double stat_precision;   /* actual precision of all slaves in iteration    */
-  calculation_results(const options &);
+  calculation_results(const askparams::options &);
 };
 
 static std::ios_base::fmtflags cout_default_flags(std::cout.flags());

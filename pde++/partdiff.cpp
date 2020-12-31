@@ -25,7 +25,9 @@
 
 #include "partdiff.h"
 
-using namespace partdiff;
+using options = partdiff::askparams::options;
+using calculation_arguments = partdiff::calculation_arguments;
+using calculation_results = partdiff::calculation_results;
 
 /* ************************************************************************ */
 /* Global variables                                                         */
@@ -225,7 +227,7 @@ const static void displayStatistics(const calculation_arguments &arguments,
             << "Speicherbedarf:     " << std::fixed << std::setprecision(6)
             << memory_consumption << " MiB" << std::endl
             << "Berechnungsmethode: ";
-  std::cout.flags(cout_default_flags);
+  std::cout.flags(partdiff::cout_default_flags);
 
   if (options.method == METH_GAUSS_SEIDEL) {
     std::cout << "Gauß-Seidel";
@@ -256,7 +258,7 @@ const static void displayStatistics(const calculation_arguments &arguments,
             << "Norm des Fehlers:   " << std::scientific
             << results.stat_precision << std::endl
             << std::endl;
-  std::cout.flags(cout_default_flags);
+  std::cout.flags(partdiff::cout_default_flags);
 }
 
 /****************************************************************************/
@@ -286,7 +288,7 @@ const static void displayMatrix(const calculation_arguments &arguments,
     std::cout << std::endl;
   }
   std::cout << std::flush;
-  std::cout.flags(cout_default_flags);
+  std::cout.flags(partdiff::cout_default_flags);
 }
 
 /* ************************************************************************ */
