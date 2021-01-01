@@ -173,8 +173,8 @@ void options::askParams() {
       std::cout << std::endl
                 << "Select number of threads:" << std::endl
                 << "Number> " << std::flush;
-      valid_input = get_from_stdin(this->number);
-    } while (!valid_input || !this->check_number());
+      valid_input = get_from_stdin(this->number) && this->check_number();
+    } while (!valid_input);
 
     do {
       std::cout << std::endl
@@ -184,15 +184,16 @@ void options::askParams() {
                 << "  " << to_underlying(calculation_method::jacobi)
                 << ": Jacobi." << std::endl
                 << "method> " << std::flush;
-      valid_input = get_from_stdin(this->method);
-    } while (!valid_input || !this->check_method());
+      valid_input = get_from_stdin(this->method) && this->check_method();
+    } while (!valid_input);
 
     do {
       std::cout << std::endl
                 << "Matrixsize = Interlines*8+9" << std::endl
                 << "Interlines> " << std::flush;
-      valid_input = get_from_stdin(this->interlines);
-    } while (!valid_input || !this->check_interlines());
+      valid_input =
+          get_from_stdin(this->interlines) && this->check_interlines();
+    } while (!valid_input);
 
     do {
       std::cout << std::endl
@@ -202,8 +203,8 @@ void options::askParams() {
                 << " " << to_underlying(interference_function::fpisin)
                 << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl
                 << "interference function> " << std::flush;
-      valid_input = get_from_stdin(this->inf_func);
-    } while (!valid_input || !this->check_inf_func());
+      valid_input = get_from_stdin(this->inf_func) && this->check_inf_func();
+    } while (!valid_input);
 
     do {
       std::cout << std::endl
@@ -213,8 +214,9 @@ void options::askParams() {
                 << " " << to_underlying(termination_condidion::iterations)
                 << ": number of iterations." << std::endl
                 << "termination> " << std::flush;
-      valid_input = get_from_stdin(this->termination);
-    } while (!valid_input || !this->check_termination());
+      valid_input =
+          get_from_stdin(this->termination) && this->check_termination();
+    } while (!valid_input);
 
     if (this->termination == termination_condidion::precision) {
       do {
@@ -222,8 +224,9 @@ void options::askParams() {
                   << "Select precision:" << std::endl
                   << "  Range: 1e-4 .. 1e-20." << std::endl
                   << "precision> " << std::flush;
-        valid_input = get_from_stdin(this->term_precision);
-      } while (!valid_input || !this->check_term_precision());
+        valid_input = get_from_stdin(this->term_precision) &&
+                      this->check_term_precision();
+      } while (!valid_input);
 
       this->term_iteration = partdiff::max_iteration;
     } else if (this->termination == termination_condidion::iterations) {
@@ -233,8 +236,9 @@ void options::askParams() {
                   << "  Range: 1 .. " << partdiff::max_iteration << "."
                   << std::endl
                   << "Iterations> " << std::flush;
-        valid_input = get_from_stdin(this->term_iteration);
-      } while (!valid_input || !this->check_term_iteration());
+        valid_input = get_from_stdin(this->term_iteration) &&
+                      this->check_term_iteration();
+      } while (!valid_input);
 
       this->term_precision = 0;
     }
@@ -244,50 +248,57 @@ void options::askParams() {
       exit(EXIT_SUCCESS);
     }
 
-    valid_input = get_from_string(this->number, this->args[0]);
-    if (!valid_input || !this->check_number()) {
+    valid_input =
+        get_from_string(this->number, this->args[0]) && this->check_number();
+    if (!valid_input) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    valid_input = get_from_string(this->method, this->args[1]);
-    if (!valid_input || !this->check_method()) {
+    valid_input =
+        get_from_string(this->method, this->args[1]) && this->check_method();
+    if (!valid_input) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    valid_input = get_from_string(this->interlines, this->args[2]);
-    if (!valid_input || !this->check_interlines()) {
+    valid_input = get_from_string(this->interlines, this->args[2]) &&
+                  this->check_interlines();
+    if (!valid_input) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    valid_input = get_from_string(this->inf_func, this->args[3]);
-    if (!valid_input || !this->check_inf_func()) {
+    valid_input = get_from_string(this->inf_func, this->args[3]) &&
+                  this->check_inf_func();
+    if (!valid_input) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    valid_input = get_from_string(this->termination, this->args[4]);
-    if (!valid_input || !this->check_termination()) {
+    valid_input = get_from_string(this->termination, this->args[4]) &&
+                  this->check_termination();
+    if (!valid_input) {
       usage();
       exit(EXIT_FAILURE);
     }
 
     if (this->termination == termination_condidion::precision) {
 
-      valid_input = get_from_string(this->term_precision, this->args[5]);
+      valid_input = get_from_string(this->term_precision, this->args[5]) &&
+                    this->check_term_precision();
       this->term_iteration = partdiff::max_iteration;
-      if (!valid_input || !this->check_term_precision()) {
+      if (!valid_input) {
         usage();
         exit(EXIT_FAILURE);
       }
 
     } else {
 
-      valid_input = get_from_string(this->term_iteration, this->args[5]);
+      valid_input = get_from_string(this->term_iteration, this->args[5]) &&
+                    this->check_term_iteration();
       this->term_precision = 0;
-      if (!valid_input || !this->check_term_iteration()) {
+      if (!valid_input) {
         usage();
         exit(EXIT_FAILURE);
       }
