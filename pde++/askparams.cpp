@@ -173,10 +173,7 @@ void options::askParams() {
       std::cout << std::endl
                 << "Select number of threads:" << std::endl
                 << "Number> " << std::flush;
-      std::string input;
-      getline(std::cin, input);
-      valid_input =
-          static_cast<bool>(std::istringstream(input) >> this->number);
+      valid_input = get_from_stdin(this->number);
     } while (!valid_input || !this->check_number());
 
     do {
@@ -187,21 +184,14 @@ void options::askParams() {
                 << "  " << to_underlying(calculation_method::jacobi)
                 << ": Jacobi." << std::endl
                 << "method> " << std::flush;
-      std::string input;
-      getline(std::cin, input);
-      std::underlying_type_t<calculation_method> n;
-      valid_input = static_cast<bool>(std::istringstream(input) >> n);
-      this->method = static_cast<calculation_method>(n);
+      valid_input = get_from_stdin(this->method);
     } while (!valid_input || !this->check_method());
 
     do {
       std::cout << std::endl
                 << "Matrixsize = Interlines*8+9" << std::endl
                 << "Interlines> " << std::flush;
-      std::string input;
-      getline(std::cin, input);
-      valid_input =
-          static_cast<bool>(std::istringstream(input) >> this->interlines);
+      valid_input = get_from_stdin(this->interlines);
     } while (!valid_input || !this->check_interlines());
 
     do {
@@ -212,11 +202,7 @@ void options::askParams() {
                 << " " << to_underlying(interference_function::fpisin)
                 << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl
                 << "interference function> " << std::flush;
-      std::string input;
-      getline(std::cin, input);
-      std::underlying_type_t<interference_function> n;
-      valid_input = static_cast<bool>(std::istringstream(input) >> n);
-      this->inf_func = static_cast<interference_function>(n);
+      valid_input = get_from_stdin(this->inf_func);
     } while (!valid_input || !this->check_inf_func());
 
     do {
@@ -227,11 +213,7 @@ void options::askParams() {
                 << " " << to_underlying(termination_condidion::iterations)
                 << ": number of iterations." << std::endl
                 << "termination> " << std::flush;
-      std::string input;
-      getline(std::cin, input);
-      std::underlying_type_t<termination_condidion> n;
-      valid_input = static_cast<bool>(std::istringstream(input) >> n);
-      this->termination = static_cast<termination_condidion>(n);
+      valid_input = get_from_stdin(this->termination);
     } while (!valid_input || !this->check_termination());
 
     if (this->termination == termination_condidion::precision) {
@@ -240,10 +222,7 @@ void options::askParams() {
                   << "Select precision:" << std::endl
                   << "  Range: 1e-4 .. 1e-20." << std::endl
                   << "precision> " << std::flush;
-        std::string input;
-        getline(std::cin, input);
-        valid_input = static_cast<bool>(std::istringstream(input) >>
-                                        this->term_precision);
+        valid_input = get_from_stdin(this->term_precision);
       } while (!valid_input || !this->check_term_precision());
 
       this->term_iteration = partdiff::max_iteration;
@@ -254,10 +233,7 @@ void options::askParams() {
                   << "  Range: 1 .. " << partdiff::max_iteration << "."
                   << std::endl
                   << "Iterations> " << std::flush;
-        std::string input;
-        getline(std::cin, input);
-        valid_input = static_cast<bool>(std::istringstream(input) >>
-                                        this->term_iteration);
+        valid_input = get_from_stdin(this->term_iteration);
       } while (!valid_input || !this->check_term_iteration());
 
       this->term_precision = 0;
@@ -268,49 +244,31 @@ void options::askParams() {
       exit(EXIT_SUCCESS);
     }
 
-    {
-      valid_input =
-          static_cast<bool>(std::istringstream(this->args[0]) >> this->number);
-    }
+    valid_input = get_from_string(this->number, this->args[0]);
     if (!valid_input || !this->check_number()) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    {
-      std::underlying_type_t<calculation_method> n;
-      valid_input = static_cast<bool>(std::istringstream(this->args[1]) >> n);
-      this->method = static_cast<calculation_method>(n);
-    }
+    valid_input = get_from_string(this->method, this->args[1]);
     if (!valid_input || !this->check_method()) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    {
-      valid_input = static_cast<bool>(std::istringstream(this->args[2]) >>
-                                      this->interlines);
-    }
+    valid_input = get_from_string(this->interlines, this->args[2]);
     if (!valid_input || !this->check_interlines()) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    {
-      std::underlying_type_t<interference_function> n;
-      valid_input = static_cast<bool>(std::istringstream(this->args[3]) >> n);
-      this->inf_func = static_cast<interference_function>(n);
-    }
+    valid_input = get_from_string(this->inf_func, this->args[3]);
     if (!valid_input || !this->check_inf_func()) {
       usage();
       exit(EXIT_FAILURE);
     }
 
-    {
-      std::underlying_type_t<termination_condidion> n;
-      valid_input = static_cast<bool>(std::istringstream(this->args[4]) >> n);
-      this->termination = static_cast<termination_condidion>(n);
-    }
+    valid_input = get_from_string(this->termination, this->args[4]);
     if (!valid_input || !this->check_termination()) {
       usage();
       exit(EXIT_FAILURE);
@@ -318,10 +276,7 @@ void options::askParams() {
 
     if (this->termination == termination_condidion::precision) {
 
-      {
-        valid_input = static_cast<bool>(std::istringstream(this->args[5]) >>
-                                        this->term_precision);
-      }
+      valid_input = get_from_string(this->term_precision, this->args[5]);
       this->term_iteration = partdiff::max_iteration;
       if (!valid_input || !this->check_term_precision()) {
         usage();
@@ -330,10 +285,7 @@ void options::askParams() {
 
     } else {
 
-      {
-        valid_input = static_cast<bool>(std::istringstream(this->args[5]) >>
-                                        this->term_iteration);
-      }
+      valid_input = get_from_string(this->term_iteration, this->args[5]);
       this->term_precision = 0;
       if (!valid_input || !this->check_term_iteration()) {
         usage();
