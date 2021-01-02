@@ -18,13 +18,6 @@ enum class termination_condidion : uint64_t { precision = 1, iterations = 2 };
 
 namespace askparams {
 
-struct argument_description {
-  std::any target;
-  std::function<bool()> check_function;
-  std::string description;
-  std::function<bool(std::any &a, const std::string &input)> getter_function;
-};
-
 struct options {
   uint64_t number;
   uint64_t interlines;
@@ -33,24 +26,32 @@ struct options {
   termination_condidion termination;
   uint64_t term_iteration;
   double term_precision;
+};
 
-  options(const int, const std::string &, const std::vector<std::string> &);
+struct argument_description {
+  std::any target;
+  std::function<bool()> check_function;
+  std::string description;
+  std::function<bool(std::any &a, const std::string &input)> getter_function;
+};
+
+struct argument_parser {
+  argument_parser(const int, const std::string &,
+                  const std::vector<std::string> &);
   int argc;
   std::string name;
   std::vector<std::string> args;
   void askParams();
   void usage() const;
-
   std::vector<argument_description> vec;
-
   template <class T>
   void add_argument_description(T *target, std::string description,
                                 std::function<bool()> check_function);
-
   void parseParam(int index, std::string &input);
   bool get_value(int index, std::string &input);
   void askParam(int index);
   void fill_vec();
+  options _options;
 };
 
 } // namespace askparams

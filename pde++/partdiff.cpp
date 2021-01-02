@@ -7,6 +7,7 @@
 
 #include "partdiff.h"
 
+using argument_parser = partdiff::askparams::argument_parser;
 using options = partdiff::askparams::options;
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
@@ -244,7 +245,9 @@ int main(const int argc, char const *argv[]) {
   const std::string name(argv[0]);
   const std::vector<std::string> args(argv + 1, argv + argc);
 
-  options options(argc, name, args);
+  argument_parser parser(argc, name, args);
+
+  options options = parser._options;
   calculation_arguments arguments(options);
   calculation_results results;
 

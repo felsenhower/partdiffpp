@@ -5,11 +5,12 @@
 
 #include "partdiff.h"
 
+using argument_parser = partdiff::askparams::argument_parser;
 using options = partdiff::askparams::options;
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
 
-void options::usage() const {
+void argument_parser::usage() const {
   std::cout << "Usage: " << this->name
             << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl
             << std::endl
@@ -56,8 +57,8 @@ enum ARG_INDEX {
 };
 
 template <class T>
-void options::add_argument_description(T *target, std::string description,
-                                       std::function<bool()> check_function) {
+void argument_parser::add_argument_description(
+    T *target, std::string description, std::function<bool()> check_function) {
   partdiff::askparams::argument_description arg_desc;
   arg_desc.target = target;
   arg_desc.getter_function = [](std::any &a, const std::string &input) {
@@ -70,9 +71,9 @@ void options::add_argument_description(T *target, std::string description,
   this->vec.push_back(arg_desc);
 }
 
-void options::fill_vec() {
+void argument_parser::fill_vec() {
   this->add_argument_description(
-      &(this->number),
+      &(this->_options.number),
       []() {
         std::stringstream ss;
         ss << std::endl
@@ -80,11 +81,11 @@ void options::fill_vec() {
            << "Number> ";
         return ss.str();
       }(),
-      [number = &(this->number)] {
+      [number = &(this->_options.number)] {
         return (*number >= 1 && *number <= partdiff::max_threads);
       });
   this->add_argument_description(
-      &(this->method),
+      &(this->_options.method),
       []() {
         std::stringstream ss;
         ss << std::endl
@@ -96,12 +97,12 @@ void options::fill_vec() {
            << "method> ";
         return ss.str();
       }(),
-      [method = &(this->method)] {
+      [method = &(this->_options.method)] {
         return (*method == calculation_method::gauss_seidel ||
                 *method == calculation_method::jacobi);
       });
   this->add_argument_description(
-      &(this->interlines),
+      &(this->_options.interlines),
       []() {
         std::stringstream ss;
         ss << std::endl
@@ -109,11 +110,11 @@ void options::fill_vec() {
            << "Interlines> ";
         return ss.str();
       }(),
-      [interlines = &(this->interlines)] {
+      [interlines = &(this->_options.interlines)] {
         return (*interlines <= partdiff::max_interlines);
       });
   this->add_argument_description(
-      &(this->inf_func),
+      &(this->_options.inf_func),
       []() {
         std::stringstream ss;
         ss << std::endl
@@ -125,12 +126,12 @@ void options::fill_vec() {
            << "interference function> ";
         return ss.str();
       }(),
-      [inf_func = &(this->inf_func)] {
+      [inf_func = &(this->_options.inf_func)] {
         return (*inf_func == interference_function::f0 ||
                 *inf_func == interference_function::fpisin);
       });
   this->add_argument_description(
-      &(this->termination),
+      &(this->_options.termination),
       []() {
         std::stringstream ss;
         ss << std::endl
@@ -142,12 +143,12 @@ void options::fill_vec() {
            << "termination> ";
         return ss.str();
       }(),
-      [termination = &(this->termination)] {
+      [termination = &(this->_options.termination)] {
         return (*termination == termination_condidion::precision ||
                 *termination == termination_condidion::iterations);
       });
   this->add_argument_description(
-      &(this->term_precision),
+      &(this->_options.term_precision),
       []() {
         std::stringstream ss;
         ss << std::endl
@@ -156,11 +157,11 @@ void options::fill_vec() {
            << "precision> ";
         return ss.str();
       }(),
-      [term_precision = &(this->term_precision)] {
+      [term_precision = &(this->_options.term_precision)] {
         return (*term_precision >= 1e-20 && *term_precision <= 1e-4);
       });
   this->add_argument_description(
-      &(this->term_iteration),
+      &(this->_options.term_iteration),
       []() {
         std::stringstream ss;
         ss << std::endl
@@ -169,18 +170,18 @@ void options::fill_vec() {
            << "Iterations> ";
         return ss.str();
       }(),
-      [term_iteration = &(this->term_iteration)] {
+      [term_iteration = &(this->_options.term_iteration)] {
         return (*term_iteration >= 1 &&
                 *term_iteration <= partdiff::max_iteration);
       });
 }
 
-bool options::get_value(int index, std::string &input) {
+bool argument_parser::get_value(int index, std::string &input) {
   return vec[index].getter_function(vec[index].target, input) &&
          vec[index].check_function();
 }
 
-void options::askParam(int index) {
+void argument_parser::askParam(int index) {
   bool valid_input = false;
   do {
     std::cout << vec[index].description << std::flush;
@@ -190,24 +191,24 @@ void options::askParam(int index) {
   } while (!valid_input);
 }
 
-void options::parseParam(int index, std::string &input) {
+void argument_parser::parseParam(int index, std::string &input) {
   if (!get_value(index, input)) {
     this->usage();
     exit(EXIT_FAILURE);
   }
 }
 
-void options::askParams() {
+void argument_parser::askParams() {
   if (this->argc < 2) {
     for (int i = 0; i <= TERMINATION; i++) {
       askParam(i);
     }
-    if (this->termination == termination_condidion::precision) {
+    if (this->_options.termination == termination_condidion::precision) {
       askParam(TERM_PRECISION);
-      this->term_iteration = partdiff::max_iteration;
+      this->_options.term_iteration = partdiff::max_iteration;
     } else {
       askParam(TERM_ITERATION);
-      this->term_precision = 0.0;
+      this->_options.term_precision = 0.0;
     }
   } else if (this->argc < 7 || this->args[0] == "-h" || this->args[0] == "-?") {
     usage();
@@ -216,18 +217,18 @@ void options::askParams() {
     for (int i = 0; i <= TERMINATION; i++) {
       parseParam(i, args[i]);
     }
-    if (this->termination == termination_condidion::precision) {
+    if (this->_options.termination == termination_condidion::precision) {
       parseParam(TERM_PRECISION, args[5]);
-      this->term_iteration = partdiff::max_iteration;
+      this->_options.term_iteration = partdiff::max_iteration;
     } else {
       parseParam(TERM_ITERATION, args[5]);
-      this->term_precision = 0.0;
+      this->_options.term_precision = 0.0;
     }
   }
 }
 
-options::options(const int argc, const std::string &name,
-                 const std::vector<std::string> &args)
+argument_parser::argument_parser(const int argc, const std::string &name,
+                                 const std::vector<std::string> &args)
     : argc(argc), name(name), args(args) {
   this->fill_vec();
   this->askParams();
