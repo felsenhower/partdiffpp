@@ -151,6 +151,22 @@ bool options::check_term_iteration() const {
           this->term_iteration <= partdiff::max_iteration);
 }
 
+struct argument_description {
+  std::any target;
+  std::function<bool()> check_function;
+  std::string description;
+  std::function<bool(std::any &a, const std::string &input)> getter_function;
+};
+
+template <class T> void set_target(argument_description &arg_desc, T *target) {
+  arg_desc.target = target;
+  arg_desc.getter_function = [](std::any &a, const std::string &input) {
+    T *temp_ptr = std::any_cast<T *>(a);
+    bool valid_input = get_from_string(temp_ptr, input);
+    return valid_input;
+  };
+}
+
 void options::askParams() {
   /*
   printf("============================================================\n");
@@ -170,13 +186,22 @@ void options::askParams() {
     /* ----------------------------------------------- */
 
     do {
-      std::cout << std::endl
-                << "Select number of threads:" << std::endl
-                << "Number> " << std::flush;
+
+      argument_description arg_desc;
+      set_target(arg_desc, &(this->number));
+      // arg_desc.target = &(this->number);
+      std::stringstream ss;
+      ss << std::endl << "Select number of threads:" << std::endl << "Number> ";
+      arg_desc.description = ss.str();
+      arg_desc.check_function = [number = &(this->number)] {
+        return (*number >= 1 && *number <= partdiff::max_threads);
+      };
+
+      std::cout << arg_desc.description << std::flush;
       std::string input;
       getline(std::cin, input);
-      valid_input = get_from_string(&(this->number), input);
-      valid_input &= this->check_number();
+      arg_desc.getter_function(arg_desc.target, input);
+      valid_input &= arg_desc.check_function();
     } while (!valid_input);
 
     do {
