@@ -91,21 +91,24 @@ U to_underlying(T v) {
   return static_cast<U>(v);
 }
 
-template <typename T> bool get_enum_from_string(T &target, std::string input) {
+template <typename T> bool get_enum_from_string(T *target, std::string input) {
   std::underlying_type_t<T> n;
   bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
-  target = static_cast<T>(n);
+  *target = static_cast<T>(n);
   return valid_input;
 }
 
 template <typename T>
-bool get_non_enum_from_string(T &target, std::string input) {
-  return static_cast<bool>(std::istringstream(input) >> target);
+bool get_non_enum_from_string(T *target, std::string input) {
+  T n;
+  bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
+  *target = n;
+  return valid_input;
 }
 
 template <typename T, class Enable = void>
 struct get_from_string_helper_struct {
-  bool get(T &target, std::string input) {
+  bool get(T *target, std::string input) {
     return get_non_enum_from_string(target, input);
   }
 };
@@ -113,17 +116,11 @@ struct get_from_string_helper_struct {
 template <typename T>
 struct get_from_string_helper_struct<
     T, typename std::enable_if<std::is_enum<T>::value>::type> {
-  bool get(T &target, std::string input) {
+  bool get(T *target, std::string input) {
     return get_enum_from_string(target, input);
   }
 };
 
-template <typename T> bool get_from_string(T &target, std::string input) {
+template <typename T> bool get_from_string(T *target, std::string input) {
   return get_from_string_helper_struct<T>().get(target, input);
-}
-
-template <typename T> bool get_from_stdin(T &target) {
-  std::string input;
-  getline(std::cin, input);
-  return get_from_string(target, input);
 }
