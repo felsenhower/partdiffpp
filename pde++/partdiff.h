@@ -61,8 +61,21 @@ struct options {
                          T *target);
 
   template <class T>
-  partdiff::askparams::argument_description static make_argument_description(
-      T *target, std::string description, std::function<bool()> check_function);
+  static partdiff::askparams::argument_description
+  make_argument_description(T *target, std::string description,
+                            std::function<bool()> check_function);
+
+  static void
+  parseParam(std::vector<partdiff::askparams::argument_description> &vec,
+             int index, std::string &input, options *options);
+
+  static void
+  askParam(std::vector<partdiff::askparams::argument_description> &vec,
+           int index);
+
+  std::vector<argument_description> vec;
+
+  void fill_vec();
 };
 
 } // namespace askparams

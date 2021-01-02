@@ -160,8 +160,8 @@ options::make_argument_description(T *target, std::string description,
   return arg_desc;
 }
 
-void askParam(std::vector<partdiff::askparams::argument_description> &vec,
-              int index) {
+void options::askParam(
+    std::vector<partdiff::askparams::argument_description> &vec, int index) {
   bool valid_input = false;
   do {
     std::cout << vec[index].description << std::flush;
@@ -172,8 +172,9 @@ void askParam(std::vector<partdiff::askparams::argument_description> &vec,
   } while (!valid_input);
 }
 
-void parseParam(std::vector<partdiff::askparams::argument_description> &vec,
-                int index, std::string &input, options *options) {
+void options::parseParam(
+    std::vector<partdiff::askparams::argument_description> &vec, int index,
+    std::string &input, options *options) {
   bool valid_input = vec[index].getter_function(vec[index].target, input);
   valid_input &= vec[index].check_function();
   if (!valid_input) {
@@ -182,9 +183,7 @@ void parseParam(std::vector<partdiff::askparams::argument_description> &vec,
   }
 }
 
-void options::askParams() {
-  // <setup stuff>
-  std::vector<argument_description> vec;
+void options::fill_vec() {
   vec.push_back(options::make_argument_description(
       &(this->number),
       []() {
@@ -287,7 +286,9 @@ void options::askParams() {
         return (*term_iteration >= 1 &&
                 *term_iteration <= partdiff::max_iteration);
       }));
-  // </setup stuff>
+}
+
+void options::askParams() {
   if (this->argc < 2) {
     for (int i = 0; i <= TERMINATION; i++) {
       askParam(vec, i);
@@ -319,5 +320,6 @@ void options::askParams() {
 options::options(const int argc, const std::string &name,
                  const std::vector<std::string> &args)
     : argc(argc), name(name), args(args) {
+  this->fill_vec();
   this->askParams();
 }
