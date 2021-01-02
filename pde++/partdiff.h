@@ -57,10 +57,14 @@ struct options {
   void usage() const;
   std::vector<argument_description> vec;
 
+  // template <class T>
+  // partdiff::askparams::argument_description
+  // make_argument_description(T *target, std::string description,
+  //                           std::function<bool()> check_function);
+
   template <class T>
-  partdiff::askparams::argument_description
-  make_argument_description(T *target, std::string description,
-                            std::function<bool()> check_function);
+  void add_argument_description(T *target, std::string description,
+                                std::function<bool()> check_function);
 
   void parseParam(int index, std::string &input);
   bool get_value(int index, std::string &input);

@@ -130,9 +130,8 @@ enum ARG_INDEX {
 };
 
 template <class T>
-partdiff::askparams::argument_description
-options::make_argument_description(T *target, std::string description,
-                                   std::function<bool()> check_function) {
+void options::add_argument_description(T *target, std::string description,
+                                       std::function<bool()> check_function) {
   partdiff::askparams::argument_description arg_desc;
   arg_desc.target = target;
   arg_desc.getter_function = [](std::any &a, const std::string &input) {
@@ -142,8 +141,24 @@ options::make_argument_description(T *target, std::string description,
   };
   arg_desc.description = description;
   arg_desc.check_function = check_function;
-  return arg_desc;
+  this->vec.push_back(arg_desc);
 }
+
+// template <class T>
+// partdiff::askparams::argument_description
+// options::make_argument_description(T *target, std::string description,
+//                                    std::function<bool()> check_function) {
+//   partdiff::askparams::argument_description arg_desc;
+//   arg_desc.target = target;
+//   arg_desc.getter_function = [](std::any &a, const std::string &input) {
+//     T *temp_ptr = std::any_cast<T *>(a);
+//     bool valid_input = get_from_string(temp_ptr, input);
+//     return valid_input;
+//   };
+//   arg_desc.description = description;
+//   arg_desc.check_function = check_function;
+//   return arg_desc;
+// }
 
 bool options::get_value(int index, std::string &input) {
   return vec[index].getter_function(vec[index].target, input) &&
@@ -168,7 +183,7 @@ void options::parseParam(int index, std::string &input) {
 }
 
 void options::fill_vec() {
-  vec.push_back(this->make_argument_description(
+  this->add_argument_description(
       &(this->number),
       []() {
         std::stringstream ss;
@@ -179,8 +194,8 @@ void options::fill_vec() {
       }(),
       [number = &(this->number)] {
         return (*number >= 1 && *number <= partdiff::max_threads);
-      }));
-  vec.push_back(this->make_argument_description(
+      });
+  this->add_argument_description(
       &(this->method),
       []() {
         std::stringstream ss;
@@ -196,8 +211,8 @@ void options::fill_vec() {
       [method = &(this->method)] {
         return (*method == calculation_method::gauss_seidel ||
                 *method == calculation_method::jacobi);
-      }));
-  vec.push_back(this->make_argument_description(
+      });
+  this->add_argument_description(
       &(this->interlines),
       []() {
         std::stringstream ss;
@@ -208,8 +223,8 @@ void options::fill_vec() {
       }(),
       [interlines = &(this->interlines)] {
         return (*interlines <= partdiff::max_interlines);
-      }));
-  vec.push_back(this->make_argument_description(
+      });
+  this->add_argument_description(
       &(this->inf_func),
       []() {
         std::stringstream ss;
@@ -225,8 +240,8 @@ void options::fill_vec() {
       [inf_func = &(this->inf_func)] {
         return (*inf_func == interference_function::f0 ||
                 *inf_func == interference_function::fpisin);
-      }));
-  vec.push_back(this->make_argument_description(
+      });
+  this->add_argument_description(
       &(this->termination),
       []() {
         std::stringstream ss;
@@ -242,8 +257,8 @@ void options::fill_vec() {
       [termination = &(this->termination)] {
         return (*termination == termination_condidion::precision ||
                 *termination == termination_condidion::iterations);
-      }));
-  vec.push_back(this->make_argument_description(
+      });
+  this->add_argument_description(
       &(this->term_precision),
       []() {
         std::stringstream ss;
@@ -255,8 +270,8 @@ void options::fill_vec() {
       }(),
       [term_precision = &(this->term_precision)] {
         return (*term_precision >= 1e-20 && *term_precision <= 1e-4);
-      }));
-  vec.push_back(this->make_argument_description(
+      });
+  this->add_argument_description(
       &(this->term_iteration),
       []() {
         std::stringstream ss;
@@ -269,7 +284,7 @@ void options::fill_vec() {
       [term_iteration = &(this->term_iteration)] {
         return (*term_iteration >= 1 &&
                 *term_iteration <= partdiff::max_iteration);
-      }));
+      });
 }
 
 void options::askParams() {
