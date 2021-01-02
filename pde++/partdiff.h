@@ -1,14 +1,12 @@
 #pragma once
 
 #include <any>
-#include <cmath>
 #include <functional>
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include <numbers>
 #include <sstream>
-#include <sys/time.h>
 #include <vector>
 
 namespace partdiff {
