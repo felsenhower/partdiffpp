@@ -144,44 +144,6 @@ void options::add_argument_description(T *target, std::string description,
   this->vec.push_back(arg_desc);
 }
 
-// template <class T>
-// partdiff::askparams::argument_description
-// options::make_argument_description(T *target, std::string description,
-//                                    std::function<bool()> check_function) {
-//   partdiff::askparams::argument_description arg_desc;
-//   arg_desc.target = target;
-//   arg_desc.getter_function = [](std::any &a, const std::string &input) {
-//     T *temp_ptr = std::any_cast<T *>(a);
-//     bool valid_input = get_from_string(temp_ptr, input);
-//     return valid_input;
-//   };
-//   arg_desc.description = description;
-//   arg_desc.check_function = check_function;
-//   return arg_desc;
-// }
-
-bool options::get_value(int index, std::string &input) {
-  return vec[index].getter_function(vec[index].target, input) &&
-         vec[index].check_function();
-}
-
-void options::askParam(int index) {
-  bool valid_input = false;
-  do {
-    std::cout << vec[index].description << std::flush;
-    std::string input;
-    getline(std::cin, input);
-    valid_input = get_value(index, input);
-  } while (!valid_input);
-}
-
-void options::parseParam(int index, std::string &input) {
-  if (!get_value(index, input)) {
-    this->usage();
-    exit(EXIT_FAILURE);
-  }
-}
-
 void options::fill_vec() {
   this->add_argument_description(
       &(this->number),
@@ -285,6 +247,28 @@ void options::fill_vec() {
         return (*term_iteration >= 1 &&
                 *term_iteration <= partdiff::max_iteration);
       });
+}
+
+bool options::get_value(int index, std::string &input) {
+  return vec[index].getter_function(vec[index].target, input) &&
+         vec[index].check_function();
+}
+
+void options::askParam(int index) {
+  bool valid_input = false;
+  do {
+    std::cout << vec[index].description << std::flush;
+    std::string input;
+    getline(std::cin, input);
+    valid_input = get_value(index, input);
+  } while (!valid_input);
+}
+
+void options::parseParam(int index, std::string &input) {
+  if (!get_value(index, input)) {
+    this->usage();
+    exit(EXIT_FAILURE);
+  }
 }
 
 void options::askParams() {

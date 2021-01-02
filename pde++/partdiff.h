@@ -49,18 +49,15 @@ struct options {
   termination_condidion termination; /* termination condition */
   uint64_t term_iteration;           /* terminate if iteration number reached */
   double term_precision;             /* terminate if precision reached */
+
   options(const int, const std::string &, const std::vector<std::string> &);
   int argc;
   std::string name;
   std::vector<std::string> args;
   void askParams();
   void usage() const;
-  std::vector<argument_description> vec;
 
-  // template <class T>
-  // partdiff::askparams::argument_description
-  // make_argument_description(T *target, std::string description,
-  //                           std::function<bool()> check_function);
+  std::vector<argument_description> vec;
 
   template <class T>
   void add_argument_description(T *target, std::string description,
