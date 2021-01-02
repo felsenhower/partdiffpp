@@ -14,58 +14,6 @@ using termination_condidion =
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
 
-template <typename T, typename U = std::underlying_type_t<T>>
-U to_underlying(T v) {
-  return static_cast<U>(v);
-}
-
-template <typename T, typename U = std::underlying_type_t<T>>
-bool get_enum_from_string(T *target, const std::string &input) {
-  U n;
-  bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
-  *target = static_cast<T>(n);
-  return valid_input;
-}
-
-template <typename T>
-bool get_non_enum_from_string(T *target, const std::string &input) {
-  T n;
-  bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
-  *target = n;
-  return valid_input;
-}
-
-template <typename T, class Enable = void>
-struct get_from_string_helper_struct {
-  bool get(T *target, const std::string &input) {
-    return get_non_enum_from_string(target, input);
-  }
-};
-
-template <typename T>
-struct get_from_string_helper_struct<
-    T, typename std::enable_if<std::is_enum<T>::value>::type> {
-  bool get(T *target, const std::string &input) {
-    return get_enum_from_string(target, input);
-  }
-};
-
-template <typename T>
-bool get_from_string(T *target, const std::string &input) {
-  return get_from_string_helper_struct<T>().get(target, input);
-}
-
-std::string scientific_double(double val, int precision) {
-  std::stringstream ss;
-  ss << std::scientific << std::setprecision(precision) << val;
-  std::string temp = ss.str();
-  int epos = temp.find("e");
-  std::string mantissa_str = temp.substr(0, epos);
-  std::string exponent_str = temp.substr(epos + 1, temp.length() - epos - 1);
-  int exponent = stoi(exponent_str);
-  return mantissa_str + "e" + std::to_string(exponent);
-}
-
 void argument_parser::usage() const {
   std::cout << "Usage: " << this->app_name;
   for (std::size_t i = 0;

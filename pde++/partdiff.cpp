@@ -43,16 +43,6 @@ calculation_arguments::calculation_arguments(const options &options)
 
 calculation_arguments::~calculation_arguments() { this->freeMatrices(); }
 
-static const uint8_t *allocateMemory(const std::size_t size) {
-  try {
-    return new uint8_t[size];
-  } catch (std::bad_alloc &) {
-    std::cout << "Speicherprobleme! " << size << " Bytes angefordert"
-              << std::endl;
-    exit(EXIT_FAILURE);
-  }
-}
-
 void calculation_arguments::allocateMatrices() {
   const uint64_t N = this->N;
 

@@ -6,7 +6,7 @@ CFLAGS  = -std=c++20 -Wall -Wextra -Wpedantic -O3 -g
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = $(CXXFLAGS)
 LDLIBS  = -lm
-OBJS = partdiff.o askparams.o
+OBJS = partdiff.o askparams.o utils.cpp
 
 default: all
 
