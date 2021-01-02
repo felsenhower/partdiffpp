@@ -119,6 +119,25 @@ void options::usage() const {
             << "Example: " << name << " 1 2 100 1 2 100 " << std::endl;
 }
 
+enum ARG_INDEX {
+  NUMBER = 0,
+  METHOD = 1,
+  INTERLINES = 2,
+  INF_FUNC = 3,
+  TERMINATION = 4,
+  TERM_PRECISION = 5,
+  TERM_ITERATION = 6
+};
+
+enum _ARG_INDEX {
+  _NUMBER = 0,
+  _METHOD = 1,
+  _INTERLINES = 2,
+  _INF_FUNC = 3,
+  _TERMINATION = 4,
+  _TERM_PREC_OR_ITER = 5
+};
+
 bool options::check_number() const {
   return (this->number >= 1 && this->number <= partdiff::max_threads);
 }
@@ -178,7 +197,29 @@ make_argument_description(T *target, std::string description,
   return arg_desc;
 }
 
+void askParam(std::vector<argument_description> &vec, int index) {
+  bool valid_input = false;
+  do {
+    std::cout << vec[index].description << std::flush;
+    std::string input;
+    getline(std::cin, input);
+    valid_input = vec[index].getter_function(vec[index].target, input);
+    valid_input &= vec[index].check_function();
+  } while (!valid_input);
+}
+
+void parseParam(std::vector<argument_description> &vec, int index,
+                std::string &input, options *options) {
+  bool valid_input = vec[index].getter_function(vec[index].target, input);
+  valid_input &= vec[index].check_function();
+  if (!valid_input) {
+    options->usage();
+    exit(EXIT_FAILURE);
+  }
+}
+
 void options::askParams() {
+  // <setup stuff>
   std::vector<argument_description> vec;
   vec.push_back(make_argument_description(
       &(this->number),
@@ -209,155 +250,105 @@ void options::askParams() {
         return (*method == calculation_method::gauss_seidel ||
                 *method == calculation_method::jacobi);
       }));
-
-  bool valid_input = false;
+  vec.push_back(make_argument_description(
+      &(this->interlines),
+      []() {
+        std::stringstream ss;
+        ss << std::endl
+           << "Matrixsize = Interlines*8+9" << std::endl
+           << "Interlines> ";
+        return ss.str();
+      }(),
+      [interlines = &(this->interlines)] {
+        return (*interlines <= partdiff::max_interlines);
+      }));
+  vec.push_back(make_argument_description(
+      &(this->inf_func),
+      []() {
+        std::stringstream ss;
+        ss << std::endl
+           << "Select interference function:" << std::endl
+           << " " << to_underlying(interference_function::f0) << ": f(x,y)=0."
+           << std::endl
+           << " " << to_underlying(interference_function::fpisin)
+           << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl
+           << "interference function> ";
+        return ss.str();
+      }(),
+      [inf_func = &(this->inf_func)] {
+        return (*inf_func == interference_function::f0 ||
+                *inf_func == interference_function::fpisin);
+      }));
+  vec.push_back(make_argument_description(
+      &(this->termination),
+      []() {
+        std::stringstream ss;
+        ss << std::endl
+           << "Select termination:" << std::endl
+           << " " << to_underlying(termination_condidion::precision)
+           << ": sufficient precision." << std::endl
+           << " " << to_underlying(termination_condidion::iterations)
+           << ": number of iterations." << std::endl
+           << "termination> ";
+        return ss.str();
+      }(),
+      [termination = &(this->termination)] {
+        return (*termination == termination_condidion::precision ||
+                *termination == termination_condidion::iterations);
+      }));
+  vec.push_back(make_argument_description(
+      &(this->term_precision),
+      []() {
+        std::stringstream ss;
+        ss << std::endl
+           << "Select precision:" << std::endl
+           << "  Range: 1e-4 .. 1e-20." << std::endl
+           << "precision> ";
+        return ss.str();
+      }(),
+      [term_precision = &(this->term_precision)] {
+        return (*term_precision >= 1e-20 && *term_precision <= 1e-4);
+      }));
+  vec.push_back(make_argument_description(
+      &(this->term_iteration),
+      []() {
+        std::stringstream ss;
+        ss << std::endl
+           << "Select number of iterations:" << std::endl
+           << "  Range: 1 .. " << partdiff::max_iteration << "." << std::endl
+           << "Iterations> ";
+        return ss.str();
+      }(),
+      [term_iteration = &(this->term_iteration)] {
+        return (*term_iteration >= 1 &&
+                *term_iteration <= partdiff::max_iteration);
+      }));
+  // </setup stuff>
   if (this->argc < 2) {
-
-    for (int i = 0; i <= 1; i++) {
-      do {
-        std::cout << vec[i].description << std::flush;
-        std::string input;
-        getline(std::cin, input);
-        valid_input = vec[i].getter_function(vec[i].target, input);
-        valid_input &= vec[i].check_function();
-      } while (!valid_input);
+    for (int i = 0; i <= TERMINATION; i++) {
+      askParam(vec, i);
     }
-
-    do {
-      std::cout << std::endl
-                << "Matrixsize = Interlines*8+9" << std::endl
-                << "Interlines> " << std::flush;
-      std::string input;
-      getline(std::cin, input);
-      valid_input = get_from_string(&(this->interlines), input);
-      valid_input &= this->check_interlines();
-    } while (!valid_input);
-
-    do {
-      std::cout << std::endl
-                << "Select interference function:" << std::endl
-                << " " << to_underlying(interference_function::f0)
-                << ": f(x,y)=0." << std::endl
-                << " " << to_underlying(interference_function::fpisin)
-                << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl
-                << "interference function> " << std::flush;
-      std::string input;
-      getline(std::cin, input);
-      valid_input = get_from_string(&(this->inf_func), input);
-      valid_input &= this->check_inf_func();
-    } while (!valid_input);
-
-    do {
-      std::cout << std::endl
-                << "Select termination:" << std::endl
-                << " " << to_underlying(termination_condidion::precision)
-                << ": sufficient precision." << std::endl
-                << " " << to_underlying(termination_condidion::iterations)
-                << ": number of iterations." << std::endl
-                << "termination> " << std::flush;
-      std::string input;
-      getline(std::cin, input);
-      valid_input = get_from_string(&(this->termination), input);
-      valid_input &= this->check_termination();
-    } while (!valid_input);
-
     if (this->termination == termination_condidion::precision) {
-      do {
-        std::cout << std::endl
-                  << "Select precision:" << std::endl
-                  << "  Range: 1e-4 .. 1e-20." << std::endl
-                  << "precision> " << std::flush;
-        std::string input;
-        getline(std::cin, input);
-        valid_input = get_from_string(&(this->term_precision), input);
-        valid_input &= this->check_term_precision();
-      } while (!valid_input);
-
+      askParam(vec, TERM_PRECISION);
       this->term_iteration = partdiff::max_iteration;
-    } else if (this->termination == termination_condidion::iterations) {
-      do {
-        std::cout << std::endl
-                  << "Select number of iterations:" << std::endl
-                  << "  Range: 1 .. " << partdiff::max_iteration << "."
-                  << std::endl
-                  << "Iterations> " << std::flush;
-        std::string input;
-        getline(std::cin, input);
-        valid_input = get_from_string(&(this->term_iteration), input);
-        valid_input &= this->check_term_iteration();
-      } while (!valid_input);
-
-      this->term_precision = 0;
+    } else {
+      askParam(vec, TERM_ITERATION);
+      this->term_precision = 0.0;
     }
   } else {
     if (this->argc < 7 || this->args[0] == "-h" || this->args[0] == "-?") {
       usage();
       exit(EXIT_SUCCESS);
     }
-
-    std::string input;
-
-    input = args[0];
-    valid_input = get_from_string(&(this->number), input);
-    valid_input &= this->check_number();
-    if (!valid_input) {
-      usage();
-      exit(EXIT_FAILURE);
+    for (int i = 0; i <= TERMINATION; i++) {
+      parseParam(vec, i, args[i], this);
     }
-
-    input = args[1];
-    valid_input = get_from_string(&(this->method), input);
-    valid_input &= this->check_method();
-    if (!valid_input) {
-      usage();
-      exit(EXIT_FAILURE);
-    }
-
-    input = args[2];
-    valid_input = get_from_string(&(this->interlines), input);
-    valid_input &= this->check_interlines();
-    if (!valid_input) {
-      usage();
-      exit(EXIT_FAILURE);
-    }
-
-    input = args[3];
-    valid_input = get_from_string(&(this->inf_func), input);
-    valid_input &= this->check_inf_func();
-    if (!valid_input) {
-      usage();
-      exit(EXIT_FAILURE);
-    }
-
-    input = args[4];
-    valid_input = get_from_string(&(this->termination), input);
-    valid_input &= this->check_termination();
-    if (!valid_input) {
-      usage();
-      exit(EXIT_FAILURE);
-    }
-
     if (this->termination == termination_condidion::precision) {
-
-      input = args[5];
-      valid_input = get_from_string(&(this->term_precision), input);
-      valid_input &= this->check_term_precision();
+      parseParam(vec, TERM_PRECISION, args[5], this);
       this->term_iteration = partdiff::max_iteration;
-      if (!valid_input) {
-        usage();
-        exit(EXIT_FAILURE);
-      }
-
     } else {
-
-      input = args[5];
-      valid_input = get_from_string(&(this->term_iteration), input);
-      valid_input &= this->check_term_iteration();
-      this->term_precision = 0;
-      if (!valid_input) {
-        usage();
-        exit(EXIT_FAILURE);
-      }
+      parseParam(vec, TERM_ITERATION, args[5], this);
+      this->term_precision = 0.0;
     }
   }
 }

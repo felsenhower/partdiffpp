@@ -43,8 +43,6 @@ struct options {
   uint64_t term_iteration;           /* terminate if iteration number reached */
   double term_precision;             /* terminate if precision reached */
   options(const int, const std::string &, const std::vector<std::string> &);
-
-private:
   int argc;
   std::string name;
   std::vector<std::string> args;
