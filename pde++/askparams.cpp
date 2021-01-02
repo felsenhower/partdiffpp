@@ -335,11 +335,10 @@ void options::askParams() {
       askParam(vec, TERM_ITERATION);
       this->term_precision = 0.0;
     }
+  } else if (this->argc < 7 || this->args[0] == "-h" || this->args[0] == "-?") {
+    usage();
+    exit(EXIT_SUCCESS);
   } else {
-    if (this->argc < 7 || this->args[0] == "-h" || this->args[0] == "-?") {
-      usage();
-      exit(EXIT_SUCCESS);
-    }
     for (int i = 0; i <= TERMINATION; i++) {
       parseParam(vec, i, args[i], this);
     }
