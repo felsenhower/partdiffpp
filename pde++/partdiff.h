@@ -145,5 +145,3 @@ struct calculation_results {
 };
 
 } // namespace partdiff
-
-static std::ios_base::fmtflags cout_default_flags(std::cout.flags());

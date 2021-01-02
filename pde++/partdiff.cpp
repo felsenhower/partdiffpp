@@ -173,10 +173,10 @@ static void displayStatistics(const calculation_arguments &arguments,
   const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
                                     arguments.num_matrices / 1024.0 / 1024.0;
   std::cout << "Berechnungszeit:    " << time << " s" << std::endl
-            << "Speicherbedarf:     " << std::fixed << std::setprecision(6)
-            << memory_consumption << " MiB" << std::endl
-            << "Berechnungsmethode: ";
-  std::cout.flags(cout_default_flags);
+            << "Speicherbedarf:     ";
+  std::stringstream ss;
+  ss << std::fixed << std::setprecision(6) << memory_consumption;
+  std::cout << ss.str() << " MiB" << std::endl << "Berechnungsmethode: ";
 
   if (options.method == calc_meth::gauss_seidel) {
     std::cout << "Gauß-Seidel";
@@ -204,10 +204,10 @@ static void displayStatistics(const calculation_arguments &arguments,
 
   std::cout << std::endl
             << "Anzahl Iterationen: " << results.stat_iteration << std::endl
-            << "Norm des Fehlers:   " << std::scientific
-            << results.stat_precision << std::endl
-            << std::endl;
-  std::cout.flags(cout_default_flags);
+            << "Norm des Fehlers:   ";
+  ss.str(std::string());
+  ss << std::scientific << results.stat_precision;
+  std::cout << ss.str() << std::endl << std::endl;
 }
 
 static void displayMatrix(const calculation_arguments &arguments,
@@ -219,15 +219,16 @@ static void displayMatrix(const calculation_arguments &arguments,
 
   std::cout << "Matrix:" << std::endl;
 
-  std::cout << std::fixed << std::internal << std::setprecision(4);
   for (int y = 0; y < 9; y++) {
     for (int x = 0; x < 9; x++) {
-      std::cout << " " << Matrix[y * (interlines + 1)][x * (interlines + 1)];
+      std::stringstream ss;
+      ss << std::fixed << std::internal << std::setprecision(4) << " "
+         << Matrix[y * (interlines + 1)][x * (interlines + 1)];
+      std::cout << ss.str();
     }
     std::cout << std::endl;
   }
   std::cout << std::flush;
-  std::cout.flags(cout_default_flags);
 }
 
 int main(const int argc, char const *argv[]) {

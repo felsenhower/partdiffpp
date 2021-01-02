@@ -32,23 +32,24 @@ void argument_parser::usage() const {
   std::cout << std::endl;
   for (std::size_t i = 0;
        i <= static_cast<std::size_t>(argument_index::termination); i++) {
-    std::cout << "  - " << std::setw(11) << std::setfill(' ') << std::left
-              << (this->argument_descriptions[i].name + ":");
-    std::cout.flags(cout_default_flags);
-    std::cout << this->argument_descriptions[i].description_for_usage
+    std::stringstream ss;
+    ss << "  - " << std::setw(11) << std::setfill(' ') << std::left
+       << (this->argument_descriptions[i].name + ":");
+    std::cout << ss.str()
+              << this->argument_descriptions[i].description_for_usage
               << std::endl;
   }
-  std::cout << "  - " << std::setw(11) << std::setfill(' ') << std::left
-            << (this->argument_descriptions[static_cast<std::size_t>(
-                                                argument_index::term_precision)]
-                    .name +
-                "/" +
-                this->argument_descriptions[static_cast<std::size_t>(
-                                                argument_index::term_iteration)]
-                    .name +
-                ":");
-  std::cout.flags(cout_default_flags);
-  std::cout << "depending on term:" << std::endl
+  std::stringstream ss;
+  ss << "  - " << std::setw(11) << std::setfill(' ') << std::left
+     << (this->argument_descriptions[static_cast<std::size_t>(
+                                         argument_index::term_precision)]
+             .name +
+         "/" +
+         this->argument_descriptions[static_cast<std::size_t>(
+                                         argument_index::term_iteration)]
+             .name +
+         ":");
+  std::cout << ss.str() << "depending on term:" << std::endl
             << "                 precision:  "
             << scientific_double(partdiff::min_precision, 0) << " .. "
             << scientific_double(partdiff::max_precision, 0) << std::endl
