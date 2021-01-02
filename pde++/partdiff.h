@@ -55,10 +55,7 @@ struct options {
   std::vector<std::string> args;
   void askParams();
   void usage() const;
-
-  template <class T>
-  void set_target(partdiff::askparams::argument_description &arg_desc,
-                  T *target);
+  std::vector<argument_description> vec;
 
   template <class T>
   partdiff::askparams::argument_description
@@ -66,11 +63,8 @@ struct options {
                             std::function<bool()> check_function);
 
   void parseParam(int index, std::string &input);
-
+  bool get_value(int index, std::string &input);
   void askParam(int index);
-
-  std::vector<argument_description> vec;
-
   void fill_vec();
 };
 

@@ -129,35 +129,25 @@ enum ARG_INDEX {
   TERM_ITERATION = 6
 };
 
-// enum _ARG_INDEX {
-//   _NUMBER = 0,
-//   _METHOD = 1,
-//   _INTERLINES = 2,
-//   _INF_FUNC = 3,
-//   _TERMINATION = 4,
-//   _TERM_PREC_OR_ITER = 5
-// };
-
 template <class T>
-void options::set_target(partdiff::askparams::argument_description &arg_desc,
-                         T *target) {
+partdiff::askparams::argument_description
+options::make_argument_description(T *target, std::string description,
+                                   std::function<bool()> check_function) {
+  partdiff::askparams::argument_description arg_desc;
   arg_desc.target = target;
   arg_desc.getter_function = [](std::any &a, const std::string &input) {
     T *temp_ptr = std::any_cast<T *>(a);
     bool valid_input = get_from_string(temp_ptr, input);
     return valid_input;
   };
-}
-
-template <class T>
-partdiff::askparams::argument_description
-options::make_argument_description(T *target, std::string description,
-                                   std::function<bool()> check_function) {
-  partdiff::askparams::argument_description arg_desc;
-  options::set_target(arg_desc, target);
   arg_desc.description = description;
   arg_desc.check_function = check_function;
   return arg_desc;
+}
+
+bool options::get_value(int index, std::string &input) {
+  return vec[index].getter_function(vec[index].target, input) &&
+         vec[index].check_function();
 }
 
 void options::askParam(int index) {
@@ -166,15 +156,12 @@ void options::askParam(int index) {
     std::cout << vec[index].description << std::flush;
     std::string input;
     getline(std::cin, input);
-    valid_input = vec[index].getter_function(vec[index].target, input);
-    valid_input &= vec[index].check_function();
+    valid_input = get_value(index, input);
   } while (!valid_input);
 }
 
 void options::parseParam(int index, std::string &input) {
-  bool valid_input = vec[index].getter_function(vec[index].target, input);
-  valid_input &= vec[index].check_function();
-  if (!valid_input) {
+  if (!get_value(index, input)) {
     this->usage();
     exit(EXIT_FAILURE);
   }
