@@ -168,16 +168,6 @@ template <class T> void set_target(argument_description &arg_desc, T *target) {
 }
 
 void options::askParams() {
-  /*
-  printf("============================================================\n");
-  printf("Program for calculation of partial differential equations.  \n");
-  printf("============================================================\n");
-  printf("(c) Dr. Thomas Ludwig, TU München.\n");
-  printf("    Thomas A. Zochler, TU München.\n");
-  printf("    Andreas C. Schmidt, TU München.\n");
-  printf("============================================================\n");
-  printf("\n");
-  */
 
   bool valid_input = false;
   if (this->argc < 2) {
@@ -186,7 +176,6 @@ void options::askParams() {
     /* ----------------------------------------------- */
 
     do {
-
       argument_description arg_desc;
       set_target(arg_desc, &(this->number));
       // arg_desc.target = &(this->number);
@@ -200,7 +189,7 @@ void options::askParams() {
       std::cout << arg_desc.description << std::flush;
       std::string input;
       getline(std::cin, input);
-      arg_desc.getter_function(arg_desc.target, input);
+      valid_input = arg_desc.getter_function(arg_desc.target, input);
       valid_input &= arg_desc.check_function();
     } while (!valid_input);
 
