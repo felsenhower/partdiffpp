@@ -19,13 +19,12 @@ static constexpr uint64_t max_threads = 1024;
 static constexpr double min_precision = 1e-4;
 static constexpr double max_precision = 1e-20;
 
-enum class calculation_method : uint64_t { gauss_seidel = 1, jacobi = 2 };
-enum class interference_function : uint64_t { f0 = 1, fpisin = 2 };
-enum class termination_condidion : uint64_t { precision = 1, iterations = 2 };
-
 namespace askparams {
 
 struct options {
+  enum class calculation_method : uint64_t { gauss_seidel = 1, jacobi = 2 };
+  enum class interference_function : uint64_t { f0 = 1, fpisin = 2 };
+  enum class termination_condidion : uint64_t { precision = 1, iterations = 2 };
   uint64_t number;
   uint64_t interlines;
   calculation_method method;
@@ -91,7 +90,7 @@ struct calculation_arguments {
   ~calculation_arguments();
 
 private:
-  interference_function inf_func;
+  askparams::options::interference_function inf_func;
   void allocateMatrices();
   void initMatrices();
   void freeMatrices();

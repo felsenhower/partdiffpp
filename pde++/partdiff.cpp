@@ -3,12 +3,14 @@
 #include "partdiff.h"
 
 using argument_parser = partdiff::askparams::argument_parser;
+
 using options = partdiff::askparams::options;
+using calc_meth = partdiff::askparams::options::calculation_method;
+using inf_func = partdiff::askparams::options::interference_function;
+using term_cond = partdiff::askparams::options::termination_condidion;
+
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
-using calc_meth = partdiff::calculation_method;
-using inf_func = partdiff::interference_function;
-using term_cond = partdiff::termination_condidion;
 
 static constexpr double pi = std::numbers::pi;
 static constexpr double two_pi_square = (2 * pi * pi);
