@@ -141,6 +141,8 @@ struct calculation_results {
   uint64_t m;
   uint64_t stat_iteration;
   double stat_precision;
+  timeval start_time;
+  timeval end_time;
   calculation_results();
 };
 
