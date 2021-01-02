@@ -168,24 +168,35 @@ template <class T> void set_target(argument_description &arg_desc, T *target) {
 }
 
 void options::askParams() {
+  argument_description arg_desc;
+  set_target(arg_desc, &(this->number));
+  std::stringstream ss;
+  ss << std::endl << "Select number of threads:" << std::endl << "Number> ";
+  arg_desc.description = ss.str();
+  arg_desc.check_function = [number = &(this->number)] {
+    return (*number >= 1 && *number <= partdiff::max_threads);
+  };
+
+  argument_description arg_desc2;
+  set_target(arg_desc2, &(this->method));
+  std::stringstream ss2;
+  ss2 << std::endl
+      << "Select calculation method:" << std::endl
+      << "  " << to_underlying(calculation_method::gauss_seidel)
+      << ": Gauß-Seidel." << std::endl
+      << "  " << to_underlying(calculation_method::jacobi) << ": Jacobi."
+      << std::endl
+      << "method> ";
+  arg_desc2.description = ss2.str();
+  arg_desc2.check_function = [method = &(this->method)] {
+    return (*method == calculation_method::gauss_seidel ||
+            *method == calculation_method::jacobi);
+  };
 
   bool valid_input = false;
   if (this->argc < 2) {
-    /* ----------------------------------------------- */
-    /* Get input: method, interlines, func, precision. */
-    /* ----------------------------------------------- */
 
     do {
-      argument_description arg_desc;
-      set_target(arg_desc, &(this->number));
-      // arg_desc.target = &(this->number);
-      std::stringstream ss;
-      ss << std::endl << "Select number of threads:" << std::endl << "Number> ";
-      arg_desc.description = ss.str();
-      arg_desc.check_function = [number = &(this->number)] {
-        return (*number >= 1 && *number <= partdiff::max_threads);
-      };
-
       std::cout << arg_desc.description << std::flush;
       std::string input;
       getline(std::cin, input);
@@ -194,17 +205,11 @@ void options::askParams() {
     } while (!valid_input);
 
     do {
-      std::cout << std::endl
-                << "Select calculation method:" << std::endl
-                << "  " << to_underlying(calculation_method::gauss_seidel)
-                << ": Gauß-Seidel." << std::endl
-                << "  " << to_underlying(calculation_method::jacobi)
-                << ": Jacobi." << std::endl
-                << "method> " << std::flush;
+      std::cout << arg_desc2.description << std::flush;
       std::string input;
       getline(std::cin, input);
-      valid_input = get_from_string(&(this->method), input);
-      valid_input &= this->check_method();
+      valid_input = arg_desc2.getter_function(arg_desc2.target, input);
+      valid_input &= arg_desc2.check_function();
     } while (!valid_input);
 
     do {
