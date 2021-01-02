@@ -93,9 +93,9 @@ U to_underlying(T v) {
   return static_cast<U>(v);
 }
 
-template <typename T>
+template <typename T, typename U = std::underlying_type_t<T>>
 bool get_enum_from_string(T *target, const std::string &input) {
-  std::underlying_type_t<T> n;
+  U n;
   bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
   *target = static_cast<T>(n);
   return valid_input;
