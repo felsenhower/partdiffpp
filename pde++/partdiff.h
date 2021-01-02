@@ -42,7 +42,7 @@ public:
 
 private:
   options _options;
-  std::string name;
+  std::string app_name;
   std::vector<std::string> args;
   void askParams();
   void usage() const;
