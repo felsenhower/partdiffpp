@@ -64,8 +64,6 @@ private:
   options _options;
   std::string app_name;
   std::vector<std::string> args;
-  void askParams();
-  void usage() const;
   std::vector<argument_description> vec;
   template <class T>
   void add_argument_description(std::string name, T *target,
@@ -76,6 +74,8 @@ private:
   bool get_value(std::size_t index, std::string &input);
   void askParam(std::size_t index);
   void fill_vec();
+  void askParams();
+  void usage() const;
 };
 
 } // namespace askparams
@@ -106,44 +106,3 @@ struct calculation_results {
 } // namespace partdiff
 
 static std::ios_base::fmtflags cout_default_flags(std::cout.flags());
-
-template <typename T, typename U = std::underlying_type_t<T>>
-U to_underlying(T v) {
-  return static_cast<U>(v);
-}
-
-template <typename T, typename U = std::underlying_type_t<T>>
-bool get_enum_from_string(T *target, const std::string &input) {
-  U n;
-  bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
-  *target = static_cast<T>(n);
-  return valid_input;
-}
-
-template <typename T>
-bool get_non_enum_from_string(T *target, const std::string &input) {
-  T n;
-  bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
-  *target = n;
-  return valid_input;
-}
-
-template <typename T, class Enable = void>
-struct get_from_string_helper_struct {
-  bool get(T *target, const std::string &input) {
-    return get_non_enum_from_string(target, input);
-  }
-};
-
-template <typename T>
-struct get_from_string_helper_struct<
-    T, typename std::enable_if<std::is_enum<T>::value>::type> {
-  bool get(T *target, const std::string &input) {
-    return get_enum_from_string(target, input);
-  }
-};
-
-template <typename T>
-bool get_from_string(T *target, const std::string &input) {
-  return get_from_string_helper_struct<T>().get(target, input);
-}
