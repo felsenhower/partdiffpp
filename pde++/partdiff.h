@@ -45,7 +45,6 @@ private:
     std::string name;
     std::string description_for_usage;
     std::string description_for_interactive;
-    std::function<bool()> check_function = []() { return false; };
     std::function<bool(const std::string &input)> read_from_string = [](auto) {
       return false;
     };
@@ -65,17 +64,16 @@ private:
   std::string app_name;
   std::vector<std::string> args;
   std::vector<argument_description> vec;
+  void askParams();
+  void parseParam(std::size_t index, std::string &input);
+  void askParam(std::size_t index);
+  void fill_vec();
+  void usage() const;
   template <class T>
   void add_argument_description(std::string name, T *target,
                                 std::string description_for_usage,
                                 std::string description_for_interactive,
-                                std::function<bool()> check_function);
-  void parseParam(std::size_t index, std::string &input);
-  bool get_value(std::size_t index, std::string &input);
-  void askParam(std::size_t index);
-  void fill_vec();
-  void askParams();
-  void usage() const;
+                                std::function<bool()> check);
 };
 
 } // namespace askparams

@@ -110,20 +110,19 @@ void argument_parser::usage() const {
 template <class T>
 void argument_parser::add_argument_description(
     std::string name, T *target, std::string description_for_usage,
-    std::string description_for_interactive,
-    std::function<bool()> check_function) {
+    std::string description_for_interactive, std::function<bool()> check) {
   argument_description arg_desc;
   arg_desc.name = name;
   arg_desc.target = target;
-  arg_desc.read_from_string = [target =
-                                   arg_desc.target](const std::string &input) {
+  arg_desc.read_from_string = [target = arg_desc.target,
+                               check](const std::string &input) {
     T *casted_ptr = std::any_cast<T *>(target);
     bool valid_input = get_from_string(casted_ptr, input);
+    valid_input &= check();
     return valid_input;
   };
   arg_desc.description_for_usage = description_for_usage;
   arg_desc.description_for_interactive = description_for_interactive;
-  arg_desc.check_function = check_function;
   this->vec.push_back(arg_desc);
 }
 
@@ -274,10 +273,6 @@ void argument_parser::fill_vec() {
       });
 }
 
-bool argument_parser::get_value(std::size_t index, std::string &input) {
-  return vec[index].read_from_string(input) && vec[index].check_function();
-}
-
 void argument_parser::askParam(std::size_t index) {
   bool valid_input = false;
   do {
@@ -285,12 +280,12 @@ void argument_parser::askParam(std::size_t index) {
               << vec[index].description_for_interactive << std::flush;
     std::string input;
     getline(std::cin, input);
-    valid_input = get_value(index, input);
+    valid_input = vec[index].read_from_string(input);
   } while (!valid_input);
 }
 
 void argument_parser::parseParam(std::size_t index, std::string &input) {
-  if (!get_value(index, input)) {
+  if (!vec[index].read_from_string(input)) {
     this->usage();
     exit(EXIT_FAILURE);
   }
