@@ -1,10 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
 
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <sys/time.h>
-
 #include "partdiff.h"
 
 using argument_parser = partdiff::askparams::argument_parser;

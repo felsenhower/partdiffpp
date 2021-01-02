@@ -1,50 +1,11 @@
 #define _POSIX_C_SOURCE 200809L
 
-#include <iostream>
-#include <sstream>
-
 #include "partdiff.h"
 
 using argument_parser = partdiff::askparams::argument_parser;
 using options = partdiff::askparams::options;
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
-
-void argument_parser::usage() const {
-  std::cout << "Usage: " << this->app_name
-            << " [num] [method] [lines] [func] [term] [prec/iter]" << std::endl
-            << std::endl
-            << "  - num:       number of threads (1 .. "
-            << partdiff::max_threads << ")" << std::endl
-            << "  - method:    calculation method (1 .. 2)" << std::endl
-            << "                 "
-            << to_underlying(calculation_method::gauss_seidel)
-            << ": Gauß-Seidel" << std::endl
-            << "                 " << to_underlying(calculation_method::jacobi)
-            << ": Jacobi" << std::endl
-            << "  - lines:     number of interlines (0 .. "
-            << partdiff::max_interlines << ")" << std::endl
-            << "                 matrixsize = (interlines * 8) + 9" << std::endl
-            << "  - func:      interference function (1 .. 2)" << std::endl
-            << "                 " << to_underlying(interference_function::f0)
-            << ": f(x,y) = 0" << std::endl
-            << "                 "
-            << to_underlying(interference_function::fpisin)
-            << ": f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)" << std::endl
-            << "  - term:      termination condition ( 1.. 2)" << std::endl
-            << "                 "
-            << to_underlying(termination_condidion::precision)
-            << ": sufficient precision" << std::endl
-            << "                 "
-            << to_underlying(termination_condidion::iterations)
-            << ": number of iterations" << std::endl
-            << "  - prec/iter: depending on term:" << std::endl
-            << "                 precision:  1e-4 .. 1e-20" << std::endl
-            << "                 iterations:    1 .. "
-            << partdiff::max_iteration << std::endl
-            << std::endl
-            << "Example: " << app_name << " 1 2 100 1 2 100 " << std::endl;
-}
 
 enum ARG_INDEX {
   NUMBER = 0,
@@ -56,17 +17,48 @@ enum ARG_INDEX {
   TERM_ITERATION = 6
 };
 
+void argument_parser::usage() const {
+  std::cout << "Usage: " << this->app_name;
+  for (int i = 0; i <= TERMINATION; i++) {
+    std::cout << " [" << this->vec[i].name << "]";
+  }
+  std::cout << " [" << this->vec[TERM_PRECISION].name << "/"
+            << this->vec[TERM_ITERATION].name << "]" << std::endl;
+  std::cout << std::endl;
+  for (int i = 0; i <= TERMINATION; i++) {
+    std::cout << "  - " << std::setw(11) << std::setfill(' ') << std::left
+              << (this->vec[i].name + ":");
+    std::cout.flags(cout_default_flags);
+    std::cout << this->vec[i].description_for_usage << std::endl;
+  }
+  std::cout << "  - " << std::setw(11) << std::setfill(' ') << std::left
+            << (this->vec[TERM_PRECISION].name + "/" +
+                this->vec[TERM_ITERATION].name + ":");
+  std::cout.flags(cout_default_flags);
+  std::cout << "depending on term:" << std::endl
+            << "                 precision:  1e-4 .. 1e-20" << std::endl
+            << "                 iterations:    1 .. "
+            << partdiff::max_iteration << std::endl
+            << std::endl
+            << "Example: " << app_name << " 1 2 100 1 2 100 " << std::endl;
+}
+
 template <class T>
 void argument_parser::add_argument_description(
-    T *target, std::string description, std::function<bool()> check_function) {
-  partdiff::askparams::argument_description arg_desc;
+    std::string name, T *target, std::string description_for_usage,
+    std::string description_for_interactive,
+    std::function<bool()> check_function) {
+  argument_description arg_desc;
+  arg_desc.name = name;
   arg_desc.target = target;
-  arg_desc.getter_function = [](std::any &a, const std::string &input) {
-    T *temp_ptr = std::any_cast<T *>(a);
-    bool valid_input = get_from_string(temp_ptr, input);
+  arg_desc.read_from_string = [target =
+                                   arg_desc.target](const std::string &input) {
+    T *casted_ptr = std::any_cast<T *>(target);
+    bool valid_input = get_from_string(casted_ptr, input);
     return valid_input;
   };
-  arg_desc.description = description;
+  arg_desc.description_for_usage = description_for_usage;
+  arg_desc.description_for_interactive = description_for_interactive;
   arg_desc.check_function = check_function;
   this->vec.push_back(arg_desc);
 }
@@ -74,22 +66,36 @@ void argument_parser::add_argument_description(
 void argument_parser::fill_vec() {
   auto number = &(this->_options.number);
   this->add_argument_description(
-      number,
+      "num", number,
+
       []() {
         std::stringstream ss;
-        ss << std::endl
-           << "Select number of threads:" << std::endl
-           << "Number> ";
+        ss << "number of threads (1 .. " << partdiff::max_threads << ")";
+        return ss.str();
+      }(),
+
+      []() {
+        std::stringstream ss;
+        ss << "Select number of threads:" << std::endl << "Number> ";
         return ss.str();
       }(),
       [number] { return (*number >= 1 && *number <= partdiff::max_threads); });
   auto method = &(this->_options.method);
   this->add_argument_description(
-      method,
+      "method", method,
       []() {
         std::stringstream ss;
-        ss << std::endl
-           << "Select calculation method:" << std::endl
+        ss << "calculation method (1 .. 2)" << std::endl
+           << "                 "
+           << to_underlying(calculation_method::gauss_seidel) << ": Gauß-Seidel"
+           << std::endl
+           << "                 " << to_underlying(calculation_method::jacobi)
+           << ": Jacobi";
+        return ss.str();
+      }(),
+      []() {
+        std::stringstream ss;
+        ss << "Select calculation method:" << std::endl
            << "  " << to_underlying(calculation_method::gauss_seidel)
            << ": Gauß-Seidel." << std::endl
            << "  " << to_underlying(calculation_method::jacobi) << ": Jacobi."
@@ -103,22 +109,36 @@ void argument_parser::fill_vec() {
       });
   auto interlines = &(this->_options.interlines);
   this->add_argument_description(
-      interlines,
+      "lines", interlines,
       []() {
         std::stringstream ss;
-        ss << std::endl
-           << "Matrixsize = Interlines*8+9" << std::endl
-           << "Interlines> ";
+        ss << "number of interlines (0 .. " << partdiff::max_interlines << ")"
+           << std::endl
+           << "                 matrixsize = (interlines * 8) + 9";
+        return ss.str();
+      }(),
+      []() {
+        std::stringstream ss;
+        ss << "Matrixsize = Interlines*8+9" << std::endl << "Interlines> ";
         return ss.str();
       }(),
       [interlines] { return (*interlines <= partdiff::max_interlines); });
   auto inf_func = &(this->_options.inf_func);
   this->add_argument_description(
-      inf_func,
+      "func", inf_func,
       []() {
         std::stringstream ss;
-        ss << std::endl
-           << "Select interference function:" << std::endl
+        ss << "interference function (1 .. 2)" << std::endl
+           << "                 " << to_underlying(interference_function::f0)
+           << ": f(x,y) = 0" << std::endl
+           << "                 "
+           << to_underlying(interference_function::fpisin)
+           << ": f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)";
+        return ss.str();
+      }(),
+      []() {
+        std::stringstream ss;
+        ss << "Select interference function:" << std::endl
            << " " << to_underlying(interference_function::f0) << ": f(x,y)=0."
            << std::endl
            << " " << to_underlying(interference_function::fpisin)
@@ -132,11 +152,21 @@ void argument_parser::fill_vec() {
       });
   auto termination = &(this->_options.termination);
   this->add_argument_description(
-      termination,
+      "term", termination,
       []() {
         std::stringstream ss;
-        ss << std::endl
-           << "Select termination:" << std::endl
+        ss << "termination condition ( 1.. 2)" << std::endl
+           << "                 "
+           << to_underlying(termination_condidion::precision)
+           << ": sufficient precision" << std::endl
+           << "                 "
+           << to_underlying(termination_condidion::iterations)
+           << ": number of iterations";
+        return ss.str();
+      }(),
+      []() {
+        std::stringstream ss;
+        ss << "Select termination:" << std::endl
            << " " << to_underlying(termination_condidion::precision)
            << ": sufficient precision." << std::endl
            << " " << to_underlying(termination_condidion::iterations)
@@ -150,11 +180,10 @@ void argument_parser::fill_vec() {
       });
   auto term_precision = &(this->_options.term_precision);
   this->add_argument_description(
-      term_precision,
+      "prec", term_precision, "< invalid >",
       []() {
         std::stringstream ss;
-        ss << std::endl
-           << "Select precision:" << std::endl
+        ss << "Select precision:" << std::endl
            << "  Range: 1e-4 .. 1e-20." << std::endl
            << "precision> ";
         return ss.str();
@@ -164,11 +193,10 @@ void argument_parser::fill_vec() {
       });
   auto term_iteration = &(this->_options.term_iteration);
   this->add_argument_description(
-      term_iteration,
+      "iter", term_iteration, "< invalid >",
       []() {
         std::stringstream ss;
-        ss << std::endl
-           << "Select number of iterations:" << std::endl
+        ss << "Select number of iterations:" << std::endl
            << "  Range: 1 .. " << partdiff::max_iteration << "." << std::endl
            << "Iterations> ";
         return ss.str();
@@ -180,14 +208,14 @@ void argument_parser::fill_vec() {
 }
 
 bool argument_parser::get_value(int index, std::string &input) {
-  return vec[index].getter_function(vec[index].target, input) &&
-         vec[index].check_function();
+  return vec[index].read_from_string(input) && vec[index].check_function();
 }
 
 void argument_parser::askParam(int index) {
   bool valid_input = false;
   do {
-    std::cout << vec[index].description << std::flush;
+    std::cout << std::endl
+              << vec[index].description_for_interactive << std::flush;
     std::string input;
     getline(std::cin, input);
     valid_input = get_value(index, input);

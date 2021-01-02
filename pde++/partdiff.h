@@ -1,9 +1,14 @@
 #pragma once
 
 #include <any>
+#include <cmath>
 #include <functional>
+#include <iomanip>
 #include <ios>
+#include <iostream>
 #include <numbers>
+#include <sstream>
+#include <sys/time.h>
 #include <vector>
 
 namespace partdiff {
@@ -28,17 +33,22 @@ struct options {
   double term_precision;
 };
 
-struct argument_description {
-  std::any target;
-  std::function<bool()> check_function;
-  std::string description;
-  std::function<bool(std::any &a, const std::string &input)> getter_function;
-};
-
 class argument_parser {
 public:
   argument_parser(const int argc, char const *argv[]);
   options get_options() { return this->_options; }
+
+private:
+  struct argument_description {
+    std::any target;
+    std::string name;
+    std::string description_for_usage;
+    std::string description_for_interactive;
+    std::function<bool()> check_function = []() { return false; };
+    std::function<bool(const std::string &input)> read_from_string = [](auto) {
+      return false;
+    };
+  };
 
 private:
   options _options;
@@ -48,7 +58,9 @@ private:
   void usage() const;
   std::vector<argument_description> vec;
   template <class T>
-  void add_argument_description(T *target, std::string description,
+  void add_argument_description(std::string name, T *target,
+                                std::string description_for_usage,
+                                std::string description_for_interactive,
                                 std::function<bool()> check_function);
   void parseParam(int index, std::string &input);
   bool get_value(int index, std::string &input);
