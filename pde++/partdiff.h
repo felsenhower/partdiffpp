@@ -1,21 +1,5 @@
-/****************************************************************************/
-/****************************************************************************/
-/**                                                                        **/
-/**  	      	   TU Muenchen - Institut fuer Informatik                  **/
-/**                                                                        **/
-/** Copyright: Prof. Dr. Thomas Ludwig                                     **/
-/**            Thomas A. Zochler, Andreas C. Schmidt                       **/
-/**                                                                        **/
-/** File:      partdiff.h                                                  **/
-/**                                                                        **/
-/****************************************************************************/
-/****************************************************************************/
-
 #pragma once
 
-/* *********************************** */
-/* Include some standard header files. */
-/* *********************************** */
 #include <any>
 #include <functional>
 #include <ios>
@@ -42,13 +26,13 @@ struct argument_description {
 };
 
 struct options {
-  uint64_t number;           /* Number of threads */
-  uint64_t interlines;       /* matrix size = interlines*8+9 */
-  calculation_method method; /* Gauss Seidel or Jacobi method of iteration */
-  interference_function inf_func;    /* inference function */
-  termination_condidion termination; /* termination condition */
-  uint64_t term_iteration;           /* terminate if iteration number reached */
-  double term_precision;             /* terminate if precision reached */
+  uint64_t number;
+  uint64_t interlines;
+  calculation_method method;
+  interference_function inf_func;
+  termination_condidion termination;
+  uint64_t term_iteration;
+  double term_precision;
 
   options(const int, const std::string &, const std::vector<std::string> &);
   int argc;
@@ -72,11 +56,11 @@ struct options {
 } // namespace askparams
 
 struct calculation_arguments {
-  uint64_t N;            /* number of spaces between lines (lines=N+1)     */
-  uint64_t num_matrices; /* number of matrices                             */
-  double h;              /* length of a space between two lines            */
-  double ***Matrix;      /* index matrix used for addressing M             */
-  double *M;             /* two matrices with real values                  */
+  uint64_t N;
+  uint64_t num_matrices;
+  double h;
+  double ***Matrix;
+  double *M;
   calculation_arguments(const askparams::options &);
   ~calculation_arguments();
 
@@ -89,8 +73,8 @@ private:
 
 struct calculation_results {
   uint64_t m;
-  uint64_t stat_iteration; /* number of current iteration                    */
-  double stat_precision;   /* actual precision of all slaves in iteration    */
+  uint64_t stat_iteration;
+  double stat_precision;
   calculation_results();
 };
 

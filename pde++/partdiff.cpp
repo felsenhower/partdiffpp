@@ -1,22 +1,3 @@
-/****************************************************************************/
-/****************************************************************************/
-/**                                                                        **/
-/**                 TU München - Institut für Informatik                   **/
-/**                                                                        **/
-/** Copyright: Prof. Dr. Thomas Ludwig                                     **/
-/**            Andreas C. Schmidt                                          **/
-/**                                                                        **/
-/** File:      partdiff.c                                                  **/
-/**                                                                        **/
-/** Purpose:   Partial differential equation solver for Gauß-Seidel and    **/
-/**            Jacobi method.                                              **/
-/**                                                                        **/
-/****************************************************************************/
-/****************************************************************************/
-
-/* ************************************************************************ */
-/* Include standard header file.                                            */
-/* ************************************************************************ */
 #define _POSIX_C_SOURCE 200809L
 
 #include <cmath>
@@ -36,13 +17,8 @@ using term_cond = partdiff::termination_condidion;
 static constexpr double pi = std::numbers::pi;
 static constexpr double two_pi_square = (2 * pi * pi);
 
-/* ************************************************************************ */
-/* Global variables                                                         */
-/* ************************************************************************ */
-
-/* time measurement variables */
-timeval start_time = {}; /* time when program started                      */
-timeval comp_time = {};  /* time when calculation completed                */
+timeval start_time = {};
+timeval comp_time = {};
 
 calculation_results::calculation_results() {
   this->m = 0;
@@ -50,9 +26,6 @@ calculation_results::calculation_results() {
   this->stat_precision = 0;
 }
 
-/* ************************************************************************ */
-/* freeMatrices: frees memory for matrices                                  */
-/* ************************************************************************ */
 void calculation_arguments::freeMatrices() {
   for (uint64_t i = 0; i < this->num_matrices; i++) {
     delete[] this->Matrix[i];
@@ -72,10 +45,6 @@ calculation_arguments::calculation_arguments(const options &options)
 
 calculation_arguments::~calculation_arguments() { this->freeMatrices(); }
 
-/* ************************************************************************ */
-/* allocateMemory ()                                                        */
-/* allocates memory and quits if there was a memory allocation problem      */
-/* ************************************************************************ */
 static const uint8_t *allocateMemory(const std::size_t size) {
   try {
     return new uint8_t[size];
@@ -86,9 +55,6 @@ static const uint8_t *allocateMemory(const std::size_t size) {
   }
 }
 
-/* ************************************************************************ */
-/* allocateMatrices: allocates memory for matrices                          */
-/* ************************************************************************ */
 void calculation_arguments::allocateMatrices() {
   const uint64_t N = this->N;
 
@@ -106,15 +72,11 @@ void calculation_arguments::allocateMatrices() {
   }
 }
 
-/* ************************************************************************ */
-/* initMatrices: Initialize matrix/matrices and some global variables       */
-/* ************************************************************************ */
 void calculation_arguments::initMatrices() {
   const uint64_t N = this->N;
   const double h = this->h;
   double ***Matrix = this->Matrix;
 
-  /* initialize matrix/matrices with zeros */
   for (uint64_t g = 0; g < this->num_matrices; g++) {
     for (uint64_t i = 0; i <= N; i++) {
       for (uint64_t j = 0; j <= N; j++) {
@@ -123,7 +85,6 @@ void calculation_arguments::initMatrices() {
     }
   }
 
-  /* initialize borders, depending on function (function 2: nothing to do) */
   if (this->inf_func == inf_func::f0) {
     for (uint64_t g = 0; g < this->num_matrices; g++) {
       for (uint64_t i = 0; i <= N; i++) {
@@ -139,9 +100,6 @@ void calculation_arguments::initMatrices() {
   }
 }
 
-/* ************************************************************************ */
-/* calculate: solves the equation                                           */
-/* ************************************************************************ */
 static void calculate(const calculation_arguments &arguments,
                       calculation_results &results, const options &options) {
 
@@ -153,7 +111,6 @@ static void calculate(const calculation_arguments &arguments,
 
   int term_iteration = options.term_iteration;
 
-  /* initialize m1 and m2 depending on algorithm */
   int m1 = 0;
   int m2 = (options.method == calc_meth::jacobi) ? 1 : 0;
 
@@ -170,7 +127,6 @@ static void calculate(const calculation_arguments &arguments,
 
     maxresiduum = 0.0;
 
-    /* over all rows */
     for (int i = 1; i < N; i++) {
       double fpisin_i = 0.0;
 
@@ -178,7 +134,6 @@ static void calculate(const calculation_arguments &arguments,
         fpisin_i = fpisin * std::sin(pih * (double)i);
       }
 
-      /* over all columns */
       for (int j = 1; j < N; j++) {
         double star = 0.25 * (Matrix_In[i - 1][j] + Matrix_In[i][j - 1] +
                               Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
@@ -201,12 +156,10 @@ static void calculate(const calculation_arguments &arguments,
     results.stat_iteration++;
     results.stat_precision = maxresiduum;
 
-    /* exchange m1 and m2 */
     const int temp = m1;
     m1 = m2;
     m2 = temp;
 
-    /* check for stopping calculation depending on termination method */
     if (options.termination == term_cond::precision) {
       if (maxresiduum < options.term_precision) {
         term_iteration = 0;
@@ -219,9 +172,6 @@ static void calculate(const calculation_arguments &arguments,
   results.m = m2;
 }
 
-/* ************************************************************************ */
-/*  displayStatistics: displays some statistics about the calculation       */
-/* ************************************************************************ */
 static void displayStatistics(const calculation_arguments &arguments,
                               const calculation_results &results,
                               const options &options) {
@@ -269,16 +219,6 @@ static void displayStatistics(const calculation_arguments &arguments,
   std::cout.flags(cout_default_flags);
 }
 
-/****************************************************************************/
-/** Beschreibung der Funktion displayMatrix:                               **/
-/**                                                                        **/
-/** Die Funktion displayMatrix gibt eine Matrix                            **/
-/** in einer "ubersichtlichen Art und Weise auf die Standardausgabe aus.   **/
-/**                                                                        **/
-/** Die "Ubersichtlichkeit wird erreicht, indem nur ein Teil der Matrix    **/
-/** ausgegeben wird. Aus der Matrix werden die Randzeilen/-spalten sowie   **/
-/** sieben Zwischenzeilen ausgegeben.                                      **/
-/****************************************************************************/
 static void displayMatrix(const calculation_arguments &arguments,
                           const calculation_results &results,
                           const options &options) {
@@ -299,9 +239,6 @@ static void displayMatrix(const calculation_arguments &arguments,
   std::cout.flags(cout_default_flags);
 }
 
-/* ************************************************************************ */
-/*  main                                                                    */
-/* ************************************************************************ */
 int main(const int argc, char const *argv[]) {
 
   const std::string name(argv[0]);
