@@ -168,6 +168,9 @@ template <class T> void set_target(argument_description &arg_desc, T *target) {
 }
 
 void options::askParams() {
+
+  std::vector<argument_description> vec;
+
   argument_description arg_desc;
   set_target(arg_desc, &(this->number));
   std::stringstream ss;
@@ -176,6 +179,7 @@ void options::askParams() {
   arg_desc.check_function = [number = &(this->number)] {
     return (*number >= 1 && *number <= partdiff::max_threads);
   };
+  vec.push_back(arg_desc);
 
   argument_description arg_desc2;
   set_target(arg_desc2, &(this->method));
@@ -192,25 +196,20 @@ void options::askParams() {
     return (*method == calculation_method::gauss_seidel ||
             *method == calculation_method::jacobi);
   };
+  vec.push_back(arg_desc2);
 
   bool valid_input = false;
   if (this->argc < 2) {
 
-    do {
-      std::cout << arg_desc.description << std::flush;
-      std::string input;
-      getline(std::cin, input);
-      valid_input = arg_desc.getter_function(arg_desc.target, input);
-      valid_input &= arg_desc.check_function();
-    } while (!valid_input);
-
-    do {
-      std::cout << arg_desc2.description << std::flush;
-      std::string input;
-      getline(std::cin, input);
-      valid_input = arg_desc2.getter_function(arg_desc2.target, input);
-      valid_input &= arg_desc2.check_function();
-    } while (!valid_input);
+    for (int i = 0; i <= 1; i++) {
+      do {
+        std::cout << vec[i].description << std::flush;
+        std::string input;
+        getline(std::cin, input);
+        valid_input = vec[i].getter_function(vec[i].target, input);
+        valid_input &= vec[i].check_function();
+      } while (!valid_input);
+    }
 
     do {
       std::cout << std::endl
