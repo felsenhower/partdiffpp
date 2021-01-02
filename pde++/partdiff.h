@@ -65,11 +65,9 @@ struct options {
   make_argument_description(T *target, std::string description,
                             std::function<bool()> check_function);
 
-  void parseParam(std::vector<partdiff::askparams::argument_description> &vec,
-                  int index, std::string &input, options *options);
+  void parseParam(int index, std::string &input);
 
-  void askParam(std::vector<partdiff::askparams::argument_description> &vec,
-                int index);
+  void askParam(int index);
 
   std::vector<argument_description> vec;
 

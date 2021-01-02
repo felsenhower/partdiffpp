@@ -160,8 +160,7 @@ options::make_argument_description(T *target, std::string description,
   return arg_desc;
 }
 
-void options::askParam(
-    std::vector<partdiff::askparams::argument_description> &vec, int index) {
+void options::askParam(int index) {
   bool valid_input = false;
   do {
     std::cout << vec[index].description << std::flush;
@@ -172,13 +171,11 @@ void options::askParam(
   } while (!valid_input);
 }
 
-void options::parseParam(
-    std::vector<partdiff::askparams::argument_description> &vec, int index,
-    std::string &input, options *options) {
+void options::parseParam(int index, std::string &input) {
   bool valid_input = vec[index].getter_function(vec[index].target, input);
   valid_input &= vec[index].check_function();
   if (!valid_input) {
-    options->usage();
+    this->usage();
     exit(EXIT_FAILURE);
   }
 }
@@ -291,13 +288,13 @@ void options::fill_vec() {
 void options::askParams() {
   if (this->argc < 2) {
     for (int i = 0; i <= TERMINATION; i++) {
-      askParam(vec, i);
+      askParam(i);
     }
     if (this->termination == termination_condidion::precision) {
-      askParam(vec, TERM_PRECISION);
+      askParam(TERM_PRECISION);
       this->term_iteration = partdiff::max_iteration;
     } else {
-      askParam(vec, TERM_ITERATION);
+      askParam(TERM_ITERATION);
       this->term_precision = 0.0;
     }
   } else if (this->argc < 7 || this->args[0] == "-h" || this->args[0] == "-?") {
@@ -305,13 +302,13 @@ void options::askParams() {
     exit(EXIT_SUCCESS);
   } else {
     for (int i = 0; i <= TERMINATION; i++) {
-      parseParam(vec, i, args[i], this);
+      parseParam(i, args[i]);
     }
     if (this->termination == termination_condidion::precision) {
-      parseParam(vec, TERM_PRECISION, args[5], this);
+      parseParam(TERM_PRECISION, args[5]);
       this->term_iteration = partdiff::max_iteration;
     } else {
-      parseParam(vec, TERM_ITERATION, args[5], this);
+      parseParam(TERM_ITERATION, args[5]);
       this->term_precision = 0.0;
     }
   }
