@@ -35,10 +35,13 @@ struct argument_description {
   std::function<bool(std::any &a, const std::string &input)> getter_function;
 };
 
-struct argument_parser {
-  argument_parser(const int, const std::string &,
-                  const std::vector<std::string> &);
-  int argc;
+class argument_parser {
+public:
+  argument_parser(const int argc, char const *argv[]);
+  options get_options() { return this->_options; }
+
+private:
+  options _options;
   std::string name;
   std::vector<std::string> args;
   void askParams();
@@ -51,7 +54,6 @@ struct argument_parser {
   bool get_value(int index, std::string &input);
   void askParam(int index);
   void fill_vec();
-  options _options;
 };
 
 } // namespace askparams

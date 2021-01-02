@@ -199,7 +199,7 @@ void argument_parser::parseParam(int index, std::string &input) {
 }
 
 void argument_parser::askParams() {
-  if (this->argc < 2) {
+  if (this->args.size() < 1) {
     for (int i = 0; i <= TERMINATION; i++) {
       askParam(i);
     }
@@ -210,7 +210,8 @@ void argument_parser::askParams() {
       askParam(TERM_ITERATION);
       this->_options.term_precision = 0.0;
     }
-  } else if (this->argc < 7 || this->args[0] == "-h" || this->args[0] == "-?") {
+  } else if (this->args.size() < 6 || this->args[0] == "-h" ||
+             this->args[0] == "-?") {
     usage();
     exit(EXIT_SUCCESS);
   } else {
@@ -227,9 +228,8 @@ void argument_parser::askParams() {
   }
 }
 
-argument_parser::argument_parser(const int argc, const std::string &name,
-                                 const std::vector<std::string> &args)
-    : argc(argc), name(name), args(args) {
+argument_parser::argument_parser(const int argc, char const *argv[])
+    : name(argv[0]), args(argv + 1, argv + argc) {
   this->fill_vec();
   this->askParams();
 }

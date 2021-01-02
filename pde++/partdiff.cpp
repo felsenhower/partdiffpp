@@ -241,13 +241,8 @@ static void displayMatrix(const calculation_arguments &arguments,
 }
 
 int main(const int argc, char const *argv[]) {
-
-  const std::string name(argv[0]);
-  const std::vector<std::string> args(argv + 1, argv + argc);
-
-  argument_parser parser(argc, name, args);
-
-  options options = parser._options;
+  argument_parser parser(argc, argv);
+  options options = parser.get_options();
   calculation_arguments arguments(options);
   calculation_results results;
 
