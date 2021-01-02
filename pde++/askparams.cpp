@@ -167,36 +167,48 @@ template <class T> void set_target(argument_description &arg_desc, T *target) {
   };
 }
 
-void options::askParams() {
-
-  std::vector<argument_description> vec;
-
+template <class T>
+argument_description
+make_argument_description(T *target, std::string description,
+                          std::function<bool()> check_function) {
   argument_description arg_desc;
-  set_target(arg_desc, &(this->number));
-  std::stringstream ss;
-  ss << std::endl << "Select number of threads:" << std::endl << "Number> ";
-  arg_desc.description = ss.str();
-  arg_desc.check_function = [number = &(this->number)] {
-    return (*number >= 1 && *number <= partdiff::max_threads);
-  };
-  vec.push_back(arg_desc);
+  set_target(arg_desc, target);
+  arg_desc.description = description;
+  arg_desc.check_function = check_function;
+  return arg_desc;
+}
 
-  argument_description arg_desc2;
-  set_target(arg_desc2, &(this->method));
-  std::stringstream ss2;
-  ss2 << std::endl
-      << "Select calculation method:" << std::endl
-      << "  " << to_underlying(calculation_method::gauss_seidel)
-      << ": Gauß-Seidel." << std::endl
-      << "  " << to_underlying(calculation_method::jacobi) << ": Jacobi."
-      << std::endl
-      << "method> ";
-  arg_desc2.description = ss2.str();
-  arg_desc2.check_function = [method = &(this->method)] {
-    return (*method == calculation_method::gauss_seidel ||
-            *method == calculation_method::jacobi);
-  };
-  vec.push_back(arg_desc2);
+void options::askParams() {
+  std::vector<argument_description> vec;
+  vec.push_back(make_argument_description(
+      &(this->number),
+      []() {
+        std::stringstream ss;
+        ss << std::endl
+           << "Select number of threads:" << std::endl
+           << "Number> ";
+        return ss.str();
+      }(),
+      [number = &(this->number)] {
+        return (*number >= 1 && *number <= partdiff::max_threads);
+      }));
+  vec.push_back(make_argument_description(
+      &(this->method),
+      []() {
+        std::stringstream ss;
+        ss << std::endl
+           << "Select calculation method:" << std::endl
+           << "  " << to_underlying(calculation_method::gauss_seidel)
+           << ": Gauß-Seidel." << std::endl
+           << "  " << to_underlying(calculation_method::jacobi) << ": Jacobi."
+           << std::endl
+           << "method> ";
+        return ss.str();
+      }(),
+      [method = &(this->method)] {
+        return (*method == calculation_method::gauss_seidel ||
+                *method == calculation_method::jacobi);
+      }));
 
   bool valid_input = false;
   if (this->argc < 2) {
