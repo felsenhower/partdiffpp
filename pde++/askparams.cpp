@@ -184,7 +184,7 @@ void options::parseParam(
 }
 
 void options::fill_vec() {
-  vec.push_back(options::make_argument_description(
+  vec.push_back(this->make_argument_description(
       &(this->number),
       []() {
         std::stringstream ss;
@@ -196,7 +196,7 @@ void options::fill_vec() {
       [number = &(this->number)] {
         return (*number >= 1 && *number <= partdiff::max_threads);
       }));
-  vec.push_back(options::make_argument_description(
+  vec.push_back(this->make_argument_description(
       &(this->method),
       []() {
         std::stringstream ss;
@@ -213,7 +213,7 @@ void options::fill_vec() {
         return (*method == calculation_method::gauss_seidel ||
                 *method == calculation_method::jacobi);
       }));
-  vec.push_back(options::make_argument_description(
+  vec.push_back(this->make_argument_description(
       &(this->interlines),
       []() {
         std::stringstream ss;
@@ -225,7 +225,7 @@ void options::fill_vec() {
       [interlines = &(this->interlines)] {
         return (*interlines <= partdiff::max_interlines);
       }));
-  vec.push_back(options::make_argument_description(
+  vec.push_back(this->make_argument_description(
       &(this->inf_func),
       []() {
         std::stringstream ss;
@@ -242,7 +242,7 @@ void options::fill_vec() {
         return (*inf_func == interference_function::f0 ||
                 *inf_func == interference_function::fpisin);
       }));
-  vec.push_back(options::make_argument_description(
+  vec.push_back(this->make_argument_description(
       &(this->termination),
       []() {
         std::stringstream ss;
@@ -259,7 +259,7 @@ void options::fill_vec() {
         return (*termination == termination_condidion::precision ||
                 *termination == termination_condidion::iterations);
       }));
-  vec.push_back(options::make_argument_description(
+  vec.push_back(this->make_argument_description(
       &(this->term_precision),
       []() {
         std::stringstream ss;
@@ -272,7 +272,7 @@ void options::fill_vec() {
       [term_precision = &(this->term_precision)] {
         return (*term_precision >= 1e-20 && *term_precision <= 1e-4);
       }));
-  vec.push_back(options::make_argument_description(
+  vec.push_back(this->make_argument_description(
       &(this->term_iteration),
       []() {
         std::stringstream ss;

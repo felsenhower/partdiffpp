@@ -57,21 +57,19 @@ struct options {
   void usage() const;
 
   template <class T>
-  static void set_target(partdiff::askparams::argument_description &arg_desc,
-                         T *target);
+  void set_target(partdiff::askparams::argument_description &arg_desc,
+                  T *target);
 
   template <class T>
-  static partdiff::askparams::argument_description
+  partdiff::askparams::argument_description
   make_argument_description(T *target, std::string description,
                             std::function<bool()> check_function);
 
-  static void
-  parseParam(std::vector<partdiff::askparams::argument_description> &vec,
-             int index, std::string &input, options *options);
+  void parseParam(std::vector<partdiff::askparams::argument_description> &vec,
+                  int index, std::string &input, options *options);
 
-  static void
-  askParam(std::vector<partdiff::askparams::argument_description> &vec,
-           int index);
+  void askParam(std::vector<partdiff::askparams::argument_description> &vec,
+                int index);
 
   std::vector<argument_description> vec;
 
