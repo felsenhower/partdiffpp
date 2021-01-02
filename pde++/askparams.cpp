@@ -70,32 +70,35 @@ void argument_parser::usage() const {
   std::cout << "Usage: " << this->app_name;
   for (std::size_t i = 0;
        i <= static_cast<std::size_t>(argument_index::termination); i++) {
-    std::cout << " [" << this->vec[i].name << "]";
+    std::cout << " [" << this->argument_descriptions[i].name << "]";
   }
-  std::cout
-      << " ["
-      << this->vec[static_cast<std::size_t>(argument_index::term_precision)]
-             .name
-      << "/"
-      << this->vec[static_cast<std::size_t>(argument_index::term_iteration)]
-             .name
-      << "]" << std::endl;
+  std::cout << " ["
+            << this->argument_descriptions[static_cast<std::size_t>(
+                                               argument_index::term_precision)]
+                   .name
+            << "/"
+            << this->argument_descriptions[static_cast<std::size_t>(
+                                               argument_index::term_iteration)]
+                   .name
+            << "]" << std::endl;
   std::cout << std::endl;
   for (std::size_t i = 0;
        i <= static_cast<std::size_t>(argument_index::termination); i++) {
     std::cout << "  - " << std::setw(11) << std::setfill(' ') << std::left
-              << (this->vec[i].name + ":");
+              << (this->argument_descriptions[i].name + ":");
     std::cout.flags(cout_default_flags);
-    std::cout << this->vec[i].description_for_usage << std::endl;
+    std::cout << this->argument_descriptions[i].description_for_usage
+              << std::endl;
   }
-  std::cout
-      << "  - " << std::setw(11) << std::setfill(' ') << std::left
-      << (this->vec[static_cast<std::size_t>(argument_index::term_precision)]
-              .name +
-          "/" +
-          this->vec[static_cast<std::size_t>(argument_index::term_iteration)]
-              .name +
-          ":");
+  std::cout << "  - " << std::setw(11) << std::setfill(' ') << std::left
+            << (this->argument_descriptions[static_cast<std::size_t>(
+                                                argument_index::term_precision)]
+                    .name +
+                "/" +
+                this->argument_descriptions[static_cast<std::size_t>(
+                                                argument_index::term_iteration)]
+                    .name +
+                ":");
   std::cout.flags(cout_default_flags);
   std::cout << "depending on term:" << std::endl
             << "                 precision:  "
@@ -123,12 +126,12 @@ void argument_parser::add_argument_description(
   };
   arg_desc.description_for_usage = description_for_usage;
   arg_desc.description_for_interactive = description_for_interactive;
-  this->vec.push_back(arg_desc);
+  this->argument_descriptions.push_back(arg_desc);
 }
 
 options argument_parser::get_options() { return this->parsed_options; }
 
-void argument_parser::fill_vec() {
+void argument_parser::fill_argument_descriptions() {
   auto number = &(this->parsed_options.number);
   this->add_argument_description(
       "num", number,
@@ -279,15 +282,16 @@ void argument_parser::askParam(std::size_t index) {
   bool valid_input = false;
   do {
     std::cout << std::endl
-              << vec[index].description_for_interactive << std::flush;
+              << argument_descriptions[index].description_for_interactive
+              << std::flush;
     std::string input;
     getline(std::cin, input);
-    valid_input = vec[index].read_from_string(input);
+    valid_input = argument_descriptions[index].read_from_string(input);
   } while (!valid_input);
 }
 
 void argument_parser::parseParam(std::size_t index, std::string &input) {
-  if (!vec[index].read_from_string(input)) {
+  if (!argument_descriptions[index].read_from_string(input)) {
     this->usage();
     exit(EXIT_FAILURE);
   }
@@ -329,6 +333,6 @@ void argument_parser::askParams() {
 
 argument_parser::argument_parser(const int argc, char const *argv[])
     : app_name(argv[0]), args(argv + 1, argv + argc) {
-  this->fill_vec();
+  this->fill_argument_descriptions();
   this->askParams();
 }

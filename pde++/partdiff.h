@@ -63,11 +63,11 @@ private:
   options parsed_options;
   std::string app_name;
   std::vector<std::string> args;
-  std::vector<argument_description> vec;
+  std::vector<argument_description> argument_descriptions;
   void askParams();
   void parseParam(std::size_t index, std::string &input);
   void askParam(std::size_t index);
-  void fill_vec();
+  void fill_argument_descriptions();
   void usage() const;
   template <class T>
   void add_argument_description(std::string name, T *target,
