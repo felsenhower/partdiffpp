@@ -34,6 +34,13 @@ enum class termination_condidion : uint64_t { precision = 1, iterations = 2 };
 
 namespace askparams {
 
+struct argument_description {
+  std::any target;
+  std::function<bool()> check_function;
+  std::string description;
+  std::function<bool(std::any &a, const std::string &input)> getter_function;
+};
+
 struct options {
   uint64_t number;           /* Number of threads */
   uint64_t interlines;       /* matrix size = interlines*8+9 */
@@ -47,13 +54,6 @@ struct options {
   std::string name;
   std::vector<std::string> args;
   void askParams();
-  bool check_number() const;
-  bool check_method() const;
-  bool check_interlines() const;
-  bool check_inf_func() const;
-  bool check_termination() const;
-  bool check_term_precision() const;
-  bool check_term_iteration() const;
   void usage() const;
 };
 

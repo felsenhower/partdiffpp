@@ -129,55 +129,18 @@ enum ARG_INDEX {
   TERM_ITERATION = 6
 };
 
-enum _ARG_INDEX {
-  _NUMBER = 0,
-  _METHOD = 1,
-  _INTERLINES = 2,
-  _INF_FUNC = 3,
-  _TERMINATION = 4,
-  _TERM_PREC_OR_ITER = 5
-};
+// enum _ARG_INDEX {
+//   _NUMBER = 0,
+//   _METHOD = 1,
+//   _INTERLINES = 2,
+//   _INF_FUNC = 3,
+//   _TERMINATION = 4,
+//   _TERM_PREC_OR_ITER = 5
+// };
 
-bool options::check_number() const {
-  return (this->number >= 1 && this->number <= partdiff::max_threads);
-}
-
-bool options::check_method() const {
-  return (this->method == calculation_method::gauss_seidel ||
-          this->method == calculation_method::jacobi);
-}
-
-bool options::check_interlines() const {
-  return (this->interlines <= partdiff::max_interlines);
-}
-
-bool options::check_inf_func() const {
-  return (this->inf_func == interference_function::f0 ||
-          this->inf_func == interference_function::fpisin);
-}
-
-bool options::check_termination() const {
-  return (this->termination == termination_condidion::precision ||
-          this->termination == termination_condidion::iterations);
-}
-
-bool options::check_term_precision() const {
-  return (this->term_precision >= 1e-20 && this->term_precision <= 1e-4);
-}
-
-bool options::check_term_iteration() const {
-  return (this->term_iteration >= 1 &&
-          this->term_iteration <= partdiff::max_iteration);
-}
-
-struct argument_description {
-  std::any target;
-  std::function<bool()> check_function;
-  std::string description;
-  std::function<bool(std::any &a, const std::string &input)> getter_function;
-};
-
-template <class T> void set_target(argument_description &arg_desc, T *target) {
+template <class T>
+void set_target(partdiff::askparams::argument_description &arg_desc,
+                T *target) {
   arg_desc.target = target;
   arg_desc.getter_function = [](std::any &a, const std::string &input) {
     T *temp_ptr = std::any_cast<T *>(a);
@@ -187,17 +150,18 @@ template <class T> void set_target(argument_description &arg_desc, T *target) {
 }
 
 template <class T>
-argument_description
+partdiff::askparams::argument_description
 make_argument_description(T *target, std::string description,
                           std::function<bool()> check_function) {
-  argument_description arg_desc;
+  partdiff::askparams::argument_description arg_desc;
   set_target(arg_desc, target);
   arg_desc.description = description;
   arg_desc.check_function = check_function;
   return arg_desc;
 }
 
-void askParam(std::vector<argument_description> &vec, int index) {
+void askParam(std::vector<partdiff::askparams::argument_description> &vec,
+              int index) {
   bool valid_input = false;
   do {
     std::cout << vec[index].description << std::flush;
@@ -208,8 +172,8 @@ void askParam(std::vector<argument_description> &vec, int index) {
   } while (!valid_input);
 }
 
-void parseParam(std::vector<argument_description> &vec, int index,
-                std::string &input, options *options) {
+void parseParam(std::vector<partdiff::askparams::argument_description> &vec,
+                int index, std::string &input, options *options) {
   bool valid_input = vec[index].getter_function(vec[index].target, input);
   valid_input &= vec[index].check_function();
   if (!valid_input) {
