@@ -55,6 +55,14 @@ struct options {
   std::vector<std::string> args;
   void askParams();
   void usage() const;
+
+  template <class T>
+  static void set_target(partdiff::askparams::argument_description &arg_desc,
+                         T *target);
+
+  template <class T>
+  partdiff::askparams::argument_description static make_argument_description(
+      T *target, std::string description, std::function<bool()> check_function);
 };
 
 } // namespace askparams

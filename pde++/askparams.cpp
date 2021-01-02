@@ -139,8 +139,8 @@ enum ARG_INDEX {
 // };
 
 template <class T>
-void set_target(partdiff::askparams::argument_description &arg_desc,
-                T *target) {
+void options::set_target(partdiff::askparams::argument_description &arg_desc,
+                         T *target) {
   arg_desc.target = target;
   arg_desc.getter_function = [](std::any &a, const std::string &input) {
     T *temp_ptr = std::any_cast<T *>(a);
@@ -151,10 +151,10 @@ void set_target(partdiff::askparams::argument_description &arg_desc,
 
 template <class T>
 partdiff::askparams::argument_description
-make_argument_description(T *target, std::string description,
-                          std::function<bool()> check_function) {
+options::make_argument_description(T *target, std::string description,
+                                   std::function<bool()> check_function) {
   partdiff::askparams::argument_description arg_desc;
-  set_target(arg_desc, target);
+  options::set_target(arg_desc, target);
   arg_desc.description = description;
   arg_desc.check_function = check_function;
   return arg_desc;
@@ -185,7 +185,7 @@ void parseParam(std::vector<partdiff::askparams::argument_description> &vec,
 void options::askParams() {
   // <setup stuff>
   std::vector<argument_description> vec;
-  vec.push_back(make_argument_description(
+  vec.push_back(options::make_argument_description(
       &(this->number),
       []() {
         std::stringstream ss;
@@ -197,7 +197,7 @@ void options::askParams() {
       [number = &(this->number)] {
         return (*number >= 1 && *number <= partdiff::max_threads);
       }));
-  vec.push_back(make_argument_description(
+  vec.push_back(options::make_argument_description(
       &(this->method),
       []() {
         std::stringstream ss;
@@ -214,7 +214,7 @@ void options::askParams() {
         return (*method == calculation_method::gauss_seidel ||
                 *method == calculation_method::jacobi);
       }));
-  vec.push_back(make_argument_description(
+  vec.push_back(options::make_argument_description(
       &(this->interlines),
       []() {
         std::stringstream ss;
@@ -226,7 +226,7 @@ void options::askParams() {
       [interlines = &(this->interlines)] {
         return (*interlines <= partdiff::max_interlines);
       }));
-  vec.push_back(make_argument_description(
+  vec.push_back(options::make_argument_description(
       &(this->inf_func),
       []() {
         std::stringstream ss;
@@ -243,7 +243,7 @@ void options::askParams() {
         return (*inf_func == interference_function::f0 ||
                 *inf_func == interference_function::fpisin);
       }));
-  vec.push_back(make_argument_description(
+  vec.push_back(options::make_argument_description(
       &(this->termination),
       []() {
         std::stringstream ss;
@@ -260,7 +260,7 @@ void options::askParams() {
         return (*termination == termination_condidion::precision ||
                 *termination == termination_condidion::iterations);
       }));
-  vec.push_back(make_argument_description(
+  vec.push_back(options::make_argument_description(
       &(this->term_precision),
       []() {
         std::stringstream ss;
@@ -273,7 +273,7 @@ void options::askParams() {
       [term_precision = &(this->term_precision)] {
         return (*term_precision >= 1e-20 && *term_precision <= 1e-4);
       }));
-  vec.push_back(make_argument_description(
+  vec.push_back(options::make_argument_description(
       &(this->term_iteration),
       []() {
         std::stringstream ss;
