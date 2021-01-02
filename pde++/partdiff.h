@@ -67,12 +67,12 @@ namespace askparams {
 struct options {
   enum class calculation_method : uint64_t { gauss_seidel = 1, jacobi = 2 };
   enum class interference_function : uint64_t { f0 = 1, fpisin = 2 };
-  enum class termination_condidion : uint64_t { precision = 1, iterations = 2 };
+  enum class termination_condition : uint64_t { precision = 1, iterations = 2 };
   uint64_t number;
   uint64_t interlines;
   calculation_method method;
   interference_function inf_func;
-  termination_condidion termination;
+  termination_condition termination;
   uint64_t term_iteration;
   double term_precision;
 };

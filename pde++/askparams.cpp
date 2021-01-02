@@ -8,8 +8,8 @@ using options = partdiff::askparams::options;
 using calculation_method = partdiff::askparams::options::calculation_method;
 using interference_function =
     partdiff::askparams::options::interference_function;
-using termination_condidion =
-    partdiff::askparams::options::termination_condidion;
+using termination_condition =
+    partdiff::askparams::options::termination_condition;
 
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
@@ -174,26 +174,26 @@ void argument_parser::fill_argument_descriptions() {
         std::stringstream ss;
         ss << "termination condition ( 1.. 2)" << std::endl
            << "                 "
-           << to_underlying(termination_condidion::precision)
+           << to_underlying(termination_condition::precision)
            << ": sufficient precision" << std::endl
            << "                 "
-           << to_underlying(termination_condidion::iterations)
+           << to_underlying(termination_condition::iterations)
            << ": number of iterations";
         return ss.str();
       }(),
       []() {
         std::stringstream ss;
         ss << "Select termination:" << std::endl
-           << " " << to_underlying(termination_condidion::precision)
+           << " " << to_underlying(termination_condition::precision)
            << ": sufficient precision." << std::endl
-           << " " << to_underlying(termination_condidion::iterations)
+           << " " << to_underlying(termination_condition::iterations)
            << ": number of iterations." << std::endl
            << "termination> ";
         return ss.str();
       }(),
       [termination] {
-        return (*termination == termination_condidion::precision ||
-                *termination == termination_condidion::iterations);
+        return (*termination == termination_condition::precision ||
+                *termination == termination_condition::iterations);
       });
   auto term_precision = &(this->parsed_options.term_precision);
   this->add_argument_description(
@@ -252,7 +252,7 @@ void argument_parser::askParams() {
          i <= static_cast<std::size_t>(argument_index::termination); i++) {
       askParam(i);
     }
-    if (this->parsed_options.termination == termination_condidion::precision) {
+    if (this->parsed_options.termination == termination_condition::precision) {
       askParam(static_cast<std::size_t>(argument_index::term_precision));
       this->parsed_options.term_iteration = partdiff::max_iteration;
     } else {
@@ -268,7 +268,7 @@ void argument_parser::askParams() {
          i <= static_cast<std::size_t>(argument_index::termination); i++) {
       parseParam(i, args[i]);
     }
-    if (this->parsed_options.termination == termination_condidion::precision) {
+    if (this->parsed_options.termination == termination_condition::precision) {
       parseParam(static_cast<std::size_t>(argument_index::term_precision),
                  args[5]);
       this->parsed_options.term_iteration = partdiff::max_iteration;
