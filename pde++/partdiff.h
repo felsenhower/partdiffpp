@@ -37,7 +37,7 @@ struct options {
 class argument_parser {
 public:
   argument_parser(const int argc, char const *argv[]);
-  options get_options() { return this->_options; }
+  options get_options();
 
 private:
   struct argument_description {
@@ -60,7 +60,7 @@ private:
   };
 
 private:
-  options _options;
+  options parsed_options;
   std::string app_name;
   std::vector<std::string> args;
   std::vector<argument_description> vec;

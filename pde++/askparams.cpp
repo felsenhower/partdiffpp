@@ -126,8 +126,10 @@ void argument_parser::add_argument_description(
   this->vec.push_back(arg_desc);
 }
 
+options argument_parser::get_options() { return this->parsed_options; }
+
 void argument_parser::fill_vec() {
-  auto number = &(this->_options.number);
+  auto number = &(this->parsed_options.number);
   this->add_argument_description(
       "num", number,
 
@@ -143,7 +145,7 @@ void argument_parser::fill_vec() {
         return ss.str();
       }(),
       [number] { return (*number >= 1 && *number <= partdiff::max_threads); });
-  auto method = &(this->_options.method);
+  auto method = &(this->parsed_options.method);
   this->add_argument_description(
       "method", method,
       []() {
@@ -170,7 +172,7 @@ void argument_parser::fill_vec() {
         return (*method == calculation_method::gauss_seidel ||
                 *method == calculation_method::jacobi);
       });
-  auto interlines = &(this->_options.interlines);
+  auto interlines = &(this->parsed_options.interlines);
   this->add_argument_description(
       "lines", interlines,
       []() {
@@ -186,7 +188,7 @@ void argument_parser::fill_vec() {
         return ss.str();
       }(),
       [interlines] { return (*interlines <= partdiff::max_interlines); });
-  auto inf_func = &(this->_options.inf_func);
+  auto inf_func = &(this->parsed_options.inf_func);
   this->add_argument_description(
       "func", inf_func,
       []() {
@@ -213,7 +215,7 @@ void argument_parser::fill_vec() {
         return (*inf_func == interference_function::f0 ||
                 *inf_func == interference_function::fpisin);
       });
-  auto termination = &(this->_options.termination);
+  auto termination = &(this->parsed_options.termination);
   this->add_argument_description(
       "term", termination,
       []() {
@@ -241,7 +243,7 @@ void argument_parser::fill_vec() {
         return (*termination == termination_condidion::precision ||
                 *termination == termination_condidion::iterations);
       });
-  auto term_precision = &(this->_options.term_precision);
+  auto term_precision = &(this->parsed_options.term_precision);
   this->add_argument_description(
       "prec", term_precision, "< invalid >",
       []() {
@@ -257,7 +259,7 @@ void argument_parser::fill_vec() {
         return (*term_precision >= partdiff::max_precision &&
                 *term_precision <= partdiff::min_precision);
       });
-  auto term_iteration = &(this->_options.term_iteration);
+  auto term_iteration = &(this->parsed_options.term_iteration);
   this->add_argument_description(
       "iter", term_iteration, "< invalid >",
       []() {
@@ -297,12 +299,12 @@ void argument_parser::askParams() {
          i <= static_cast<std::size_t>(argument_index::termination); i++) {
       askParam(i);
     }
-    if (this->_options.termination == termination_condidion::precision) {
+    if (this->parsed_options.termination == termination_condidion::precision) {
       askParam(static_cast<std::size_t>(argument_index::term_precision));
-      this->_options.term_iteration = partdiff::max_iteration;
+      this->parsed_options.term_iteration = partdiff::max_iteration;
     } else {
       askParam(static_cast<std::size_t>(argument_index::term_iteration));
-      this->_options.term_precision = 0.0;
+      this->parsed_options.term_precision = 0.0;
     }
   } else if (this->args.size() < 6 || this->args[0] == "-h" ||
              this->args[0] == "-?") {
@@ -313,14 +315,14 @@ void argument_parser::askParams() {
          i <= static_cast<std::size_t>(argument_index::termination); i++) {
       parseParam(i, args[i]);
     }
-    if (this->_options.termination == termination_condidion::precision) {
+    if (this->parsed_options.termination == termination_condidion::precision) {
       parseParam(static_cast<std::size_t>(argument_index::term_precision),
                  args[5]);
-      this->_options.term_iteration = partdiff::max_iteration;
+      this->parsed_options.term_iteration = partdiff::max_iteration;
     } else {
       parseParam(static_cast<std::size_t>(argument_index::term_iteration),
                  args[5]);
-      this->_options.term_precision = 0.0;
+      this->parsed_options.term_precision = 0.0;
     }
   }
 }
