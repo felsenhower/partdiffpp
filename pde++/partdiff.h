@@ -16,6 +16,8 @@ namespace partdiff {
 static constexpr uint64_t max_interlines = 10240;
 static constexpr uint64_t max_iteration = 200000;
 static constexpr uint64_t max_threads = 1024;
+static constexpr double min_precision = 1e-4;
+static constexpr double max_precision = 1e-20;
 
 enum class calculation_method : uint64_t { gauss_seidel = 1, jacobi = 2 };
 enum class interference_function : uint64_t { f0 = 1, fpisin = 2 };
@@ -49,6 +51,15 @@ private:
       return false;
     };
   };
+  enum class argument_index : std::size_t {
+    number = 0,
+    method = 1,
+    interlines = 2,
+    inf_func = 3,
+    termination = 4,
+    term_precision = 5,
+    term_iteration = 6
+  };
 
 private:
   options _options;
@@ -62,9 +73,9 @@ private:
                                 std::string description_for_usage,
                                 std::string description_for_interactive,
                                 std::function<bool()> check_function);
-  void parseParam(int index, std::string &input);
-  bool get_value(int index, std::string &input);
-  void askParam(int index);
+  void parseParam(std::size_t index, std::string &input);
+  bool get_value(std::size_t index, std::string &input);
+  void askParam(std::size_t index);
   void fill_vec();
 };
 

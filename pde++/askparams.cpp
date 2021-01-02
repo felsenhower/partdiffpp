@@ -7,36 +7,52 @@ using options = partdiff::askparams::options;
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
 
-enum ARG_INDEX {
-  NUMBER = 0,
-  METHOD = 1,
-  INTERLINES = 2,
-  INF_FUNC = 3,
-  TERMINATION = 4,
-  TERM_PRECISION = 5,
-  TERM_ITERATION = 6
-};
+std::string scientific_double(double val, int precision) {
+  std::stringstream ss;
+  ss << std::scientific << std::setprecision(precision) << val;
+  std::string temp = ss.str();
+  int epos = temp.find("e");
+  std::string mantissa_str = temp.substr(0, epos);
+  std::string exponent_str = temp.substr(epos + 1, temp.length() - epos - 1);
+  int exponent = stoi(exponent_str);
+  return mantissa_str + "e" + std::to_string(exponent);
+}
 
 void argument_parser::usage() const {
   std::cout << "Usage: " << this->app_name;
-  for (int i = 0; i <= TERMINATION; i++) {
+  for (std::size_t i = 0;
+       i <= static_cast<std::size_t>(argument_index::termination); i++) {
     std::cout << " [" << this->vec[i].name << "]";
   }
-  std::cout << " [" << this->vec[TERM_PRECISION].name << "/"
-            << this->vec[TERM_ITERATION].name << "]" << std::endl;
+  std::cout
+      << " ["
+      << this->vec[static_cast<std::size_t>(argument_index::term_precision)]
+             .name
+      << "/"
+      << this->vec[static_cast<std::size_t>(argument_index::term_iteration)]
+             .name
+      << "]" << std::endl;
   std::cout << std::endl;
-  for (int i = 0; i <= TERMINATION; i++) {
+  for (std::size_t i = 0;
+       i <= static_cast<std::size_t>(argument_index::termination); i++) {
     std::cout << "  - " << std::setw(11) << std::setfill(' ') << std::left
               << (this->vec[i].name + ":");
     std::cout.flags(cout_default_flags);
     std::cout << this->vec[i].description_for_usage << std::endl;
   }
-  std::cout << "  - " << std::setw(11) << std::setfill(' ') << std::left
-            << (this->vec[TERM_PRECISION].name + "/" +
-                this->vec[TERM_ITERATION].name + ":");
+  std::cout
+      << "  - " << std::setw(11) << std::setfill(' ') << std::left
+      << (this->vec[static_cast<std::size_t>(argument_index::term_precision)]
+              .name +
+          "/" +
+          this->vec[static_cast<std::size_t>(argument_index::term_iteration)]
+              .name +
+          ":");
   std::cout.flags(cout_default_flags);
   std::cout << "depending on term:" << std::endl
-            << "                 precision:  1e-4 .. 1e-20" << std::endl
+            << "                 precision:  "
+            << scientific_double(partdiff::min_precision, 0) << " .. "
+            << scientific_double(partdiff::max_precision, 0) << std::endl
             << "                 iterations:    1 .. "
             << partdiff::max_iteration << std::endl
             << std::endl
@@ -184,12 +200,15 @@ void argument_parser::fill_vec() {
       []() {
         std::stringstream ss;
         ss << "Select precision:" << std::endl
-           << "  Range: 1e-4 .. 1e-20." << std::endl
+           << "  Range: " << scientific_double(partdiff::min_precision, 0)
+           << " .. " << scientific_double(partdiff::max_precision, 0) << "."
+           << std::endl
            << "precision> ";
         return ss.str();
       }(),
       [term_precision] {
-        return (*term_precision >= 1e-20 && *term_precision <= 1e-4);
+        return (*term_precision >= partdiff::max_precision &&
+                *term_precision <= partdiff::min_precision);
       });
   auto term_iteration = &(this->_options.term_iteration);
   this->add_argument_description(
@@ -207,11 +226,11 @@ void argument_parser::fill_vec() {
       });
 }
 
-bool argument_parser::get_value(int index, std::string &input) {
+bool argument_parser::get_value(std::size_t index, std::string &input) {
   return vec[index].read_from_string(input) && vec[index].check_function();
 }
 
-void argument_parser::askParam(int index) {
+void argument_parser::askParam(std::size_t index) {
   bool valid_input = false;
   do {
     std::cout << std::endl
@@ -222,7 +241,7 @@ void argument_parser::askParam(int index) {
   } while (!valid_input);
 }
 
-void argument_parser::parseParam(int index, std::string &input) {
+void argument_parser::parseParam(std::size_t index, std::string &input) {
   if (!get_value(index, input)) {
     this->usage();
     exit(EXIT_FAILURE);
@@ -231,14 +250,15 @@ void argument_parser::parseParam(int index, std::string &input) {
 
 void argument_parser::askParams() {
   if (this->args.size() < 1) {
-    for (int i = 0; i <= TERMINATION; i++) {
+    for (std::size_t i = 0;
+         i <= static_cast<std::size_t>(argument_index::termination); i++) {
       askParam(i);
     }
     if (this->_options.termination == termination_condidion::precision) {
-      askParam(TERM_PRECISION);
+      askParam(static_cast<std::size_t>(argument_index::term_precision));
       this->_options.term_iteration = partdiff::max_iteration;
     } else {
-      askParam(TERM_ITERATION);
+      askParam(static_cast<std::size_t>(argument_index::term_iteration));
       this->_options.term_precision = 0.0;
     }
   } else if (this->args.size() < 6 || this->args[0] == "-h" ||
@@ -246,14 +266,17 @@ void argument_parser::askParams() {
     usage();
     exit(EXIT_SUCCESS);
   } else {
-    for (int i = 0; i <= TERMINATION; i++) {
+    for (std::size_t i = 0;
+         i <= static_cast<std::size_t>(argument_index::termination); i++) {
       parseParam(i, args[i]);
     }
     if (this->_options.termination == termination_condidion::precision) {
-      parseParam(TERM_PRECISION, args[5]);
+      parseParam(static_cast<std::size_t>(argument_index::term_precision),
+                 args[5]);
       this->_options.term_iteration = partdiff::max_iteration;
     } else {
-      parseParam(TERM_ITERATION, args[5]);
+      parseParam(static_cast<std::size_t>(argument_index::term_iteration),
+                 args[5]);
       this->_options.term_precision = 0.0;
     }
   }
