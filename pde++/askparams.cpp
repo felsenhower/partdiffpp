@@ -3,16 +3,20 @@
 #include "partdiff.h"
 
 using argument_parser = partdiff::askparams::argument_parser;
-
 using options = partdiff::askparams::options;
-using calculation_method = partdiff::askparams::options::calculation_method;
-using interference_function =
-    partdiff::askparams::options::interference_function;
-using termination_condition =
-    partdiff::askparams::options::termination_condition;
-
+using calculation_method = options::calculation_method;
+using interference_function = options::interference_function;
+using termination_condition = options::termination_condition;
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
+
+argument_parser::argument_parser(const int argc, char const *argv[])
+    : app_name(argv[0]), args(argv + 1, argv + argc) {
+  this->fill_argument_descriptions();
+  this->askParams();
+}
+
+options argument_parser::get_options() { return this->parsed_options; }
 
 void argument_parser::usage() const {
   std::cout << "Usage: " << this->app_name;
@@ -59,26 +63,58 @@ void argument_parser::usage() const {
             << "Example: " << app_name << " 1 2 100 1 2 100 " << std::endl;
 }
 
-template <class T>
-void argument_parser::add_argument_description(
-    std::string name, T *target, std::string description_for_usage,
-    std::string description_for_interactive, std::function<bool()> check) {
-  argument_description arg_desc;
-  arg_desc.name = name;
-  arg_desc.target = target;
-  arg_desc.read_from_string = [target = arg_desc.target,
-                               check](const std::string &input) {
-    T *casted_ptr = std::any_cast<T *>(target);
-    bool valid_input = get_from_string(casted_ptr, input);
-    valid_input &= check();
-    return valid_input;
-  };
-  arg_desc.description_for_usage = description_for_usage;
-  arg_desc.description_for_interactive = description_for_interactive;
-  this->argument_descriptions.push_back(arg_desc);
+void argument_parser::askParams() {
+  if (this->args.size() < 1) {
+    for (std::size_t i = 0;
+         i <= static_cast<std::size_t>(argument_index::termination); i++) {
+      askParam(i);
+    }
+    if (this->parsed_options.termination == termination_condition::precision) {
+      askParam(static_cast<std::size_t>(argument_index::term_precision));
+      this->parsed_options.term_iteration = partdiff::max_iteration;
+    } else {
+      askParam(static_cast<std::size_t>(argument_index::term_iteration));
+      this->parsed_options.term_precision = 0.0;
+    }
+  } else if (this->args.size() < 6 || this->args[0] == "-h" ||
+             this->args[0] == "-?") {
+    usage();
+    exit(EXIT_SUCCESS);
+  } else {
+    for (std::size_t i = 0;
+         i <= static_cast<std::size_t>(argument_index::termination); i++) {
+      parseParam(i, args[i]);
+    }
+    if (this->parsed_options.termination == termination_condition::precision) {
+      parseParam(static_cast<std::size_t>(argument_index::term_precision),
+                 args[5]);
+      this->parsed_options.term_iteration = partdiff::max_iteration;
+    } else {
+      parseParam(static_cast<std::size_t>(argument_index::term_iteration),
+                 args[5]);
+      this->parsed_options.term_precision = 0.0;
+    }
+  }
 }
 
-options argument_parser::get_options() { return this->parsed_options; }
+void argument_parser::parseParam(std::size_t index, std::string &input) {
+  if (!argument_descriptions[index].read_from_string(input)) {
+    this->usage();
+    exit(EXIT_FAILURE);
+  }
+}
+
+void argument_parser::askParam(std::size_t index) {
+  bool valid_input = false;
+  do {
+    std::cout << std::endl
+              << argument_descriptions[index].description_for_interactive
+              << std::flush;
+    std::string input;
+    getline(std::cin, input);
+    valid_input = argument_descriptions[index].read_from_string(input);
+  } while (!valid_input);
+}
 
 void argument_parser::fill_argument_descriptions() {
   auto number = &(this->parsed_options.number);
@@ -227,61 +263,21 @@ void argument_parser::fill_argument_descriptions() {
       });
 }
 
-void argument_parser::askParam(std::size_t index) {
-  bool valid_input = false;
-  do {
-    std::cout << std::endl
-              << argument_descriptions[index].description_for_interactive
-              << std::flush;
-    std::string input;
-    getline(std::cin, input);
-    valid_input = argument_descriptions[index].read_from_string(input);
-  } while (!valid_input);
-}
-
-void argument_parser::parseParam(std::size_t index, std::string &input) {
-  if (!argument_descriptions[index].read_from_string(input)) {
-    this->usage();
-    exit(EXIT_FAILURE);
-  }
-}
-
-void argument_parser::askParams() {
-  if (this->args.size() < 1) {
-    for (std::size_t i = 0;
-         i <= static_cast<std::size_t>(argument_index::termination); i++) {
-      askParam(i);
-    }
-    if (this->parsed_options.termination == termination_condition::precision) {
-      askParam(static_cast<std::size_t>(argument_index::term_precision));
-      this->parsed_options.term_iteration = partdiff::max_iteration;
-    } else {
-      askParam(static_cast<std::size_t>(argument_index::term_iteration));
-      this->parsed_options.term_precision = 0.0;
-    }
-  } else if (this->args.size() < 6 || this->args[0] == "-h" ||
-             this->args[0] == "-?") {
-    usage();
-    exit(EXIT_SUCCESS);
-  } else {
-    for (std::size_t i = 0;
-         i <= static_cast<std::size_t>(argument_index::termination); i++) {
-      parseParam(i, args[i]);
-    }
-    if (this->parsed_options.termination == termination_condition::precision) {
-      parseParam(static_cast<std::size_t>(argument_index::term_precision),
-                 args[5]);
-      this->parsed_options.term_iteration = partdiff::max_iteration;
-    } else {
-      parseParam(static_cast<std::size_t>(argument_index::term_iteration),
-                 args[5]);
-      this->parsed_options.term_precision = 0.0;
-    }
-  }
-}
-
-argument_parser::argument_parser(const int argc, char const *argv[])
-    : app_name(argv[0]), args(argv + 1, argv + argc) {
-  this->fill_argument_descriptions();
-  this->askParams();
+template <class T>
+void argument_parser::add_argument_description(
+    std::string name, T *target, std::string description_for_usage,
+    std::string description_for_interactive, std::function<bool()> check) {
+  argument_description arg_desc;
+  arg_desc.name = name;
+  arg_desc.target = target;
+  arg_desc.read_from_string = [target = arg_desc.target,
+                               check](const std::string &input) {
+    T *casted_ptr = std::any_cast<T *>(target);
+    bool valid_input = get_from_string(casted_ptr, input);
+    valid_input &= check();
+    return valid_input;
+  };
+  arg_desc.description_for_usage = description_for_usage;
+  arg_desc.description_for_interactive = description_for_interactive;
+  this->argument_descriptions.push_back(arg_desc);
 }

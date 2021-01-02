@@ -6,39 +6,20 @@
 #include "partdiff.h"
 
 using argument_parser = partdiff::askparams::argument_parser;
-
 using options = partdiff::askparams::options;
-using calc_meth = partdiff::askparams::options::calculation_method;
-using inf_func = partdiff::askparams::options::interference_function;
-using term_cond = partdiff::askparams::options::termination_condition;
-
+using calculation_method = options::calculation_method;
+using interference_function = options::interference_function;
+using termination_condition = options::termination_condition;
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
 
 static constexpr double pi = std::numbers::pi;
 static constexpr double two_pi_square = (2 * pi * pi);
 
-timeval start_time = {};
-timeval comp_time = {};
-
-calculation_results::calculation_results() {
-  this->m = 0;
-  this->stat_iteration = 0;
-  this->stat_precision = 0;
-}
-
-void calculation_arguments::freeMatrices() {
-  for (uint64_t i = 0; i < this->num_matrices; i++) {
-    delete[] this->Matrix[i];
-  }
-  delete[] this->Matrix;
-  delete[] this->M;
-}
-
 calculation_arguments::calculation_arguments(const options &options)
     : inf_func(options.inf_func) {
   this->N = (options.interlines * 8) + 9 - 1;
-  this->num_matrices = (options.method == calc_meth::jacobi) ? 2 : 1;
+  this->num_matrices = (options.method == calculation_method::jacobi) ? 2 : 1;
   this->h = 1.0 / this->N;
   this->allocateMatrices();
   this->initMatrices();
@@ -76,7 +57,7 @@ void calculation_arguments::initMatrices() {
     }
   }
 
-  if (this->inf_func == inf_func::f0) {
+  if (this->inf_func == interference_function::f0) {
     for (uint64_t g = 0; g < this->num_matrices; g++) {
       for (uint64_t i = 0; i <= N; i++) {
         Matrix[g][i][0] = 1.0 - (h * i);
@@ -91,6 +72,20 @@ void calculation_arguments::initMatrices() {
   }
 }
 
+void calculation_arguments::freeMatrices() {
+  for (uint64_t i = 0; i < this->num_matrices; i++) {
+    delete[] this->Matrix[i];
+  }
+  delete[] this->Matrix;
+  delete[] this->M;
+}
+
+calculation_results::calculation_results() {
+  this->m = 0;
+  this->stat_iteration = 0;
+  this->stat_precision = 0;
+}
+
 static void calculate(const calculation_arguments &arguments,
                       calculation_results &results, const options &options) {
 
@@ -103,9 +98,9 @@ static void calculate(const calculation_arguments &arguments,
   int term_iteration = options.term_iteration;
 
   int m1 = 0;
-  int m2 = (options.method == calc_meth::jacobi) ? 1 : 0;
+  int m2 = (options.method == calculation_method::jacobi) ? 1 : 0;
 
-  if (options.inf_func == inf_func::fpisin) {
+  if (options.inf_func == interference_function::fpisin) {
     pih = pi * h;
     fpisin = 0.25 * two_pi_square * h * h;
   }
@@ -121,7 +116,7 @@ static void calculate(const calculation_arguments &arguments,
     for (int i = 1; i < N; i++) {
       double fpisin_i = 0.0;
 
-      if (options.inf_func == inf_func::fpisin) {
+      if (options.inf_func == interference_function::fpisin) {
         fpisin_i = fpisin * std::sin(pih * (double)i);
       }
 
@@ -129,11 +124,11 @@ static void calculate(const calculation_arguments &arguments,
         double star = 0.25 * (Matrix_In[i - 1][j] + Matrix_In[i][j - 1] +
                               Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
 
-        if (options.inf_func == inf_func::fpisin) {
+        if (options.inf_func == interference_function::fpisin) {
           star += fpisin_i * std::sin(pih * (double)j);
         }
 
-        if (options.termination == term_cond::precision ||
+        if (options.termination == termination_condition::precision ||
             term_iteration == 1) {
           double residuum = Matrix_In[i][j] - star;
           residuum = std::fabs(residuum);
@@ -151,11 +146,11 @@ static void calculate(const calculation_arguments &arguments,
     m1 = m2;
     m2 = temp;
 
-    if (options.termination == term_cond::precision) {
+    if (options.termination == termination_condition::precision) {
       if (maxresiduum < options.term_precision) {
         term_iteration = 0;
       }
-    } else if (options.termination == term_cond::iterations) {
+    } else if (options.termination == termination_condition::iterations) {
       term_iteration--;
     }
   }
@@ -165,7 +160,8 @@ static void calculate(const calculation_arguments &arguments,
 
 static void displayStatistics(const calculation_arguments &arguments,
                               const calculation_results &results,
-                              const options &options) {
+                              const options &options, timeval &start_time,
+                              timeval &comp_time) {
   const int N = arguments.N;
   const double time = (comp_time.tv_sec - start_time.tv_sec) +
                       (comp_time.tv_usec - start_time.tv_usec) * 1e-6;
@@ -178,9 +174,9 @@ static void displayStatistics(const calculation_arguments &arguments,
   ss << std::fixed << std::setprecision(6) << memory_consumption;
   std::cout << ss.str() << " MiB" << std::endl << "Berechnungsmethode: ";
 
-  if (options.method == calc_meth::gauss_seidel) {
+  if (options.method == calculation_method::gauss_seidel) {
     std::cout << "Gauß-Seidel";
-  } else if (options.method == calc_meth::jacobi) {
+  } else if (options.method == calculation_method::jacobi) {
     std::cout << "Jacobi";
   }
 
@@ -188,17 +184,17 @@ static void displayStatistics(const calculation_arguments &arguments,
             << "Interlines:         " << options.interlines << std::endl
             << "Stoerfunktion:      ";
 
-  if (options.inf_func == inf_func::f0) {
+  if (options.inf_func == interference_function::f0) {
     std::cout << "f(x,y) = 0";
-  } else if (options.inf_func == inf_func::fpisin) {
+  } else if (options.inf_func == interference_function::fpisin) {
     std::cout << "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)";
   }
 
   std::cout << std::endl << "Terminierung:       ";
 
-  if (options.termination == term_cond::precision) {
+  if (options.termination == termination_condition::precision) {
     std::cout << "Hinreichende Genaugkeit";
-  } else if (options.termination == term_cond::iterations) {
+  } else if (options.termination == termination_condition::iterations) {
     std::cout << "Anzahl der Iterationen";
   }
 
@@ -237,11 +233,13 @@ int main(const int argc, char const *argv[]) {
   calculation_arguments arguments(options);
   calculation_results results;
 
+  timeval start_time;
   gettimeofday(&start_time, nullptr);
   calculate(arguments, results, options);
+  timeval comp_time;
   gettimeofday(&comp_time, nullptr);
 
-  displayStatistics(arguments, results, options);
+  displayStatistics(arguments, results, options, start_time, comp_time);
   displayMatrix(arguments, results, options);
 
   return EXIT_SUCCESS;
