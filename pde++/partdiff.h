@@ -11,6 +11,13 @@
 
 namespace partdiff {
 
+enum class compile_modes { legacy, normal };
+#ifdef LEGACY
+static constexpr compile_modes compile_mode = compile_modes::legacy;
+#else
+static constexpr compile_modes compile_mode = compile_modes::normal;
+#endif
+
 static constexpr uint64_t max_interlines = 10240;
 static constexpr uint64_t max_iteration = 200000;
 static constexpr uint64_t max_threads = 1024;

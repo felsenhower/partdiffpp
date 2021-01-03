@@ -12,6 +12,7 @@ using interference_function = options::interference_function;
 using termination_condition = options::termination_condition;
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
+using compile_modes = partdiff::compile_modes;
 
 static constexpr double pi = std::numbers::pi;
 static constexpr double two_pi_square = (2 * pi * pi);
@@ -171,7 +172,10 @@ static void displayStatistics(const calculation_arguments &arguments,
 
   const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
                                     arguments.num_matrices / 1024.0 / 1024.0;
-  std::cout << "Berechnungszeit:    " << time << " s" << std::endl
+  std::cout << (partdiff::compile_mode == compile_modes::legacy
+                    ? "Berechnungszeit:    "
+                    : "Calculation time:   ")
+            << time << " s" << std::endl
             << "Speicherbedarf:     ";
   std::stringstream ss;
   ss << std::fixed << std::setprecision(6) << memory_consumption;

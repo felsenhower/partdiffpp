@@ -3,10 +3,14 @@
 CC = g++
 CXX = $(CC)
 CFLAGS  = -std=c++20 -Wall -Werror -Wextra -Wpedantic -O3 -g
+ifeq ($(COMPILE_MODE),LEGACY)
+	CFLAGS += -DLEGACY
+endif
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = $(CXXFLAGS)
 LDLIBS  = -lm
 OBJS = partdiff.o askparams.o utils.cpp
+
 
 default: all
 
@@ -47,7 +51,8 @@ testinteractive: default
 	bash -c 'diff <((for i in 1 1 0 1 2 47 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f1 | grep -A9 "Matrix:")'
 	bash -c 'diff <((for i in 1 1 0 1 1 8.7e-5 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f1 | grep -A9 "Matrix:")'
 
-beautify: partdiff.cpp partdiff.h askparams.cpp
+beautify: partdiff.cpp partdiff.h askparams.cpp utils.cpp
 	clang-format -i partdiff.cpp
 	clang-format -i partdiff.h
 	clang-format -i askparams.cpp
+	clang-format -i utils.cpp

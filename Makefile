@@ -8,7 +8,7 @@ partdiff:
 	$(MAKE) -C pde
 
 partdiffpp:
-	$(MAKE) -C pde++
+	$(MAKE) COMPILE_MODE=LEGACY -C pde++
 
 clean:
 	$(MAKE) -C pde clean
