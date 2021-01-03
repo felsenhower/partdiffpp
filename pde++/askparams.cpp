@@ -26,22 +26,22 @@ bool argument_parser::argument_description::get_from_string(
 
 void argument_parser::usage() const {
   std::cout << "Usage: " << this->app_name;
-  for (std::size_t i = 0;
-       i <= static_cast<std::size_t>(argument_index::termination); i++) {
+  for (std::size_t i = 0; i <= to_underlying(argument_index::termination);
+       i++) {
     std::cout << " [" << this->argument_descriptions[i].name << "]";
   }
   std::cout << " ["
-            << this->argument_descriptions[static_cast<std::size_t>(
+            << this->argument_descriptions[to_underlying(
                                                argument_index::term_precision)]
                    .name
             << "/"
-            << this->argument_descriptions[static_cast<std::size_t>(
+            << this->argument_descriptions[to_underlying(
                                                argument_index::term_iteration)]
                    .name
             << "]" << std::endl;
   std::cout << std::endl;
-  for (std::size_t i = 0;
-       i <= static_cast<std::size_t>(argument_index::termination); i++) {
+  for (std::size_t i = 0; i <= to_underlying(argument_index::termination);
+       i++) {
     std::stringstream ss;
     ss << "  - " << std::setw(11) << std::setfill(' ') << std::left
        << (this->argument_descriptions[i].name + ":");
@@ -51,11 +51,11 @@ void argument_parser::usage() const {
   }
   std::stringstream ss;
   ss << "  - " << std::setw(11) << std::setfill(' ') << std::left
-     << (this->argument_descriptions[static_cast<std::size_t>(
+     << (this->argument_descriptions[to_underlying(
                                          argument_index::term_precision)]
              .name +
          "/" +
-         this->argument_descriptions[static_cast<std::size_t>(
+         this->argument_descriptions[to_underlying(
                                          argument_index::term_iteration)]
              .name +
          ":");
@@ -71,15 +71,15 @@ void argument_parser::usage() const {
 
 void argument_parser::askParams() {
   if (this->args.size() < 1) {
-    for (std::size_t i = 0;
-         i <= static_cast<std::size_t>(argument_index::termination); i++) {
+    for (std::size_t i = 0; i <= to_underlying(argument_index::termination);
+         i++) {
       askParam(i);
     }
     if (this->parsed_options.termination == termination_condition::precision) {
-      askParam(static_cast<std::size_t>(argument_index::term_precision));
+      askParam(to_underlying(argument_index::term_precision));
       this->parsed_options.term_iteration = partdiff::max_iteration;
     } else {
-      askParam(static_cast<std::size_t>(argument_index::term_iteration));
+      askParam(to_underlying(argument_index::term_iteration));
       this->parsed_options.term_precision = 0.0;
     }
   } else if (this->args.size() < 6 || this->args[0] == "-h" ||
@@ -87,17 +87,15 @@ void argument_parser::askParams() {
     usage();
     exit(EXIT_SUCCESS);
   } else {
-    for (std::size_t i = 0;
-         i <= static_cast<std::size_t>(argument_index::termination); i++) {
+    for (std::size_t i = 0; i <= to_underlying(argument_index::termination);
+         i++) {
       parseParam(i, args[i]);
     }
     if (this->parsed_options.termination == termination_condition::precision) {
-      parseParam(static_cast<std::size_t>(argument_index::term_precision),
-                 args[5]);
+      parseParam(to_underlying(argument_index::term_precision), args[5]);
       this->parsed_options.term_iteration = partdiff::max_iteration;
     } else {
-      parseParam(static_cast<std::size_t>(argument_index::term_iteration),
-                 args[5]);
+      parseParam(to_underlying(argument_index::term_iteration), args[5]);
       this->parsed_options.term_precision = 0.0;
     }
   }
