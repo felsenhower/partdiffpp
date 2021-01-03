@@ -18,6 +18,12 @@ argument_parser::argument_parser(const int argc, char const *argv[])
 
 options argument_parser::get_options() { return this->parsed_options; }
 
+template <typename T>
+bool argument_parser::argument_description::get_from_string(
+    T *target, const std::string &input) {
+  return from_string<T>::get(target, input);
+}
+
 void argument_parser::usage() const {
   std::cout << "Usage: " << this->app_name;
   for (std::size_t i = 0;
@@ -273,7 +279,7 @@ void argument_parser::add_argument_description(
   arg_desc.read_from_string = [target = arg_desc.target,
                                check](const std::string &input) {
     T *casted_ptr = std::any_cast<T *>(target);
-    bool valid_input = get_from_string(casted_ptr, input);
+    bool valid_input = argument_description::get_from_string(casted_ptr, input);
     valid_input &= check();
     return valid_input;
   };

@@ -22,42 +22,6 @@ U to_underlying(T v) {
   return static_cast<U>(v);
 }
 
-template <typename T, typename U = std::underlying_type_t<T>>
-bool get_enum_from_string(T *target, const std::string &input) {
-  U n;
-  bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
-  *target = static_cast<T>(n);
-  return valid_input;
-}
-
-template <typename T>
-bool get_non_enum_from_string(T *target, const std::string &input) {
-  T n;
-  bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
-  *target = n;
-  return valid_input;
-}
-
-template <typename T, class Enable = void>
-struct get_from_string_helper_struct {
-  bool get(T *target, const std::string &input) {
-    return get_non_enum_from_string(target, input);
-  }
-};
-
-template <typename T>
-struct get_from_string_helper_struct<
-    T, typename std::enable_if<std::is_enum<T>::value>::type> {
-  bool get(T *target, const std::string &input) {
-    return get_enum_from_string(target, input);
-  }
-};
-
-template <typename T>
-bool get_from_string(T *target, const std::string &input) {
-  return get_from_string_helper_struct<T>().get(target, input);
-}
-
 const std::string scientific_double(double val, int precision);
 
 const uint8_t *allocateMemory(const std::size_t size);
@@ -91,7 +55,32 @@ private:
     std::function<bool(const std::string &input)> read_from_string = [](auto) {
       return false;
     };
+
+    template <typename T>
+    static bool get_from_string(T *target, const std::string &input);
+
+  private:
+    template <typename T, class Enable = void> struct from_string {
+      static bool get(T *target, const std::string &input) {
+        T n;
+        bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
+        *target = n;
+        return valid_input;
+      }
+    };
+
+    template <typename T>
+    struct from_string<T,
+                       typename std::enable_if<std::is_enum<T>::value>::type> {
+      static bool get(T *target, const std::string &input) {
+        std::underlying_type_t<T> n;
+        bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
+        *target = static_cast<T>(n);
+        return valid_input;
+      }
+    };
   };
+
   enum class argument_index : std::size_t {
     number = 0,
     method = 1,
