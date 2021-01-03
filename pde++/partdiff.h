@@ -91,15 +91,18 @@ private:
     term_iteration = 6
   };
 
-private:
   options parsed_options;
   std::string app_name;
   std::vector<std::string> args;
   std::vector<argument_description> argument_descriptions;
+  argument_description get_description(std::size_t index) const;
+  argument_description get_description(argument_index index) const;
   void usage() const;
   void askParams();
   void parseParam(std::size_t index, std::string &input);
+  void parseParam(argument_index index, std::string &input);
   void askParam(std::size_t index);
+  void askParam(argument_index index);
   void fill_argument_descriptions();
   template <class T>
   void add_argument_description(std::string name, T *target,

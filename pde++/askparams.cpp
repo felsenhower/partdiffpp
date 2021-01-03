@@ -24,41 +24,39 @@ bool argument_parser::argument_description::get_from_string(
   return from_string<T>::get(target, input);
 }
 
+argument_parser::argument_description
+argument_parser::get_description(std::size_t index) const {
+  return this->argument_descriptions[index];
+}
+
+argument_parser::argument_description
+argument_parser::get_description(argument_index index) const {
+  return this->get_description(to_underlying(index));
+}
+
 void argument_parser::usage() const {
   std::cout << "Usage: " << this->app_name;
   for (std::size_t i = 0; i <= to_underlying(argument_index::termination);
        i++) {
-    std::cout << " [" << this->argument_descriptions[i].name << "]";
+    std::cout << " [" << get_description(i).name << "]";
   }
   std::cout << " ["
-            << this->argument_descriptions[to_underlying(
-                                               argument_index::term_precision)]
-                   .name
-            << "/"
-            << this->argument_descriptions[to_underlying(
-                                               argument_index::term_iteration)]
-                   .name
-            << "]" << std::endl;
+            << this->get_description(argument_index::term_precision).name << "/"
+            << this->get_description(argument_index::term_iteration).name << "]"
+            << std::endl;
   std::cout << std::endl;
   for (std::size_t i = 0; i <= to_underlying(argument_index::termination);
        i++) {
     std::stringstream ss;
     ss << "  - " << std::setw(11) << std::setfill(' ') << std::left
-       << (this->argument_descriptions[i].name + ":");
-    std::cout << ss.str()
-              << this->argument_descriptions[i].description_for_usage
+       << (this->get_description(i).name + ":");
+    std::cout << ss.str() << this->get_description(i).description_for_usage
               << std::endl;
   }
   std::stringstream ss;
   ss << "  - " << std::setw(11) << std::setfill(' ') << std::left
-     << (this->argument_descriptions[to_underlying(
-                                         argument_index::term_precision)]
-             .name +
-         "/" +
-         this->argument_descriptions[to_underlying(
-                                         argument_index::term_iteration)]
-             .name +
-         ":");
+     << (this->get_description(argument_index::term_precision).name + "/" +
+         this->get_description(argument_index::term_iteration).name + ":");
   std::cout << ss.str() << "depending on term:" << std::endl
             << "                 precision:  "
             << scientific_double(partdiff::min_precision, 0) << " .. "
@@ -76,10 +74,10 @@ void argument_parser::askParams() {
       askParam(i);
     }
     if (this->parsed_options.termination == termination_condition::precision) {
-      askParam(to_underlying(argument_index::term_precision));
+      askParam(argument_index::term_precision);
       this->parsed_options.term_iteration = partdiff::max_iteration;
     } else {
-      askParam(to_underlying(argument_index::term_iteration));
+      askParam(argument_index::term_iteration);
       this->parsed_options.term_precision = 0.0;
     }
   } else if (this->args.size() < 6 || this->args[0] == "-h" ||
@@ -92,31 +90,39 @@ void argument_parser::askParams() {
       parseParam(i, args[i]);
     }
     if (this->parsed_options.termination == termination_condition::precision) {
-      parseParam(to_underlying(argument_index::term_precision), args[5]);
+      parseParam(argument_index::term_precision, args[5]);
       this->parsed_options.term_iteration = partdiff::max_iteration;
     } else {
-      parseParam(to_underlying(argument_index::term_iteration), args[5]);
+      parseParam(argument_index::term_iteration, args[5]);
       this->parsed_options.term_precision = 0.0;
     }
   }
 }
 
+void argument_parser::parseParam(argument_index index, std::string &input) {
+  this->parseParam(to_underlying(index), input);
+}
+
 void argument_parser::parseParam(std::size_t index, std::string &input) {
-  if (!argument_descriptions[index].read_from_string(input)) {
+  if (!this->get_description(index).read_from_string(input)) {
     this->usage();
     exit(EXIT_FAILURE);
   }
+}
+
+void argument_parser::askParam(argument_index index) {
+  this->askParam(to_underlying(index));
 }
 
 void argument_parser::askParam(std::size_t index) {
   bool valid_input = false;
   do {
     std::cout << std::endl
-              << argument_descriptions[index].description_for_interactive
+              << this->get_description(index).description_for_interactive
               << std::flush;
     std::string input;
     getline(std::cin, input);
-    valid_input = argument_descriptions[index].read_from_string(input);
+    valid_input = this->get_description(index).read_from_string(input);
   } while (!valid_input);
 }
 
