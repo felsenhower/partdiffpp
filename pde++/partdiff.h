@@ -21,8 +21,8 @@ static constexpr compile_modes compile_mode = compile_modes::normal;
 static constexpr uint64_t max_interlines = 10240;
 static constexpr uint64_t max_iteration = 200000;
 static constexpr uint64_t max_threads = 1024;
-static constexpr double min_precision = 1e-4;
-static constexpr double max_precision = 1e-20;
+static constexpr double min_accuracy = 1e-4;
+static constexpr double max_accuracy = 1e-20;
 
 template <typename T, typename U = std::underlying_type_t<T>>
 U to_underlying(T v) {
@@ -38,14 +38,14 @@ namespace askparams {
 struct options {
   enum class calculation_method : uint64_t { gauss_seidel = 1, jacobi = 2 };
   enum class interference_function : uint64_t { f0 = 1, fpisin = 2 };
-  enum class termination_condition : uint64_t { precision = 1, iterations = 2 };
+  enum class termination_condition : uint64_t { accuracy = 1, iterations = 2 };
   uint64_t number;
   uint64_t interlines;
   calculation_method method;
   interference_function inf_func;
   termination_condition termination;
   uint64_t term_iteration;
-  double term_precision;
+  double term_accuracy;
 };
 
 class argument_parser {
@@ -94,7 +94,7 @@ private:
     interlines = 2,
     inf_func = 3,
     termination = 4,
-    term_precision = 5,
+    term_accuracy = 5,
     term_iteration = 6
   };
 
@@ -139,7 +139,7 @@ private:
 struct calculation_results {
   uint64_t m;
   uint64_t stat_iteration;
-  double stat_precision;
+  double stat_accuracy;
   timeval start_time;
   timeval end_time;
   calculation_results();

@@ -84,7 +84,7 @@ void calculation_arguments::freeMatrices() {
 calculation_results::calculation_results() {
   this->m = 0;
   this->stat_iteration = 0;
-  this->stat_precision = 0;
+  this->stat_accuracy = 0;
 }
 
 static void calculate(const calculation_arguments &arguments,
@@ -131,7 +131,7 @@ static void calculate(const calculation_arguments &arguments,
           star += fpisin_i * std::sin(pih * (double)j);
         }
 
-        if (options.termination == termination_condition::precision ||
+        if (options.termination == termination_condition::accuracy ||
             term_iteration == 1) {
           double residuum = Matrix_In[i][j] - star;
           residuum = std::fabs(residuum);
@@ -143,14 +143,14 @@ static void calculate(const calculation_arguments &arguments,
     }
 
     results.stat_iteration++;
-    results.stat_precision = maxresiduum;
+    results.stat_accuracy = maxresiduum;
 
     const int temp = m1;
     m1 = m2;
     m2 = temp;
 
-    if (options.termination == termination_condition::precision) {
-      if (maxresiduum < options.term_precision) {
+    if (options.termination == termination_condition::accuracy) {
+      if (maxresiduum < options.term_accuracy) {
         term_iteration = 0;
       }
     } else if (options.termination == termination_condition::iterations) {
@@ -222,7 +222,7 @@ static void displayStatistics(const calculation_arguments &arguments,
   print_left_column(partdiff::compile_mode == compile_modes::legacy
                         ? "Terminierung:"
                         : "Termination condition:");
-  if (options.termination == termination_condition::precision) {
+  if (options.termination == termination_condition::accuracy) {
     std::cout << (partdiff::compile_mode == compile_modes::legacy
                       ? "Hinreichende Genaugkeit"
                       : "Sufficient accuracy");
@@ -243,7 +243,7 @@ static void displayStatistics(const calculation_arguments &arguments,
                         : "Norm of error:");
   {
     std::stringstream ss;
-    ss << std::scientific << results.stat_precision;
+    ss << std::scientific << results.stat_accuracy;
     std::cout << ss.str() << std::endl << std::endl;
   }
 }

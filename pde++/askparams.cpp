@@ -40,10 +40,9 @@ void argument_parser::usage() const {
        i++) {
     std::cout << " [" << get_description(i).name << "]";
   }
-  std::cout << " ["
-            << this->get_description(argument_index::term_precision).name << "/"
-            << this->get_description(argument_index::term_iteration).name << "]"
-            << std::endl;
+  std::cout << " [" << this->get_description(argument_index::term_accuracy).name
+            << "/" << this->get_description(argument_index::term_iteration).name
+            << "]" << std::endl;
   std::cout << std::endl;
   for (std::size_t i = 0; i <= to_underlying(argument_index::termination);
        i++) {
@@ -55,12 +54,12 @@ void argument_parser::usage() const {
   }
   std::stringstream ss;
   ss << "  - " << std::setw(11) << std::setfill(' ') << std::left
-     << (this->get_description(argument_index::term_precision).name + "/" +
+     << (this->get_description(argument_index::term_accuracy).name + "/" +
          this->get_description(argument_index::term_iteration).name + ":");
   std::cout << ss.str() << "depending on term:" << std::endl
             << "                 precision:  "
-            << scientific_double(partdiff::min_precision, 0) << " .. "
-            << scientific_double(partdiff::max_precision, 0) << std::endl
+            << scientific_double(partdiff::min_accuracy, 0) << " .. "
+            << scientific_double(partdiff::max_accuracy, 0) << std::endl
             << "                 iterations:    1 .. "
             << partdiff::max_iteration << std::endl
             << std::endl
@@ -73,12 +72,12 @@ void argument_parser::askParams() {
          i++) {
       askParam(i);
     }
-    if (this->parsed_options.termination == termination_condition::precision) {
-      askParam(argument_index::term_precision);
+    if (this->parsed_options.termination == termination_condition::accuracy) {
+      askParam(argument_index::term_accuracy);
       this->parsed_options.term_iteration = partdiff::max_iteration;
     } else {
       askParam(argument_index::term_iteration);
-      this->parsed_options.term_precision = 0.0;
+      this->parsed_options.term_accuracy = 0.0;
     }
   } else if (this->args.size() < 6 || this->args[0] == "-h" ||
              this->args[0] == "-?") {
@@ -89,12 +88,12 @@ void argument_parser::askParams() {
          i++) {
       parseParam(i, args[i]);
     }
-    if (this->parsed_options.termination == termination_condition::precision) {
-      parseParam(argument_index::term_precision, args[5]);
+    if (this->parsed_options.termination == termination_condition::accuracy) {
+      parseParam(argument_index::term_accuracy, args[5]);
       this->parsed_options.term_iteration = partdiff::max_iteration;
     } else {
       parseParam(argument_index::term_iteration, args[5]);
-      this->parsed_options.term_precision = 0.0;
+      this->parsed_options.term_accuracy = 0.0;
     }
   }
 }
@@ -220,7 +219,7 @@ void argument_parser::fill_argument_descriptions() {
         std::stringstream ss;
         ss << "termination condition ( 1.. 2)" << std::endl
            << "                 "
-           << to_underlying(termination_condition::precision)
+           << to_underlying(termination_condition::accuracy)
            << ": sufficient precision" << std::endl
            << "                 "
            << to_underlying(termination_condition::iterations)
@@ -230,7 +229,7 @@ void argument_parser::fill_argument_descriptions() {
       []() {
         std::stringstream ss;
         ss << "Select termination:" << std::endl
-           << " " << to_underlying(termination_condition::precision)
+           << " " << to_underlying(termination_condition::accuracy)
            << ": sufficient precision." << std::endl
            << " " << to_underlying(termination_condition::iterations)
            << ": number of iterations." << std::endl
@@ -238,24 +237,24 @@ void argument_parser::fill_argument_descriptions() {
         return ss.str();
       }(),
       [termination] {
-        return (*termination == termination_condition::precision ||
+        return (*termination == termination_condition::accuracy ||
                 *termination == termination_condition::iterations);
       });
-  auto term_precision = &(this->parsed_options.term_precision);
+  auto term_accuracy = &(this->parsed_options.term_accuracy);
   this->add_argument_description(
-      "prec", term_precision, "< invalid >",
+      "prec", term_accuracy, "< invalid >",
       []() {
         std::stringstream ss;
         ss << "Select precision:" << std::endl
-           << "  Range: " << scientific_double(partdiff::min_precision, 0)
-           << " .. " << scientific_double(partdiff::max_precision, 0) << "."
+           << "  Range: " << scientific_double(partdiff::min_accuracy, 0)
+           << " .. " << scientific_double(partdiff::max_accuracy, 0) << "."
            << std::endl
            << "precision> ";
         return ss.str();
       }(),
-      [term_precision] {
-        return (*term_precision >= partdiff::max_precision &&
-                *term_precision <= partdiff::min_precision);
+      [term_accuracy] {
+        return (*term_accuracy >= partdiff::max_accuracy &&
+                *term_accuracy <= partdiff::min_accuracy);
       });
   auto term_iteration = &(this->parsed_options.term_iteration);
   this->add_argument_description(
