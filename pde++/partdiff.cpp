@@ -162,6 +162,14 @@ static void calculate(const calculation_arguments &arguments,
   gettimeofday(&(results.end_time), nullptr);
 }
 
+static void print_left_column(const std::string input) {
+  constexpr std::size_t padding =
+      (partdiff::compile_mode == compile_modes::legacy ? 20 : 25);
+  std::stringstream left_column;
+  left_column << std::setw(padding) << std::left << std::setfill(' ') << input;
+  std::cout << left_column.str();
+}
+
 static void displayStatistics(const calculation_arguments &arguments,
                               const calculation_results &results,
                               const options &options) {
@@ -172,45 +180,72 @@ static void displayStatistics(const calculation_arguments &arguments,
 
   const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
                                     arguments.num_matrices / 1024.0 / 1024.0;
-  std::cout << (partdiff::compile_mode == compile_modes::legacy
-                    ? "Berechnungszeit:    "
-                    : "Calculation time:   ")
-            << time << " s" << std::endl
-            << "Speicherbedarf:     ";
-  std::stringstream ss;
-  ss << std::fixed << std::setprecision(6) << memory_consumption;
-  std::cout << ss.str() << " MiB" << std::endl << "Berechnungsmethode: ";
+
+  print_left_column(partdiff::compile_mode == compile_modes::legacy
+                        ? "Berechnungszeit:"
+                        : "Calculation time:");
+  std::cout << time << " s" << std::endl;
+
+  print_left_column(partdiff::compile_mode == compile_modes::legacy
+                        ? "Speicherbedarf:"
+                        : "Memory usage:");
+  {
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(6) << memory_consumption;
+    std::cout << ss.str() << " MiB" << std::endl;
+  }
+
+  print_left_column(partdiff::compile_mode == compile_modes::legacy
+                        ? "Berechnungsmethode:"
+                        : "Calculation method:");
 
   if (options.method == calculation_method::gauss_seidel) {
     std::cout << "Gauß-Seidel";
   } else if (options.method == calculation_method::jacobi) {
     std::cout << "Jacobi";
   }
+  std::cout << std::endl;
 
-  std::cout << std::endl
-            << "Interlines:         " << options.interlines << std::endl
-            << "Stoerfunktion:      ";
+  print_left_column("Interlines:");
+  std::cout << options.interlines << std::endl;
 
+  print_left_column(partdiff::compile_mode == compile_modes::legacy
+                        ? "Stoerfunktion:"
+                        : "Interference function:");
   if (options.inf_func == interference_function::f0) {
     std::cout << "f(x,y) = 0";
   } else if (options.inf_func == interference_function::fpisin) {
     std::cout << "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)";
   }
+  std::cout << std::endl;
 
-  std::cout << std::endl << "Terminierung:       ";
-
+  print_left_column(partdiff::compile_mode == compile_modes::legacy
+                        ? "Terminierung:"
+                        : "Termination condition:");
   if (options.termination == termination_condition::precision) {
-    std::cout << "Hinreichende Genaugkeit";
+    std::cout << (partdiff::compile_mode == compile_modes::legacy
+                      ? "Hinreichende Genaugkeit"
+                      : "Sufficient accuracy");
   } else if (options.termination == termination_condition::iterations) {
-    std::cout << "Anzahl der Iterationen";
+    std::cout << (partdiff::compile_mode == compile_modes::legacy
+                      ? "Anzahl der Iterationen"
+                      : "Number of iterations");
   }
+  std::cout << std::endl;
 
-  std::cout << std::endl
-            << "Anzahl Iterationen: " << results.stat_iteration << std::endl
-            << "Norm des Fehlers:   ";
-  ss.str(std::string());
-  ss << std::scientific << results.stat_precision;
-  std::cout << ss.str() << std::endl << std::endl;
+  print_left_column(partdiff::compile_mode == compile_modes::legacy
+                        ? "Anzahl Iterationen:"
+                        : "Number of iterations:");
+  std::cout << results.stat_iteration << std::endl;
+
+  print_left_column(partdiff::compile_mode == compile_modes::legacy
+                        ? "Norm des Fehlers:"
+                        : "Norm of error:");
+  {
+    std::stringstream ss;
+    ss << std::scientific << results.stat_precision;
+    std::cout << ss.str() << std::endl << std::endl;
+  }
 }
 
 static void displayMatrix(const calculation_arguments &arguments,
