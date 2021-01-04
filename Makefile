@@ -44,4 +44,3 @@ testmem: partdiff partdiffpp
 
 beautify:
 	$(MAKE) -C pde++ beautify
-	# $(MAKE) -C pde beautify

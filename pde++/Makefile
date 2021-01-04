@@ -52,7 +52,7 @@ testinteractive: default
 	bash -c 'diff <((for i in 1 1 0 1 1 8.7e-5 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f1 | grep -A9 "Matrix:")'
 
 beautify: partdiff.cpp partdiff.h askparams.cpp utils.cpp
-	clang-format -i partdiff.cpp
-	clang-format -i partdiff.h
-	clang-format -i askparams.cpp
-	clang-format -i utils.cpp
+	clang-format --style=file -i partdiff.cpp
+	clang-format --style=file -i partdiff.h
+	clang-format --style=file -i askparams.cpp
+	clang-format --style=file -i utils.cpp

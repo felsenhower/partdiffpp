@@ -15,8 +15,7 @@ using compile_modes = partdiff::compile_modes;
 static constexpr double pi = std::numbers::pi;
 static constexpr double two_pi_square = (2 * pi * pi);
 
-calculation_arguments::calculation_arguments(const options &options)
-    : inf_func(options.inf_func) {
+calculation_arguments::calculation_arguments(const options &options) : inf_func(options.inf_func) {
   this->N = (options.interlines * 8) + 9 - 1;
   this->num_matrices = (options.method == calculation_method::jacobi) ? 2 : 1;
   this->h = 1.0 / this->N;
@@ -29,10 +28,8 @@ calculation_arguments::~calculation_arguments() { this->freeMatrices(); }
 void calculation_arguments::allocateMatrices() {
   const uint64_t N = this->N;
 
-  this->M = (double *)allocateMemory(this->num_matrices * (N + 1) * (N + 1) *
-                                     sizeof(double));
-  this->Matrix =
-      (double ***)allocateMemory(this->num_matrices * sizeof(double **));
+  this->M = (double *)allocateMemory(this->num_matrices * (N + 1) * (N + 1) * sizeof(double));
+  this->Matrix = (double ***)allocateMemory(this->num_matrices * sizeof(double **));
 
   for (uint64_t i = 0; i < this->num_matrices; i++) {
     this->Matrix[i] = (double **)allocateMemory((N + 1) * sizeof(double *));
@@ -85,8 +82,7 @@ calculation_results::calculation_results() {
   this->stat_accuracy = 0;
 }
 
-static void calculate(const calculation_arguments &arguments,
-                      calculation_results &results, const options &options) {
+static void calculate(const calculation_arguments &arguments, calculation_results &results, const options &options) {
   results.start_time = std::chrono::high_resolution_clock::now();
 
   const int N = arguments.N;
@@ -121,15 +117,13 @@ static void calculate(const calculation_arguments &arguments,
       }
 
       for (int j = 1; j < N; j++) {
-        double star = 0.25 * (Matrix_In[i - 1][j] + Matrix_In[i][j - 1] +
-                              Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
+        double star = 0.25 * (Matrix_In[i - 1][j] + Matrix_In[i][j - 1] + Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
 
         if (options.inf_func == interference_function::fpisin) {
           star += fpisin_i * std::sin(pih * (double)j);
         }
 
-        if (options.termination == termination_condition::accuracy ||
-            term_iteration == 1) {
+        if (options.termination == termination_condition::accuracy || term_iteration == 1) {
           double residuum = Matrix_In[i][j] - star;
           residuum = std::fabs(residuum);
           maxresiduum = std::max(residuum, maxresiduum);
@@ -159,41 +153,27 @@ static void calculate(const calculation_arguments &arguments,
   results.end_time = std::chrono::high_resolution_clock::now();
 }
 
-static void displayStatistics(const calculation_arguments &arguments,
-                              const calculation_results &results,
+static void displayStatistics(const calculation_arguments &arguments, const calculation_results &results,
                               const options &options) {
 
   const auto left_pad = [](const std::string input) {
-    constexpr std::size_t padding =
-        (partdiff::compile_mode == compile_modes::legacy ? 20 : 25);
-    return partdiff::build_string(
-        {std::setw(padding), std::left, std::setfill(' '), input});
+    constexpr std::size_t padding = (partdiff::compile_mode == compile_modes::legacy ? 20 : 25);
+    return partdiff::build_string({std::setw(padding), std::left, std::setfill(' '), input});
   };
 
   const int N = arguments.N;
 
-  const double time =
-      std::chrono::duration<double>(results.end_time - results.start_time)
-          .count();
+  const double time = std::chrono::duration<double>(results.end_time - results.start_time).count();
 
-  const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
-                                    arguments.num_matrices / 1024.0 / 1024.0;
+  const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) * arguments.num_matrices / 1024.0 / 1024.0;
 
-  std::cout << left_pad(partdiff::compile_mode == compile_modes::legacy
-                            ? "Berechnungszeit:"
-                            : "Calculation time:")
-            << partdiff::build_string({std::fixed, std::setprecision(6), time})
-            << " s" << std::endl
-            << left_pad(partdiff::compile_mode == compile_modes::legacy
-                            ? "Speicherbedarf:"
-                            : "Memory usage:")
-            << partdiff::build_string(
-                   {std::fixed, std::setprecision(6), memory_consumption})
-            << " MiB" << std::endl;
+  std::cout << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Berechnungszeit:" : "Calculation time:")
+            << partdiff::build_string({std::fixed, std::setprecision(6), time}) << " s" << std::endl
+            << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Speicherbedarf:" : "Memory usage:")
+            << partdiff::build_string({std::fixed, std::setprecision(6), memory_consumption}) << " MiB" << std::endl;
 
-  std::cout << left_pad(partdiff::compile_mode == compile_modes::legacy
-                            ? "Berechnungsmethode:"
-                            : "Calculation method:");
+  std::cout << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Berechnungsmethode:"
+                                                                        : "Calculation method:");
 
   if (options.method == calculation_method::gauss_seidel) {
     std::cout << "Gauß-Seidel";
@@ -202,42 +182,29 @@ static void displayStatistics(const calculation_arguments &arguments,
   }
   std::cout << std::endl
             << left_pad("Interlines:") << options.interlines << std::endl
-            << left_pad(partdiff::compile_mode == compile_modes::legacy
-                            ? "Stoerfunktion:"
-                            : "Interference function:");
+            << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Stoerfunktion:" : "Interference function:");
   if (options.inf_func == interference_function::f0) {
     std::cout << "f(x,y) = 0";
   } else if (options.inf_func == interference_function::fpisin) {
     std::cout << "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)";
   }
   std::cout << std::endl
-            << left_pad(partdiff::compile_mode == compile_modes::legacy
-                            ? "Terminierung:"
-                            : "Termination condition:");
+            << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Terminierung:" : "Termination condition:");
   if (options.termination == termination_condition::accuracy) {
-    std::cout << (partdiff::compile_mode == compile_modes::legacy
-                      ? "Hinreichende Genaugkeit"
-                      : "Sufficient accuracy");
+    std::cout << (partdiff::compile_mode == compile_modes::legacy ? "Hinreichende Genaugkeit" : "Sufficient accuracy");
   } else if (options.termination == termination_condition::iterations) {
-    std::cout << (partdiff::compile_mode == compile_modes::legacy
-                      ? "Anzahl der Iterationen"
-                      : "Number of iterations");
+    std::cout << (partdiff::compile_mode == compile_modes::legacy ? "Anzahl der Iterationen" : "Number of iterations");
   }
   std::cout << std::endl
-            << left_pad(partdiff::compile_mode == compile_modes::legacy
-                            ? "Anzahl Iterationen:"
-                            : "Number of iterations:");
+            << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Anzahl Iterationen:"
+                                                                        : "Number of iterations:");
   std::cout << results.stat_iteration << std::endl
-            << left_pad(partdiff::compile_mode == compile_modes::legacy
-                            ? "Norm des Fehlers:"
-                            : "Norm of error:")
-            << partdiff::build_string({std::scientific, results.stat_accuracy})
-            << std::endl
+            << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Norm des Fehlers:" : "Norm of error:")
+            << partdiff::build_string({std::scientific, results.stat_accuracy}) << std::endl
             << std::endl;
 }
 
-static void displayMatrix(const calculation_arguments &arguments,
-                          const calculation_results &results,
+static void displayMatrix(const calculation_arguments &arguments, const calculation_results &results,
                           const options &options) {
   double **Matrix = arguments.Matrix[results.m];
 
@@ -248,8 +215,7 @@ static void displayMatrix(const calculation_arguments &arguments,
   for (int y = 0; y < 9; y++) {
     for (int x = 0; x < 9; x++) {
       std::cout << partdiff::build_string(
-          {std::fixed, std::internal, std::setprecision(4), " ",
-           Matrix[y * (interlines + 1)][x * (interlines + 1)]});
+          {std::fixed, std::internal, std::setprecision(4), " ", Matrix[y * (interlines + 1)][x * (interlines + 1)]});
     }
     std::cout << std::endl;
   }

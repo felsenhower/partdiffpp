@@ -22,10 +22,7 @@ static constexpr uint64_t max_threads = 1024;
 static constexpr double min_accuracy = 1e-4;
 static constexpr double max_accuracy = 1e-20;
 
-template <typename T, typename U = std::underlying_type_t<T>>
-U to_underlying(T v) {
-  return static_cast<U>(v);
-}
+template <typename T, typename U = std::underlying_type_t<T>> U to_underlying(T v) { return static_cast<U>(v); }
 
 const std::string scientific_double(double val, int precision);
 
@@ -41,8 +38,7 @@ struct streamable {
   }
 };
 
-const std::string
-build_string(const std::initializer_list<streamable> &streamables);
+const std::string build_string(const std::initializer_list<streamable> &streamables);
 
 namespace askparams {
 
@@ -70,12 +66,9 @@ private:
     std::string name;
     std::string description_for_usage;
     std::string description_for_interactive;
-    std::function<bool(const std::string &input)> read_from_string = [](auto) {
-      return false;
-    };
+    std::function<bool(const std::string &input)> read_from_string = [](auto) { return false; };
 
-    template <typename T>
-    static bool get_from_string(T *target, const std::string &input);
+    template <typename T> static bool get_from_string(T *target, const std::string &input);
 
   private:
     template <typename T, class Enable = void> struct from_string {
@@ -87,9 +80,7 @@ private:
       }
     };
 
-    template <typename T>
-    struct from_string<T,
-                       typename std::enable_if<std::is_enum<T>::value>::type> {
+    template <typename T> struct from_string<T, typename std::enable_if<std::is_enum<T>::value>::type> {
       static bool get(T *target, const std::string &input) {
         std::underlying_type_t<T> n;
         bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
@@ -123,10 +114,8 @@ private:
   void askParam(argument_index index);
   void fill_argument_descriptions();
   template <class T>
-  void add_argument_description(std::string name, T *target,
-                                std::string description_for_usage,
-                                std::string description_for_interactive,
-                                std::function<bool()> check);
+  void add_argument_description(std::string name, T *target, std::string description_for_usage,
+                                std::string description_for_interactive, std::function<bool()> check);
 };
 
 } // namespace askparams
