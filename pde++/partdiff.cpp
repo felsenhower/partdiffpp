@@ -182,7 +182,8 @@ static void displayStatistics(const calculation_arguments &arguments,
   std::cout << left_pad(partdiff::compile_mode == compile_modes::legacy
                             ? "Berechnungszeit:"
                             : "Calculation time:")
-            << time << " s" << std::endl
+            << partdiff::build_string({std::fixed, std::setprecision(6), time})
+            << " s" << std::endl
             << left_pad(partdiff::compile_mode == compile_modes::legacy
                             ? "Speicherbedarf:"
                             : "Memory usage:")
