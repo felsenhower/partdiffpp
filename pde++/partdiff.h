@@ -32,7 +32,8 @@ namespace partdiff {
 
   struct streamable {
     std::function<void(std::ostream &)> apply = {};
-    streamable(std::ostream &(*x)(std::ostream &)) {
+    using iomanip = std::ostream &(*)(std::ostream &);
+    streamable(iomanip x) {
       this->apply = [x](auto &ss) { ss << *x; };
     }
     template <typename T>
