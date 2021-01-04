@@ -10,7 +10,6 @@ using interference_function = options::interference_function;
 using termination_condition = options::termination_condition;
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
-using compile_modes = partdiff::compile_modes;
 
 static constexpr double pi = std::numbers::pi;
 static constexpr double two_pi_square = (2 * pi * pi);
@@ -157,7 +156,7 @@ static void displayStatistics(const calculation_arguments &arguments, const calc
                               const options &options) {
 
   const auto left_pad = [](const std::string input) {
-    constexpr std::size_t padding = (partdiff::compile_mode == compile_modes::legacy ? 20 : 25);
+    constexpr std::size_t padding = (partdiff::legacy_mode ? 20 : 25);
     return partdiff::build_string({std::setw(padding), std::left, std::setfill(' '), input});
   };
 
@@ -167,13 +166,12 @@ static void displayStatistics(const calculation_arguments &arguments, const calc
 
   const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) * arguments.num_matrices / 1024.0 / 1024.0;
 
-  std::cout << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Berechnungszeit:" : "Calculation time:")
+  std::cout << left_pad(partdiff::legacy_mode ? "Berechnungszeit:" : "Calculation time:")
             << partdiff::build_string({std::fixed, std::setprecision(6), time}) << " s" << std::endl
-            << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Speicherbedarf:" : "Memory usage:")
+            << left_pad(partdiff::legacy_mode ? "Speicherbedarf:" : "Memory usage:")
             << partdiff::build_string({std::fixed, std::setprecision(6), memory_consumption}) << " MiB" << std::endl;
 
-  std::cout << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Berechnungsmethode:"
-                                                                        : "Calculation method:");
+  std::cout << left_pad(partdiff::legacy_mode ? "Berechnungsmethode:" : "Calculation method:");
 
   if (options.method == calculation_method::gauss_seidel) {
     std::cout << "Gauß-Seidel";
@@ -182,24 +180,21 @@ static void displayStatistics(const calculation_arguments &arguments, const calc
   }
   std::cout << std::endl
             << left_pad("Interlines:") << options.interlines << std::endl
-            << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Stoerfunktion:" : "Interference function:");
+            << left_pad(partdiff::legacy_mode ? "Stoerfunktion:" : "Interference function:");
   if (options.inf_func == interference_function::f0) {
     std::cout << "f(x,y) = 0";
   } else if (options.inf_func == interference_function::fpisin) {
     std::cout << "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)";
   }
-  std::cout << std::endl
-            << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Terminierung:" : "Termination condition:");
+  std::cout << std::endl << left_pad(partdiff::legacy_mode ? "Terminierung:" : "Termination condition:");
   if (options.termination == termination_condition::accuracy) {
-    std::cout << (partdiff::compile_mode == compile_modes::legacy ? "Hinreichende Genaugkeit" : "Sufficient accuracy");
+    std::cout << (partdiff::legacy_mode ? "Hinreichende Genaugkeit" : "Sufficient accuracy");
   } else if (options.termination == termination_condition::iterations) {
-    std::cout << (partdiff::compile_mode == compile_modes::legacy ? "Anzahl der Iterationen" : "Number of iterations");
+    std::cout << (partdiff::legacy_mode ? "Anzahl der Iterationen" : "Number of iterations");
   }
-  std::cout << std::endl
-            << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Anzahl Iterationen:"
-                                                                        : "Number of iterations:");
+  std::cout << std::endl << left_pad(partdiff::legacy_mode ? "Anzahl Iterationen:" : "Number of iterations:");
   std::cout << results.stat_iteration << std::endl
-            << left_pad(partdiff::compile_mode == compile_modes::legacy ? "Norm des Fehlers:" : "Norm of error:")
+            << left_pad(partdiff::legacy_mode ? "Norm des Fehlers:" : "Norm of error:")
             << partdiff::build_string({std::scientific, results.stat_accuracy}) << std::endl
             << std::endl;
 }

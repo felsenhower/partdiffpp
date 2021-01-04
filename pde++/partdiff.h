@@ -9,11 +9,10 @@
 
 namespace partdiff {
 
-enum class compile_modes { legacy, normal };
 #ifdef LEGACY
-static constexpr compile_modes compile_mode = compile_modes::legacy;
+static constexpr bool legacy_mode = true;
 #else
-static constexpr compile_modes compile_mode = compile_modes::normal;
+static constexpr bool legacy_mode = false;
 #endif
 
 static constexpr uint64_t max_interlines = 10240;

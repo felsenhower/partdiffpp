@@ -45,8 +45,7 @@ void argument_parser::usage() const {
   std::cout << get_name((this->get_description(argument_index::term_accuracy).name + "/" +
                          this->get_description(argument_index::term_iteration).name))
             << "depending on term:" << std::endl
-            << (partdiff::compile_mode == compile_modes::legacy ? "                 precision:  "
-                                                                : "                 accuracy: ")
+            << (partdiff::legacy_mode ? "                 precision:  " : "                 accuracy: ")
             << scientific_double(partdiff::min_accuracy, 0) << " .. " << scientific_double(partdiff::max_accuracy, 0)
             << std::endl
             << "                 iterations:    1 .. " << partdiff::max_iteration << std::endl
@@ -143,27 +142,25 @@ void argument_parser::fill_argument_descriptions() {
   auto termination = &(this->parsed_options.termination);
   this->add_argument_description(
       "term", termination,
-      partdiff::build_string(
-          {"termination condition ( 1.. 2)", std::endl, "                 ",
-           to_underlying(termination_condition::accuracy),
-           (partdiff::compile_mode == compile_modes::legacy ? ": sufficient precision" : ": sufficient accuracy"),
-           std::endl, "                 ", to_underlying(termination_condition::iterations), ": number of iterations"}),
-      partdiff::build_string(
-          {"Select termination:", std::endl, " ", to_underlying(termination_condition::accuracy),
-           (partdiff::compile_mode == compile_modes::legacy ? ": sufficient precision." : ": sufficient accuracy."),
-           std::endl, " ", to_underlying(termination_condition::iterations), ": number of iterations.", std::endl,
-           "termination> "}),
+      partdiff::build_string({"termination condition ( 1.. 2)", std::endl, "                 ",
+                              to_underlying(termination_condition::accuracy),
+                              (partdiff::legacy_mode ? ": sufficient precision" : ": sufficient accuracy"), std::endl,
+                              "                 ", to_underlying(termination_condition::iterations),
+                              ": number of iterations"}),
+      partdiff::build_string({"Select termination:", std::endl, " ", to_underlying(termination_condition::accuracy),
+                              (partdiff::legacy_mode ? ": sufficient precision." : ": sufficient accuracy."), std::endl,
+                              " ", to_underlying(termination_condition::iterations), ": number of iterations.",
+                              std::endl, "termination> "}),
       [termination] {
         return (*termination == termination_condition::accuracy || *termination == termination_condition::iterations);
       });
   auto term_accuracy = &(this->parsed_options.term_accuracy);
   this->add_argument_description(
-      (partdiff::compile_mode == compile_modes::legacy ? "prec" : "acc"), term_accuracy, "< invalid >",
-      partdiff::build_string(
-          {(partdiff::compile_mode == compile_modes::legacy ? "Select precision:" : "Select accuracy:"), std::endl,
-           "  Range: ", scientific_double(partdiff::min_accuracy, 0), " .. ",
-           scientific_double(partdiff::max_accuracy, 0), ".", std::endl,
-           (partdiff::compile_mode == compile_modes::legacy ? "precision> " : "accuracy> ")}),
+      (partdiff::legacy_mode ? "prec" : "acc"), term_accuracy, "< invalid >",
+      partdiff::build_string({(partdiff::legacy_mode ? "Select precision:" : "Select accuracy:"), std::endl,
+                              "  Range: ", scientific_double(partdiff::min_accuracy, 0), " .. ",
+                              scientific_double(partdiff::max_accuracy, 0), ".", std::endl,
+                              (partdiff::legacy_mode ? "precision> " : "accuracy> ")}),
       [term_accuracy] {
         return (*term_accuracy >= partdiff::max_accuracy && *term_accuracy <= partdiff::min_accuracy);
       });

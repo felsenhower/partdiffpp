@@ -17,7 +17,7 @@ const uint8_t *allocateMemory(const std::size_t size) {
   try {
     return new uint8_t[size];
   } catch (std::bad_alloc &) {
-    if (compile_mode == compile_modes::legacy) {
+    if (partdiff::legacy_mode) {
       std::cout << "Speicherprobleme! " << size << " Bytes angefordert" << std::endl;
     } else {
       std::cout << "Memory failure! Requested" << size << " bytes" << std::endl;
