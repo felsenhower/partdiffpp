@@ -13,7 +13,9 @@ argument_parser::argument_parser(const int argc, char const *argv[]) : app_name(
   this->askParams();
 }
 
-options argument_parser::get_options() { return this->parsed_options; }
+options argument_parser::get_options() {
+  return this->parsed_options;
+}
 
 argument_parser::argument_description argument_parser::get_description(std::size_t index) const {
   return this->argument_descriptions[index];
@@ -89,7 +91,9 @@ void argument_parser::parseParam(std::size_t index, std::string &input) {
   }
 }
 
-void argument_parser::askParam(argument_index index) { this->askParam(to_underlying(index)); }
+void argument_parser::askParam(argument_index index) {
+  this->askParam(to_underlying(index));
+}
 
 void argument_parser::askParam(std::size_t index) {
   bool valid_input = false;

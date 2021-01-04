@@ -1,0 +1,29 @@
+---
+# We'll use defaults from the LLVM style, but with 4 columns indentation.
+BasedOnStyle: LLVM
+IndentWidth: 2
+---
+Language: Cpp
+Standard: c++20
+ColumnLimit: 120
+AccessModifierOffset: 0
+IndentPPDirectives: BeforeHash
+AlwaysBreakTemplateDeclarations: Yes
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortBlocksOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: All
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: false
+FixNamespaceComments: true
+NamespaceIndentation: All
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '\".*\.h\"'
+    Priority: 1
+    SortPriority: 1
+  - Regex: '.*'
+    Priority: 0
+    SortPriority: 0
+---

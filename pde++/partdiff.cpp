@@ -22,7 +22,9 @@ calculation_arguments::calculation_arguments(const options &options) : inf_func(
   this->initMatrices();
 }
 
-calculation_arguments::~calculation_arguments() { this->freeMatrices(); }
+calculation_arguments::~calculation_arguments() {
+  this->freeMatrices();
+}
 
 void calculation_arguments::allocateMatrices() {
   const uint64_t N = this->N;
