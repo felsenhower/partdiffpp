@@ -1,5 +1,3 @@
-#define _POSIX_C_SOURCE 200809L
-
 #include "partdiff.h"
 
 using argument_parser = partdiff::askparams::argument_parser;

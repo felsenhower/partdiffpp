@@ -1,6 +1,7 @@
 #pragma once
 
 #include <any>
+#include <chrono>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -147,11 +148,12 @@ private:
 };
 
 struct calculation_results {
+  using timepoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
   uint64_t m;
   uint64_t stat_iteration;
   double stat_accuracy;
-  timeval start_time;
-  timeval end_time;
+  timepoint start_time;
+  timepoint end_time;
   calculation_results();
 };
 

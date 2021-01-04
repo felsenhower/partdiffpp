@@ -1,8 +1,5 @@
-#define _POSIX_C_SOURCE 200809L
-
 #include <cmath>
 #include <numbers>
-#include <sys/time.h>
 
 #include "partdiff.h"
 
@@ -90,8 +87,7 @@ calculation_results::calculation_results() {
 
 static void calculate(const calculation_arguments &arguments,
                       calculation_results &results, const options &options) {
-
-  gettimeofday(&(results.start_time), nullptr);
+  results.start_time = std::chrono::high_resolution_clock::now();
 
   const int N = arguments.N;
   const double h = arguments.h;
@@ -160,7 +156,7 @@ static void calculate(const calculation_arguments &arguments,
   }
 
   results.m = m2;
-  gettimeofday(&(results.end_time), nullptr);
+  results.end_time = std::chrono::high_resolution_clock::now();
 }
 
 static void displayStatistics(const calculation_arguments &arguments,
@@ -175,9 +171,10 @@ static void displayStatistics(const calculation_arguments &arguments,
   };
 
   const int N = arguments.N;
+
   const double time =
-      (results.end_time.tv_sec - results.start_time.tv_sec) +
-      (results.end_time.tv_usec - results.start_time.tv_usec) * 1e-6;
+      std::chrono::duration<double>(results.end_time - results.start_time)
+          .count();
 
   const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
                                     arguments.num_matrices / 1024.0 / 1024.0;
