@@ -15,10 +15,6 @@ argument_parser::argument_parser(const int argc, char const *argv[]) : app_name(
 
 options argument_parser::get_options() { return this->parsed_options; }
 
-template <typename T> bool argument_parser::argument_description::get_from_string(T *target, const std::string &input) {
-  return from_string<T>::get(target, input);
-}
-
 argument_parser::argument_description argument_parser::get_description(std::size_t index) const {
   return this->argument_descriptions[index];
 }
@@ -180,7 +176,15 @@ void argument_parser::add_argument_description(std::string name, T *target, std:
   arg_desc.target = target;
   arg_desc.read_from_string = [target = arg_desc.target, check](const std::string &input) {
     T *casted_ptr = std::any_cast<T *>(target);
-    bool valid_input = argument_description::get_from_string(casted_ptr, input);
+    bool valid_input = false;
+    std::istringstream iss(input);
+    if constexpr (std::is_enum_v<T>) {
+      std::underlying_type_t<T> temp;
+      valid_input = static_cast<bool>(iss >> temp);
+      *casted_ptr = static_cast<T>(temp);
+    } else {
+      valid_input = static_cast<bool>(iss >> *casted_ptr);
+    }
     valid_input &= check();
     return valid_input;
   };

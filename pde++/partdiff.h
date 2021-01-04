@@ -66,27 +66,6 @@ private:
     std::string description_for_usage;
     std::string description_for_interactive;
     std::function<bool(const std::string &input)> read_from_string = [](auto) { return false; };
-
-    template <typename T> static bool get_from_string(T *target, const std::string &input);
-
-  private:
-    template <typename T, class Enable = void> struct from_string {
-      static bool get(T *target, const std::string &input) {
-        T n;
-        bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
-        *target = n;
-        return valid_input;
-      }
-    };
-
-    template <typename T> struct from_string<T, typename std::enable_if<std::is_enum<T>::value>::type> {
-      static bool get(T *target, const std::string &input) {
-        std::underlying_type_t<T> n;
-        bool valid_input = static_cast<bool>(std::istringstream(input) >> n);
-        *target = static_cast<T>(n);
-        return valid_input;
-      }
-    };
   };
 
   enum class argument_index : std::size_t {
