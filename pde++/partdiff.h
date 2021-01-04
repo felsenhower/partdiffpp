@@ -3,10 +3,7 @@
 #include <any>
 #include <functional>
 #include <iomanip>
-#include <ios>
 #include <iostream>
-#include <numbers>
-#include <sstream>
 #include <vector>
 
 namespace partdiff {
@@ -32,6 +29,19 @@ U to_underlying(T v) {
 const std::string scientific_double(double val, int precision);
 
 const uint8_t *allocateMemory(const std::size_t size);
+
+struct streamable {
+  std::function<void(std::ostream &)> apply = {};
+  streamable(std::ostream &(*x)(std::ostream &)) {
+    this->apply = [x](auto &ss) { ss << *x; };
+  }
+  template <typename T> streamable(const T &x) {
+    this->apply = [x](auto &ss) { ss << x; };
+  }
+};
+
+const std::string
+build_string(const std::initializer_list<streamable> &streamables);
 
 namespace askparams {
 

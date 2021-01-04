@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include <cmath>
+#include <numbers>
 #include <sys/time.h>
 
 #include "partdiff.h"
@@ -162,19 +163,15 @@ static void calculate(const calculation_arguments &arguments,
   gettimeofday(&(results.end_time), nullptr);
 }
 
-
-
 static void displayStatistics(const calculation_arguments &arguments,
                               const calculation_results &results,
                               const options &options) {
 
-  const auto get_left_column = [](const std::string input) {
+  const auto left_pad = [](const std::string input) {
     constexpr std::size_t padding =
         (partdiff::compile_mode == compile_modes::legacy ? 20 : 25);
-    std::stringstream left_column;
-    left_column << std::setw(padding) << std::left << std::setfill(' ')
-                << input;
-    return left_column.str();
+    return partdiff::build_string(
+        {std::setw(padding), std::left, std::setfill(' '), input});
   };
 
   const int N = arguments.N;
@@ -185,22 +182,20 @@ static void displayStatistics(const calculation_arguments &arguments,
   const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) *
                                     arguments.num_matrices / 1024.0 / 1024.0;
 
-  std::cout << get_left_column(partdiff::compile_mode == compile_modes::legacy
-                                   ? "Berechnungszeit:"
-                                   : "Calculation time:")
+  std::cout << left_pad(partdiff::compile_mode == compile_modes::legacy
+                            ? "Berechnungszeit:"
+                            : "Calculation time:")
             << time << " s" << std::endl
-            << get_left_column(partdiff::compile_mode == compile_modes::legacy
-                                   ? "Speicherbedarf:"
-                                   : "Memory usage:");
-  {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(6) << memory_consumption;
-    std::cout << ss.str() << " MiB" << std::endl;
-  }
+            << left_pad(partdiff::compile_mode == compile_modes::legacy
+                            ? "Speicherbedarf:"
+                            : "Memory usage:")
+            << partdiff::build_string(
+                   {std::fixed, std::setprecision(6), memory_consumption})
+            << " MiB" << std::endl;
 
-  std::cout << get_left_column(partdiff::compile_mode == compile_modes::legacy
-                                   ? "Berechnungsmethode:"
-                                   : "Calculation method:");
+  std::cout << left_pad(partdiff::compile_mode == compile_modes::legacy
+                            ? "Berechnungsmethode:"
+                            : "Calculation method:");
 
   if (options.method == calculation_method::gauss_seidel) {
     std::cout << "Gauß-Seidel";
@@ -208,19 +203,19 @@ static void displayStatistics(const calculation_arguments &arguments,
     std::cout << "Jacobi";
   }
   std::cout << std::endl
-            << get_left_column("Interlines:") << options.interlines << std::endl
-            << get_left_column(partdiff::compile_mode == compile_modes::legacy
-                                   ? "Stoerfunktion:"
-                                   : "Interference function:");
+            << left_pad("Interlines:") << options.interlines << std::endl
+            << left_pad(partdiff::compile_mode == compile_modes::legacy
+                            ? "Stoerfunktion:"
+                            : "Interference function:");
   if (options.inf_func == interference_function::f0) {
     std::cout << "f(x,y) = 0";
   } else if (options.inf_func == interference_function::fpisin) {
     std::cout << "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)";
   }
   std::cout << std::endl
-            << get_left_column(partdiff::compile_mode == compile_modes::legacy
-                                   ? "Terminierung:"
-                                   : "Termination condition:");
+            << left_pad(partdiff::compile_mode == compile_modes::legacy
+                            ? "Terminierung:"
+                            : "Termination condition:");
   if (options.termination == termination_condition::accuracy) {
     std::cout << (partdiff::compile_mode == compile_modes::legacy
                       ? "Hinreichende Genaugkeit"
@@ -231,18 +226,16 @@ static void displayStatistics(const calculation_arguments &arguments,
                       : "Number of iterations");
   }
   std::cout << std::endl
-            << get_left_column(partdiff::compile_mode == compile_modes::legacy
-                                   ? "Anzahl Iterationen:"
-                                   : "Number of iterations:");
+            << left_pad(partdiff::compile_mode == compile_modes::legacy
+                            ? "Anzahl Iterationen:"
+                            : "Number of iterations:");
   std::cout << results.stat_iteration << std::endl
-            << get_left_column(partdiff::compile_mode == compile_modes::legacy
-                                   ? "Norm des Fehlers:"
-                                   : "Norm of error:");
-  {
-    std::stringstream ss;
-    ss << std::scientific << results.stat_accuracy;
-    std::cout << ss.str() << std::endl << std::endl;
-  }
+            << left_pad(partdiff::compile_mode == compile_modes::legacy
+                            ? "Norm des Fehlers:"
+                            : "Norm of error:")
+            << partdiff::build_string({std::scientific, results.stat_accuracy})
+            << std::endl
+            << std::endl;
 }
 
 static void displayMatrix(const calculation_arguments &arguments,
@@ -256,10 +249,9 @@ static void displayMatrix(const calculation_arguments &arguments,
 
   for (int y = 0; y < 9; y++) {
     for (int x = 0; x < 9; x++) {
-      std::stringstream ss;
-      ss << std::fixed << std::internal << std::setprecision(4) << " "
-         << Matrix[y * (interlines + 1)][x * (interlines + 1)];
-      std::cout << ss.str();
+      std::cout << partdiff::build_string(
+          {std::fixed, std::internal, std::setprecision(4), " ",
+           Matrix[y * (interlines + 1)][x * (interlines + 1)]});
     }
     std::cout << std::endl;
   }

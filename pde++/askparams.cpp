@@ -34,6 +34,11 @@ argument_parser::get_description(argument_index index) const {
   return this->get_description(to_underlying(index));
 }
 
+std::string get_name(std::string input) {
+  return partdiff::build_string(
+      {"  - ", std::setw(11), std::setfill(' '), std::left, input + ":"});
+}
+
 void argument_parser::usage() const {
   std::cout << "Usage: " << this->app_name;
   for (std::size_t i = 0; i <= to_underlying(argument_index::termination);
@@ -46,17 +51,14 @@ void argument_parser::usage() const {
   std::cout << std::endl;
   for (std::size_t i = 0; i <= to_underlying(argument_index::termination);
        i++) {
-    std::stringstream ss;
-    ss << "  - " << std::setw(11) << std::setfill(' ') << std::left
-       << (this->get_description(i).name + ":");
-    std::cout << ss.str() << this->get_description(i).description_for_usage
-              << std::endl;
+    std::cout << get_name(this->get_description(i).name)
+              << this->get_description(i).description_for_usage << std::endl;
   }
-  std::stringstream ss;
-  ss << "  - " << std::setw(11) << std::setfill(' ') << std::left
-     << (this->get_description(argument_index::term_accuracy).name + "/" +
-         this->get_description(argument_index::term_iteration).name + ":");
-  std::cout << ss.str() << "depending on term:" << std::endl
+  std::cout << get_name(
+                   (this->get_description(argument_index::term_accuracy).name +
+                    "/" +
+                    this->get_description(argument_index::term_iteration).name))
+            << "depending on term:" << std::endl
             << "                 precision:  "
             << scientific_double(partdiff::min_accuracy, 0) << " .. "
             << scientific_double(partdiff::max_accuracy, 0) << std::endl
@@ -129,42 +131,24 @@ void argument_parser::fill_argument_descriptions() {
   auto number = &(this->parsed_options.number);
   this->add_argument_description(
       "num", number,
-
-      []() {
-        std::stringstream ss;
-        ss << "number of threads (1 .. " << partdiff::max_threads << ")";
-        return ss.str();
-      }(),
-
-      []() {
-        std::stringstream ss;
-        ss << "Select number of threads:" << std::endl << "Number> ";
-        return ss.str();
-      }(),
+      partdiff::build_string(
+          {"number of threads (1 .. ", partdiff::max_threads, ")"}),
+      partdiff::build_string(
+          {"Select number of threads:", std::endl, "Number> "}),
       [number] { return (*number >= 1 && *number <= partdiff::max_threads); });
   auto method = &(this->parsed_options.method);
   this->add_argument_description(
       "method", method,
-      []() {
-        std::stringstream ss;
-        ss << "calculation method (1 .. 2)" << std::endl
-           << "                 "
-           << to_underlying(calculation_method::gauss_seidel) << ": Gauß-Seidel"
-           << std::endl
-           << "                 " << to_underlying(calculation_method::jacobi)
-           << ": Jacobi";
-        return ss.str();
-      }(),
-      []() {
-        std::stringstream ss;
-        ss << "Select calculation method:" << std::endl
-           << "  " << to_underlying(calculation_method::gauss_seidel)
-           << ": Gauß-Seidel." << std::endl
-           << "  " << to_underlying(calculation_method::jacobi) << ": Jacobi."
-           << std::endl
-           << "method> ";
-        return ss.str();
-      }(),
+      partdiff::build_string(
+          {"calculation method (1 .. 2)", std::endl, "                 ",
+           to_underlying(calculation_method::gauss_seidel), ": Gauß-Seidel",
+           std::endl, "                 ",
+           to_underlying(calculation_method::jacobi), ": Jacobi"}),
+      partdiff::build_string({"Select calculation method:", std::endl, "  ",
+                              to_underlying(calculation_method::gauss_seidel),
+                              ": Gauß-Seidel.", std::endl, "  ",
+                              to_underlying(calculation_method::jacobi),
+                              ": Jacobi.", std::endl, "method> "}),
       [method] {
         return (*method == calculation_method::gauss_seidel ||
                 *method == calculation_method::jacobi);
@@ -172,42 +156,26 @@ void argument_parser::fill_argument_descriptions() {
   auto interlines = &(this->parsed_options.interlines);
   this->add_argument_description(
       "lines", interlines,
-      []() {
-        std::stringstream ss;
-        ss << "number of interlines (0 .. " << partdiff::max_interlines << ")"
-           << std::endl
-           << "                 matrixsize = (interlines * 8) + 9";
-        return ss.str();
-      }(),
-      []() {
-        std::stringstream ss;
-        ss << "Matrixsize = Interlines*8+9" << std::endl << "Interlines> ";
-        return ss.str();
-      }(),
+      partdiff::build_string(
+          {"number of interlines (0 .. ", partdiff::max_interlines, ")",
+           std::endl, "                 matrixsize = (interlines * 8) + 9"}),
+      partdiff::build_string(
+          {"Matrixsize = Interlines*8+9", std::endl, "Interlines> "}),
       [interlines] { return (*interlines <= partdiff::max_interlines); });
   auto inf_func = &(this->parsed_options.inf_func);
   this->add_argument_description(
       "func", inf_func,
-      []() {
-        std::stringstream ss;
-        ss << "interference function (1 .. 2)" << std::endl
-           << "                 " << to_underlying(interference_function::f0)
-           << ": f(x,y) = 0" << std::endl
-           << "                 "
-           << to_underlying(interference_function::fpisin)
-           << ": f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)";
-        return ss.str();
-      }(),
-      []() {
-        std::stringstream ss;
-        ss << "Select interference function:" << std::endl
-           << " " << to_underlying(interference_function::f0) << ": f(x,y)=0."
-           << std::endl
-           << " " << to_underlying(interference_function::fpisin)
-           << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)." << std::endl
-           << "interference function> ";
-        return ss.str();
-      }(),
+      partdiff::build_string(
+          {"interference function (1 .. 2)", std::endl, "                 ",
+           to_underlying(interference_function::f0), ": f(x,y) = 0", std::endl,
+           "                 ", to_underlying(interference_function::fpisin),
+           ": f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)"}),
+      partdiff::build_string({"Select interference function:", std::endl, " ",
+                              to_underlying(interference_function::f0),
+                              ": f(x,y)=0.", std::endl, " ",
+                              to_underlying(interference_function::fpisin),
+                              ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y).", std::endl,
+                              "interference function> "}),
       [inf_func] {
         return (*inf_func == interference_function::f0 ||
                 *inf_func == interference_function::fpisin);
@@ -215,27 +183,18 @@ void argument_parser::fill_argument_descriptions() {
   auto termination = &(this->parsed_options.termination);
   this->add_argument_description(
       "term", termination,
-      []() {
-        std::stringstream ss;
-        ss << "termination condition ( 1.. 2)" << std::endl
-           << "                 "
-           << to_underlying(termination_condition::accuracy)
-           << ": sufficient precision" << std::endl
-           << "                 "
-           << to_underlying(termination_condition::iterations)
-           << ": number of iterations";
-        return ss.str();
-      }(),
-      []() {
-        std::stringstream ss;
-        ss << "Select termination:" << std::endl
-           << " " << to_underlying(termination_condition::accuracy)
-           << ": sufficient precision." << std::endl
-           << " " << to_underlying(termination_condition::iterations)
-           << ": number of iterations." << std::endl
-           << "termination> ";
-        return ss.str();
-      }(),
+      partdiff::build_string(
+          {"termination condition ( 1.. 2)", std::endl, "                 ",
+           to_underlying(termination_condition::accuracy),
+           ": sufficient precision", std::endl, "                 ",
+           to_underlying(termination_condition::iterations),
+           ": number of iterations"}),
+      partdiff::build_string({"Select termination:", std::endl, " ",
+                              to_underlying(termination_condition::accuracy),
+                              ": sufficient precision.", std::endl, " ",
+                              to_underlying(termination_condition::iterations),
+                              ": number of iterations.", std::endl,
+                              "termination> "}),
       [termination] {
         return (*termination == termination_condition::accuracy ||
                 *termination == termination_condition::iterations);
@@ -243,15 +202,11 @@ void argument_parser::fill_argument_descriptions() {
   auto term_accuracy = &(this->parsed_options.term_accuracy);
   this->add_argument_description(
       "prec", term_accuracy, "< invalid >",
-      []() {
-        std::stringstream ss;
-        ss << "Select precision:" << std::endl
-           << "  Range: " << scientific_double(partdiff::min_accuracy, 0)
-           << " .. " << scientific_double(partdiff::max_accuracy, 0) << "."
-           << std::endl
-           << "precision> ";
-        return ss.str();
-      }(),
+      partdiff::build_string(
+          {"Select precision:", std::endl,
+           "  Range: ", scientific_double(partdiff::min_accuracy, 0), " .. ",
+           scientific_double(partdiff::max_accuracy, 0), ".", std::endl,
+           "precision> "}),
       [term_accuracy] {
         return (*term_accuracy >= partdiff::max_accuracy &&
                 *term_accuracy <= partdiff::min_accuracy);
@@ -259,13 +214,9 @@ void argument_parser::fill_argument_descriptions() {
   auto term_iteration = &(this->parsed_options.term_iteration);
   this->add_argument_description(
       "iter", term_iteration, "< invalid >",
-      []() {
-        std::stringstream ss;
-        ss << "Select number of iterations:" << std::endl
-           << "  Range: 1 .. " << partdiff::max_iteration << "." << std::endl
-           << "Iterations> ";
-        return ss.str();
-      }(),
+      partdiff::build_string({"Select number of iterations:", std::endl,
+                              "  Range: 1 .. ", partdiff::max_iteration, ".",
+                              std::endl, "Iterations> "}),
       [term_iteration] {
         return (*term_iteration >= 1 &&
                 *term_iteration <= partdiff::max_iteration);
