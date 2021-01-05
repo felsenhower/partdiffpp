@@ -10,71 +10,64 @@ namespace partdiff {
   using calculation_method = options::calculation_method;
   using interference_function = options::interference_function;
   using termination_condition = options::termination_condition;
+  using Tensor = calculation_arguments::Tensor;
 
   static constexpr double pi = std::numbers::pi;
   static constexpr double two_pi_square = (2 * pi * pi);
+
+  inline Tensor::Tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols)
+      : num_matrices(num_matrices), num_rows(num_rows), num_cols(num_cols) {
+    auto size = num_matrices * num_rows * num_cols;
+    try {
+      data = new double[size]();
+    } catch (std::bad_alloc &) {
+      auto size_bytes = size * sizeof(double);
+      if (partdiff::legacy_mode) {
+        std::cout << "Speicherprobleme! " << size_bytes << " Bytes angefordert" << std::endl;
+      } else {
+        std::cout << "Memory failure! Requested" << size_bytes << " bytes" << std::endl;
+      }
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  inline Tensor::~Tensor() {
+    delete[] data;
+  }
+
+  inline double &Tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) {
+    return data[(num_cols * num_rows * matrix) + (num_cols * row) + (col)];
+  }
+
+  inline double Tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) const {
+    return data[(num_cols * num_rows * matrix) + (num_cols * row) + (col)];
+  }
 
   calculation_arguments::calculation_arguments(const options &options) : inf_func(options.inf_func) {
     this->N = (options.interlines * 8) + 9 - 1;
     this->num_matrices = (options.method == calculation_method::jacobi) ? 2 : 1;
     this->h = 1.0 / this->N;
-    this->allocateMatrices();
+    this->matrices = new Tensor(num_matrices, N + 1, N + 1);
     this->initMatrices();
   }
 
   calculation_arguments::~calculation_arguments() {
-    this->freeMatrices();
-  }
-
-  void calculation_arguments::allocateMatrices() {
-    const uint64_t N = this->N;
-
-    this->M = (double *)allocateMemory(this->num_matrices * (N + 1) * (N + 1) * sizeof(double));
-    this->Matrix = (double ***)allocateMemory(this->num_matrices * sizeof(double **));
-
-    for (uint64_t i = 0; i < this->num_matrices; i++) {
-      this->Matrix[i] = (double **)allocateMemory((N + 1) * sizeof(double *));
-
-      for (uint64_t j = 0; j <= N; j++) {
-        this->Matrix[i][j] = this->M + (i * (N + 1) * (N + 1)) + (j * (N + 1));
-      }
-    }
+    delete this->matrices;
   }
 
   void calculation_arguments::initMatrices() {
-    const uint64_t N = this->N;
-    const double h = this->h;
-    double ***Matrix = this->Matrix;
-
-    for (uint64_t g = 0; g < this->num_matrices; g++) {
-      for (uint64_t i = 0; i <= N; i++) {
-        for (uint64_t j = 0; j <= N; j++) {
-          Matrix[g][i][j] = 0.0;
-        }
-      }
-    }
-
     if (this->inf_func == interference_function::f0) {
       for (uint64_t g = 0; g < this->num_matrices; g++) {
         for (uint64_t i = 0; i <= N; i++) {
-          Matrix[g][i][0] = 1.0 - (h * i);
-          Matrix[g][i][N] = h * i;
-          Matrix[g][0][i] = 1.0 - (h * i);
-          Matrix[g][N][i] = h * i;
+          (*matrices)(g, i, 0) = 1.0 - (h * i);
+          (*matrices)(g, i, N) = h * i;
+          (*matrices)(g, 0, i) = 1.0 - (h * i);
+          (*matrices)(g, N, i) = h * i;
         }
-
-        Matrix[g][N][0] = 0.0;
-        Matrix[g][0][N] = 0.0;
+        (*matrices)(g, N, 0) = 0.0;
+        (*matrices)(g, 0, N) = 0.0;
       }
     }
-  }
-
-  void calculation_arguments::freeMatrices() {
-    for (uint64_t i = 0; i < this->num_matrices; i++) {
-      delete[] this->Matrix[i];
-    }
-    delete[] this->Matrix;
-    delete[] this->M;
   }
 
   calculation_results::calculation_results() {
@@ -105,8 +98,8 @@ namespace partdiff {
     double maxresiduum = 0.0;
 
     while (term_iteration > 0) {
-      double **Matrix_Out = arguments.Matrix[m1];
-      double **Matrix_In = arguments.Matrix[m2];
+
+      Tensor *matrices = arguments.matrices;
 
       maxresiduum = 0.0;
 
@@ -118,19 +111,20 @@ namespace partdiff {
         }
 
         for (int j = 1; j < N; j++) {
-          double star = 0.25 * (Matrix_In[i - 1][j] + Matrix_In[i][j - 1] + Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
+          double star = 0.25 * ((*matrices)(m2, i - 1, j) + (*matrices)(m2, i, j - 1) + (*matrices)(m2, i, j + 1) +
+                                (*matrices)(m2, i + 1, j));
 
           if (options.inf_func == interference_function::fpisin) {
             star += fpisin_i * std::sin(pih * (double)j);
           }
 
           if (options.termination == termination_condition::accuracy || term_iteration == 1) {
-            double residuum = Matrix_In[i][j] - star;
+            double residuum = (*matrices)(m2, i, j) - star;
             residuum = std::fabs(residuum);
             maxresiduum = std::max(residuum, maxresiduum);
           }
 
-          Matrix_Out[i][j] = star;
+          (*matrices)(m1, i, j) = star;
         }
       }
 
@@ -203,7 +197,8 @@ namespace partdiff {
 
   static void displayMatrix(const calculation_arguments &arguments, const calculation_results &results,
                             const options &options) {
-    double **Matrix = arguments.Matrix[results.m];
+    Tensor *matrices = arguments.matrices;
+    auto m = results.m;
 
     const int interlines = options.interlines;
 
@@ -211,8 +206,8 @@ namespace partdiff {
 
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
-        std::cout << partdiff::build_string(
-            {std::fixed, std::internal, std::setprecision(4), " ", Matrix[y * (interlines + 1)][x * (interlines + 1)]});
+        std::cout << partdiff::build_string({std::fixed, std::internal, std::setprecision(4), " ",
+                                             (*matrices)(m, y * (interlines + 1), x * (interlines + 1))});
       }
       std::cout << std::endl;
     }

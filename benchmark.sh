@@ -1,8 +1,6 @@
 
 #!/usr/bin/env bash
 
-n=4
-
 for i in {1..10} ; do
   for p in 'pde' 'pde++' ; do
     echo -n "$p"' '
@@ -21,4 +19,4 @@ done | awk 'BEGIN {
 } END {
   printf("pde: total = %f, average = %f\n", pde, pde/10.0)
   printf("pde++: total = %f, average = %f\n", pdepp, pdepp/10.0)
-}' | tee 'benchmark.txt'
+}'

@@ -28,8 +28,6 @@ namespace partdiff {
 
   const std::string scientific_double(double val, int precision);
 
-  const uint8_t *allocateMemory(const std::size_t size);
-
   struct streamable {
     std::function<void(std::ostream &)> apply = {};
     using iomanip = std::ostream &(*)(std::ostream &);
@@ -104,19 +102,29 @@ namespace partdiff {
   } // namespace askparams
 
   struct calculation_arguments {
+
+    class Tensor {
+      public:
+      Tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols);
+      ~Tensor();
+      double &operator()(std::size_t matrix, std::size_t row, std::size_t col);
+      double operator()(std::size_t matrix, std::size_t row, std::size_t col) const;
+
+      private:
+      std::size_t num_matrices, num_rows, num_cols;
+      double *data = nullptr;
+    };
+
     uint64_t N;
     uint64_t num_matrices;
     double h;
-    double ***Matrix;
-    double *M;
+    Tensor *matrices = nullptr;
     calculation_arguments(const askparams::options &);
     ~calculation_arguments();
 
     private:
     askparams::options::interference_function inf_func;
-    void allocateMatrices();
     void initMatrices();
-    void freeMatrices();
   };
 
   struct calculation_results {
