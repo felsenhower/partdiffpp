@@ -20,7 +20,7 @@ namespace partdiff {
     if (num_matrices == 0 || num_rows == 0 || num_cols == 0) {
       throw "Tensor constructor has 0 size";
     }
-    data = new double[num_matrices * num_rows * num_cols];
+    data = new double[num_matrices * num_rows * num_cols]();
   }
 
   inline Tensor::~Tensor() {
@@ -48,15 +48,6 @@ namespace partdiff {
   }
 
   void calculation_arguments::initMatrices() {
-
-    for (uint64_t g = 0; g < this->num_matrices; g++) {
-      for (uint64_t i = 0; i <= N; i++) {
-        for (uint64_t j = 0; j <= N; j++) {
-          (*matrices)(g, i, j) = 0.0;
-        }
-      }
-    }
-
     if (this->inf_func == interference_function::f0) {
       for (uint64_t g = 0; g < this->num_matrices; g++) {
         for (uint64_t i = 0; i <= N; i++) {
@@ -65,7 +56,6 @@ namespace partdiff {
           (*matrices)(g, 0, i) = 1.0 - (h * i);
           (*matrices)(g, N, i) = h * i;
         }
-
         (*matrices)(g, N, 0) = 0.0;
         (*matrices)(g, 0, N) = 0.0;
       }
