@@ -28,8 +28,6 @@ namespace partdiff {
 
   const std::string scientific_double(double val, int precision);
 
-  const uint8_t *allocateMemory(const std::size_t size);
-
   struct streamable {
     std::function<void(std::ostream &)> apply = {};
     using iomanip = std::ostream &(*)(std::ostream &);

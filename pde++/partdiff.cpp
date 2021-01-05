@@ -17,10 +17,18 @@ namespace partdiff {
 
   inline Tensor::Tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols)
       : num_matrices(num_matrices), num_rows(num_rows), num_cols(num_cols) {
-    if (num_matrices == 0 || num_rows == 0 || num_cols == 0) {
-      throw "Tensor constructor has 0 size";
+    auto size = num_matrices * num_rows * num_cols;
+    try {
+      data = new double[size]();
+    } catch (std::bad_alloc &) {
+      auto size_bytes = size * sizeof(double);
+      if (partdiff::legacy_mode) {
+        std::cout << "Speicherprobleme! " << size_bytes << " Bytes angefordert" << std::endl;
+      } else {
+        std::cout << "Memory failure! Requested" << size_bytes << " bytes" << std::endl;
+      }
+      exit(EXIT_FAILURE);
     }
-    data = new double[num_matrices * num_rows * num_cols]();
   }
 
   inline Tensor::~Tensor() {
