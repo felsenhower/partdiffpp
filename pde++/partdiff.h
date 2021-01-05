@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 
+#include "matrix.h"
+
 namespace partdiff {
 
 #ifdef LEGACY
@@ -107,16 +109,13 @@ namespace partdiff {
     uint64_t N;
     uint64_t num_matrices;
     double h;
-    double ***Matrix;
-    double *M;
+    Tensor *Matrix = nullptr;
     calculation_arguments(const askparams::options &);
     ~calculation_arguments();
 
     private:
     askparams::options::interference_function inf_func;
-    void allocateMatrices();
     void initMatrices();
-    void freeMatrices();
   };
 
   struct calculation_results {

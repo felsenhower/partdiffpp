@@ -18,38 +18,20 @@ namespace partdiff {
     this->N = (options.interlines * 8) + 9 - 1;
     this->num_matrices = (options.method == calculation_method::jacobi) ? 2 : 1;
     this->h = 1.0 / this->N;
-    this->allocateMatrices();
+    this->Matrix = new Tensor(num_matrices, N + 1, N + 1);
     this->initMatrices();
   }
 
   calculation_arguments::~calculation_arguments() {
-    this->freeMatrices();
-  }
-
-  void calculation_arguments::allocateMatrices() {
-    const uint64_t N = this->N;
-
-    this->M = (double *)allocateMemory(this->num_matrices * (N + 1) * (N + 1) * sizeof(double));
-    this->Matrix = (double ***)allocateMemory(this->num_matrices * sizeof(double **));
-
-    for (uint64_t i = 0; i < this->num_matrices; i++) {
-      this->Matrix[i] = (double **)allocateMemory((N + 1) * sizeof(double *));
-
-      for (uint64_t j = 0; j <= N; j++) {
-        this->Matrix[i][j] = this->M + (i * (N + 1) * (N + 1)) + (j * (N + 1));
-      }
-    }
+    delete this->Matrix;
   }
 
   void calculation_arguments::initMatrices() {
-    const uint64_t N = this->N;
-    const double h = this->h;
-    double ***Matrix = this->Matrix;
 
     for (uint64_t g = 0; g < this->num_matrices; g++) {
       for (uint64_t i = 0; i <= N; i++) {
         for (uint64_t j = 0; j <= N; j++) {
-          Matrix[g][i][j] = 0.0;
+          (*Matrix)(g, i, j) = 0.0;
         }
       }
     }
@@ -57,24 +39,16 @@ namespace partdiff {
     if (this->inf_func == interference_function::f0) {
       for (uint64_t g = 0; g < this->num_matrices; g++) {
         for (uint64_t i = 0; i <= N; i++) {
-          Matrix[g][i][0] = 1.0 - (h * i);
-          Matrix[g][i][N] = h * i;
-          Matrix[g][0][i] = 1.0 - (h * i);
-          Matrix[g][N][i] = h * i;
+          (*Matrix)(g, i, 0) = 1.0 - (h * i);
+          (*Matrix)(g, i, N) = h * i;
+          (*Matrix)(g, 0, i) = 1.0 - (h * i);
+          (*Matrix)(g, N, i) = h * i;
         }
 
-        Matrix[g][N][0] = 0.0;
-        Matrix[g][0][N] = 0.0;
+        (*Matrix)(g, N, 0) = 0.0;
+        (*Matrix)(g, 0, N) = 0.0;
       }
     }
-  }
-
-  void calculation_arguments::freeMatrices() {
-    for (uint64_t i = 0; i < this->num_matrices; i++) {
-      delete[] this->Matrix[i];
-    }
-    delete[] this->Matrix;
-    delete[] this->M;
   }
 
   calculation_results::calculation_results() {
@@ -105,8 +79,8 @@ namespace partdiff {
     double maxresiduum = 0.0;
 
     while (term_iteration > 0) {
-      double **Matrix_Out = arguments.Matrix[m1];
-      double **Matrix_In = arguments.Matrix[m2];
+
+      Tensor *Matrix = arguments.Matrix;
 
       maxresiduum = 0.0;
 
@@ -118,19 +92,20 @@ namespace partdiff {
         }
 
         for (int j = 1; j < N; j++) {
-          double star = 0.25 * (Matrix_In[i - 1][j] + Matrix_In[i][j - 1] + Matrix_In[i][j + 1] + Matrix_In[i + 1][j]);
+          double star = 0.25 * ((*Matrix)(m2, i - 1, j) + (*Matrix)(m2, i, j - 1) + (*Matrix)(m2, i, j + 1) +
+                                (*Matrix)(m2, i + 1, j));
 
           if (options.inf_func == interference_function::fpisin) {
             star += fpisin_i * std::sin(pih * (double)j);
           }
 
           if (options.termination == termination_condition::accuracy || term_iteration == 1) {
-            double residuum = Matrix_In[i][j] - star;
+            double residuum = (*Matrix)(m2, i, j) - star;
             residuum = std::fabs(residuum);
             maxresiduum = std::max(residuum, maxresiduum);
           }
 
-          Matrix_Out[i][j] = star;
+          (*Matrix)(m1, i, j) = star;
         }
       }
 
@@ -203,7 +178,8 @@ namespace partdiff {
 
   static void displayMatrix(const calculation_arguments &arguments, const calculation_results &results,
                             const options &options) {
-    double **Matrix = arguments.Matrix[results.m];
+    Tensor *Matrix = arguments.Matrix;
+    auto m = results.m;
 
     const int interlines = options.interlines;
 
@@ -211,8 +187,8 @@ namespace partdiff {
 
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
-        std::cout << partdiff::build_string(
-            {std::fixed, std::internal, std::setprecision(4), " ", Matrix[y * (interlines + 1)][x * (interlines + 1)]});
+        std::cout << partdiff::build_string({std::fixed, std::internal, std::setprecision(4), " ",
+                                             (*Matrix)(m, y * (interlines + 1), x * (interlines + 1))});
       }
       std::cout << std::endl;
     }
