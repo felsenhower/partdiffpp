@@ -15,12 +15,12 @@ namespace partdiff {
   static constexpr double pi = std::numbers::pi;
   static constexpr double two_pi_square = (2 * pi * pi);
 
-  inline Tensor::Tensor(std::size_t matrices, std::size_t rows, std::size_t cols)
-      : matrices(matrices), rows(rows), cols(cols) {
-    if (matrices == 0 || rows == 0 || cols == 0) {
+  inline Tensor::Tensor(std::size_t num_matrices, std::size_t rows, std::size_t cols)
+      : num_matrices(num_matrices), rows(rows), cols(cols) {
+    if (num_matrices == 0 || rows == 0 || cols == 0) {
       throw "Tensor constructor has 0 size";
     }
-    data = new double[matrices * rows * cols];
+    data = new double[num_matrices * rows * cols];
   }
 
   inline Tensor::~Tensor() {
