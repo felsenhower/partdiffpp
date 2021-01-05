@@ -2,17 +2,14 @@
 
 class Tensor {
   public:
-  Tensor() : Tensor(1, 1, 1){};
   Tensor(std::size_t matrices, std::size_t rows, std::size_t cols);
-  double &operator()(std::size_t matrices, std::size_t row, std::size_t col);
-  double operator()(std::size_t matrices, std::size_t row, std::size_t col) const;
   ~Tensor();
-  Tensor(const Tensor &m);
-  Tensor &operator=(const Tensor &m);
+  double &operator()(std::size_t matrix, std::size_t row, std::size_t col);
+  double operator()(std::size_t matrix, std::size_t row, std::size_t col) const;
 
   private:
   std::size_t matrices, rows, cols;
-  double *data;
+  double *data = nullptr;
 };
 
 inline Tensor::Tensor(std::size_t matrices, std::size_t rows, std::size_t cols)
