@@ -7,8 +7,6 @@
 #include <iostream>
 #include <vector>
 
-#include "matrix.h"
-
 namespace partdiff {
 
 #ifdef LEGACY
@@ -106,10 +104,23 @@ namespace partdiff {
   } // namespace askparams
 
   struct calculation_arguments {
+
+    class Tensor {
+      public:
+      Tensor(std::size_t matrices, std::size_t rows, std::size_t cols);
+      ~Tensor();
+      double &operator()(std::size_t matrix, std::size_t row, std::size_t col);
+      double operator()(std::size_t matrix, std::size_t row, std::size_t col) const;
+
+      private:
+      std::size_t matrices, rows, cols;
+      double *data = nullptr;
+    };
+
     uint64_t N;
     uint64_t num_matrices;
     double h;
-    Tensor *Matrix = nullptr;
+    Tensor *matrices = nullptr;
     calculation_arguments(const askparams::options &);
     ~calculation_arguments();
 

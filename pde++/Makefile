@@ -56,5 +56,4 @@ beautify: partdiff.cpp partdiff.h askparams.cpp utils.cpp
 	clang-format --style=file -i partdiff.h
 	clang-format --style=file -i askparams.cpp
 	clang-format --style=file -i utils.cpp
-	clang-format --style=file -i matrix.h
 
