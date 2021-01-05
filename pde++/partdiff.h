@@ -107,13 +107,13 @@ namespace partdiff {
 
     class Tensor {
       public:
-      Tensor(std::size_t num_matrices, std::size_t rows, std::size_t cols);
+      Tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols);
       ~Tensor();
       double &operator()(std::size_t matrix, std::size_t row, std::size_t col);
       double operator()(std::size_t matrix, std::size_t row, std::size_t col) const;
 
       private:
-      std::size_t num_matrices, rows, cols;
+      std::size_t num_matrices, num_rows, num_cols;
       double *data = nullptr;
     };
 

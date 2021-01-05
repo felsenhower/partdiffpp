@@ -15,12 +15,12 @@ namespace partdiff {
   static constexpr double pi = std::numbers::pi;
   static constexpr double two_pi_square = (2 * pi * pi);
 
-  inline Tensor::Tensor(std::size_t num_matrices, std::size_t rows, std::size_t cols)
-      : num_matrices(num_matrices), rows(rows), cols(cols) {
-    if (num_matrices == 0 || rows == 0 || cols == 0) {
+  inline Tensor::Tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols)
+      : num_matrices(num_matrices), num_rows(num_rows), num_cols(num_cols) {
+    if (num_matrices == 0 || num_rows == 0 || num_cols == 0) {
       throw "Tensor constructor has 0 size";
     }
-    data = new double[num_matrices * rows * cols];
+    data = new double[num_matrices * num_rows * num_cols];
   }
 
   inline Tensor::~Tensor() {
@@ -28,11 +28,11 @@ namespace partdiff {
   }
 
   inline double &Tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) {
-    return data[(cols * rows * matrix) + (cols * row) + (col)];
+    return data[(num_cols * num_rows * matrix) + (num_cols * row) + (col)];
   }
 
   inline double Tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) const {
-    return data[(cols * rows * matrix) + (cols * row) + (col)];
+    return data[(num_cols * num_rows * matrix) + (num_cols * row) + (col)];
   }
 
   calculation_arguments::calculation_arguments(const options &options) : inf_func(options.inf_func) {
