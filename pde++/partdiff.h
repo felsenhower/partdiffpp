@@ -105,7 +105,12 @@ namespace partdiff {
 
     class Tensor {
       public:
+      Tensor(){};
       Tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols);
+      Tensor(const Tensor &other);
+      Tensor(Tensor &&other) noexcept;
+      Tensor &operator=(const Tensor &other);
+      Tensor &operator=(Tensor &&other) noexcept;
       ~Tensor();
       double &operator()(std::size_t matrix, std::size_t row, std::size_t col);
       double operator()(std::size_t matrix, std::size_t row, std::size_t col) const;
@@ -118,9 +123,8 @@ namespace partdiff {
     uint64_t N;
     uint64_t num_matrices;
     double h;
-    Tensor *matrices = nullptr;
+    Tensor matrices;
     calculation_arguments(const askparams::options &);
-    ~calculation_arguments();
 
     private:
     askparams::options::interference_function inf_func;

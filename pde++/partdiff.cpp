@@ -31,8 +31,31 @@ namespace partdiff {
     }
   }
 
+  inline Tensor::Tensor(const Tensor &other)
+      : num_matrices(other.num_matrices), num_rows(other.num_rows), num_cols(other.num_cols), data(other.data) {}
+
+  inline Tensor::Tensor(Tensor &&other) noexcept
+      : num_matrices(other.num_matrices), num_rows(other.num_rows), num_cols(other.num_cols),
+        data(std::exchange(other.data, nullptr)) {}
+
+  inline Tensor &Tensor::operator=(const Tensor &other) {
+    return *this = Tensor(other);
+  }
+
+  inline Tensor &Tensor::operator=(Tensor &&other) noexcept // move assignment
+  {
+    std::swap(data, other.data);
+    num_matrices = other.num_matrices;
+    num_cols = other.num_cols;
+    num_rows = other.num_rows;
+    return *this;
+  }
+
   inline Tensor::~Tensor() {
-    delete[] data;
+    if (data) {
+      delete[] data;
+      data = nullptr;
+    }
   }
 
   inline double &Tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) {
@@ -47,25 +70,21 @@ namespace partdiff {
     this->N = (options.interlines * 8) + 9 - 1;
     this->num_matrices = (options.method == calculation_method::jacobi) ? 2 : 1;
     this->h = 1.0 / this->N;
-    this->matrices = new Tensor(num_matrices, N + 1, N + 1);
+    this->matrices = Tensor(num_matrices, N + 1, N + 1);
     this->initMatrices();
-  }
-
-  calculation_arguments::~calculation_arguments() {
-    delete this->matrices;
   }
 
   void calculation_arguments::initMatrices() {
     if (this->inf_func == interference_function::f0) {
       for (uint64_t g = 0; g < this->num_matrices; g++) {
         for (uint64_t i = 0; i <= N; i++) {
-          (*matrices)(g, i, 0) = 1.0 - (h * i);
-          (*matrices)(g, i, N) = h * i;
-          (*matrices)(g, 0, i) = 1.0 - (h * i);
-          (*matrices)(g, N, i) = h * i;
+          this->matrices(g, i, 0) = 1.0 - (h * i);
+          this->matrices(g, i, N) = h * i;
+          this->matrices(g, 0, i) = 1.0 - (h * i);
+          this->matrices(g, N, i) = h * i;
         }
-        (*matrices)(g, N, 0) = 0.0;
-        (*matrices)(g, 0, N) = 0.0;
+        this->matrices(g, N, 0) = 0.0;
+        this->matrices(g, 0, N) = 0.0;
       }
     }
   }
@@ -76,7 +95,7 @@ namespace partdiff {
     this->stat_accuracy = 0;
   }
 
-  static void calculate(const calculation_arguments &arguments, calculation_results &results, const options &options) {
+  static void calculate(calculation_arguments &arguments, calculation_results &results, const options &options) {
     results.start_time = std::chrono::high_resolution_clock::now();
 
     const int N = arguments.N;
@@ -99,8 +118,6 @@ namespace partdiff {
 
     while (term_iteration > 0) {
 
-      Tensor *matrices = arguments.matrices;
-
       maxresiduum = 0.0;
 
       for (int i = 1; i < N; i++) {
@@ -111,20 +128,20 @@ namespace partdiff {
         }
 
         for (int j = 1; j < N; j++) {
-          double star = 0.25 * ((*matrices)(m2, i - 1, j) + (*matrices)(m2, i, j - 1) + (*matrices)(m2, i, j + 1) +
-                                (*matrices)(m2, i + 1, j));
+          double star = 0.25 * (arguments.matrices(m2, i - 1, j) + arguments.matrices(m2, i, j - 1) +
+                                arguments.matrices(m2, i, j + 1) + arguments.matrices(m2, i + 1, j));
 
           if (options.inf_func == interference_function::fpisin) {
             star += fpisin_i * std::sin(pih * (double)j);
           }
 
           if (options.termination == termination_condition::accuracy || term_iteration == 1) {
-            double residuum = (*matrices)(m2, i, j) - star;
+            double residuum = arguments.matrices(m2, i, j) - star;
             residuum = std::fabs(residuum);
             maxresiduum = std::max(residuum, maxresiduum);
           }
 
-          (*matrices)(m1, i, j) = star;
+          arguments.matrices(m1, i, j) = star;
         }
       }
 
@@ -197,7 +214,6 @@ namespace partdiff {
 
   static void displayMatrix(const calculation_arguments &arguments, const calculation_results &results,
                             const options &options) {
-    Tensor *matrices = arguments.matrices;
     auto m = results.m;
 
     const int interlines = options.interlines;
@@ -207,7 +223,7 @@ namespace partdiff {
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
         std::cout << partdiff::build_string({std::fixed, std::internal, std::setprecision(4), " ",
-                                             (*matrices)(m, y * (interlines + 1), x * (interlines + 1))});
+                                             arguments.matrices(m, y * (interlines + 1), x * (interlines + 1))});
       }
       std::cout << std::endl;
     }
