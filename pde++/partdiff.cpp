@@ -6,16 +6,16 @@
 namespace partdiff {
 
   using argument_parser = askparams::argument_parser;
-  using options = askparams::options;
-  using calculation_method = options::calculation_method;
-  using interference_function = options::interference_function;
-  using termination_condition = options::termination_condition;
-  using Tensor = calculation_arguments::Tensor;
+  using calculation_options = askparams::calculation_options;
+  using calculation_method = calculation_options::calculation_method;
+  using interference_function = calculation_options::interference_function;
+  using termination_condition = calculation_options::termination_condition;
+  using tensor = calculation_arguments::tensor;
 
   static constexpr double pi = std::numbers::pi;
   static constexpr double two_pi_square = (2 * pi * pi);
 
-  inline Tensor::Tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols)
+  inline tensor::tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols)
       : num_matrices(num_matrices), num_rows(num_rows), num_cols(num_cols) {
     auto size = num_matrices * num_rows * num_cols;
     try {
@@ -31,18 +31,18 @@ namespace partdiff {
     }
   }
 
-  inline Tensor::Tensor(const Tensor &other)
+  inline tensor::tensor(const tensor &other)
       : num_matrices(other.num_matrices), num_rows(other.num_rows), num_cols(other.num_cols), data(other.data) {}
 
-  inline Tensor::Tensor(Tensor &&other) noexcept
+  inline tensor::tensor(tensor &&other) noexcept
       : num_matrices(other.num_matrices), num_rows(other.num_rows), num_cols(other.num_cols),
         data(std::exchange(other.data, nullptr)) {}
 
-  inline Tensor &Tensor::operator=(const Tensor &other) {
-    return *this = Tensor(other);
+  inline tensor &tensor::operator=(const tensor &other) {
+    return *this = tensor(other);
   }
 
-  inline Tensor &Tensor::operator=(Tensor &&other) noexcept // move assignment
+  inline tensor &tensor::operator=(tensor &&other) noexcept // move assignment
   {
     std::swap(data, other.data);
     num_matrices = other.num_matrices;
@@ -51,30 +51,30 @@ namespace partdiff {
     return *this;
   }
 
-  inline Tensor::~Tensor() {
+  inline tensor::~tensor() {
     if (data) {
       delete[] data;
       data = nullptr;
     }
   }
 
-  inline double &Tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) {
+  inline double &tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) {
     return data[(num_cols * num_rows * matrix) + (num_cols * row) + (col)];
   }
 
-  inline double Tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) const {
+  inline double tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) const {
     return data[(num_cols * num_rows * matrix) + (num_cols * row) + (col)];
   }
 
-  calculation_arguments::calculation_arguments(const options &options) : inf_func(options.inf_func) {
+  calculation_arguments::calculation_arguments(const calculation_options &options) : inf_func(options.inf_func) {
     this->N = (options.interlines * 8) + 9 - 1;
     this->num_matrices = (options.method == calculation_method::jacobi) ? 2 : 1;
     this->h = 1.0 / this->N;
-    this->matrices = Tensor(num_matrices, N + 1, N + 1);
-    this->initMatrices();
+    this->matrices = tensor(num_matrices, N + 1, N + 1);
+    this->init_matrices();
   }
 
-  void calculation_arguments::initMatrices() {
+  void calculation_arguments::init_matrices() {
     if (this->inf_func == interference_function::f0) {
       for (uint64_t g = 0; g < this->num_matrices; g++) {
         for (uint64_t i = 0; i <= N; i++) {
@@ -95,7 +95,8 @@ namespace partdiff {
     this->stat_accuracy = 0;
   }
 
-  static void calculate(calculation_arguments &arguments, calculation_results &results, const options &options) {
+  static void calculate(calculation_arguments &arguments, calculation_results &results,
+                        const calculation_options &options) {
     results.start_time = std::chrono::high_resolution_clock::now();
 
     const int N = arguments.N;
@@ -165,8 +166,8 @@ namespace partdiff {
     results.end_time = std::chrono::high_resolution_clock::now();
   }
 
-  static void displayStatistics(const calculation_arguments &arguments, const calculation_results &results,
-                                const options &options) {
+  static void display_statistics(const calculation_arguments &arguments, const calculation_results &results,
+                                 const calculation_options &options) {
 
     const auto left_pad = [](const std::string input) {
       constexpr std::size_t padding = (partdiff::legacy_mode ? 20 : 25);
@@ -212,8 +213,8 @@ namespace partdiff {
               << std::endl;
   }
 
-  static void displayMatrix(const calculation_arguments &arguments, const calculation_results &results,
-                            const options &options) {
+  static void display_matrix(const calculation_arguments &arguments, const calculation_results &results,
+                             const calculation_options &options) {
     auto m = results.m;
 
     const int interlines = options.interlines;
@@ -235,18 +236,18 @@ namespace partdiff {
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
 using argument_parser = partdiff::askparams::argument_parser;
-using options = partdiff::askparams::options;
+using calculation_options = partdiff::askparams::calculation_options;
 
 int main(const int argc, char const *argv[]) {
   argument_parser parser(argc, argv);
-  options options = parser.get_options();
+  calculation_options options = parser.get_options();
   calculation_arguments arguments(options);
   calculation_results results;
 
   calculate(arguments, results, options);
 
-  displayStatistics(arguments, results, options);
-  displayMatrix(arguments, results, options);
+  display_statistics(arguments, results, options);
+  display_matrix(arguments, results, options);
 
   return EXIT_SUCCESS;
 }

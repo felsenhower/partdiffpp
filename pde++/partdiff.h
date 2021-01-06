@@ -44,7 +44,7 @@ namespace partdiff {
 
   namespace askparams {
 
-    struct options {
+    struct calculation_options {
       enum class calculation_method : uint64_t { gauss_seidel = 1, jacobi = 2 };
       enum class interference_function : uint64_t { f0 = 1, fpisin = 2 };
       enum class termination_condition : uint64_t { accuracy = 1, iterations = 2 };
@@ -60,7 +60,7 @@ namespace partdiff {
     class argument_parser {
       public:
       argument_parser(const int argc, char const *argv[]);
-      options get_options();
+      calculation_options get_options();
 
       private:
       struct argument_description {
@@ -81,18 +81,18 @@ namespace partdiff {
         term_iteration = 6
       };
 
-      options parsed_options;
+      calculation_options options;
       std::string app_name;
       std::vector<std::string> args;
       std::vector<argument_description> argument_descriptions;
       argument_description get_description(std::size_t index) const;
       argument_description get_description(argument_index index) const;
       void usage() const;
-      void askParams();
-      void parseParam(std::size_t index, std::string &input);
-      void parseParam(argument_index index, std::string &input);
-      void askParam(std::size_t index);
-      void askParam(argument_index index);
+      void ask_params();
+      void parse_param(std::size_t index, std::string &input);
+      void parse_param(argument_index index, std::string &input);
+      void ask_param(std::size_t index);
+      void ask_param(argument_index index);
       void fill_argument_descriptions();
       template <class T>
       void add_argument_description(std::string name, T *target, std::string description_for_usage,
@@ -103,15 +103,15 @@ namespace partdiff {
 
   struct calculation_arguments {
 
-    class Tensor {
+    class tensor {
       public:
-      Tensor(){};
-      Tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols);
-      Tensor(const Tensor &other);
-      Tensor(Tensor &&other) noexcept;
-      Tensor &operator=(const Tensor &other);
-      Tensor &operator=(Tensor &&other) noexcept;
-      ~Tensor();
+      tensor(){};
+      tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols);
+      tensor(const tensor &other);
+      tensor(tensor &&other) noexcept;
+      tensor &operator=(const tensor &other);
+      tensor &operator=(tensor &&other) noexcept;
+      ~tensor();
       double &operator()(std::size_t matrix, std::size_t row, std::size_t col);
       double operator()(std::size_t matrix, std::size_t row, std::size_t col) const;
 
@@ -123,21 +123,21 @@ namespace partdiff {
     uint64_t N;
     uint64_t num_matrices;
     double h;
-    Tensor matrices;
-    calculation_arguments(const askparams::options &);
+    tensor matrices;
+    calculation_arguments(const askparams::calculation_options &);
 
     private:
-    askparams::options::interference_function inf_func;
-    void initMatrices();
+    askparams::calculation_options::interference_function inf_func;
+    void init_matrices();
   };
 
   struct calculation_results {
-    using timepoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
+    using time_point = std::chrono::time_point<std::chrono::high_resolution_clock>;
     uint64_t m;
     uint64_t stat_iteration;
     double stat_accuracy;
-    timepoint start_time;
-    timepoint end_time;
+    time_point start_time;
+    time_point end_time;
     calculation_results();
   };
 
