@@ -9,7 +9,8 @@ namespace partdiff {
     using termination_condition = calculation_options::termination_condition;
 
     argument_parser::argument_parser(const int argc, char const *argv[])
-        : app_name(argv[0]), args(argv + 1, argv + argc) {
+      : app_name(argv[0]),
+        args(argv + 1, argv + argc) {
       this->fill_argument_descriptions();
       this->ask_params();
     }

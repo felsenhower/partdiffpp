@@ -26,4 +26,7 @@ IncludeCategories:
   - Regex: '.*'
     Priority: 0
     SortPriority: 0
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AllowAllConstructorInitializersOnNextLine: false
+ConstructorInitializerIndentWidth: 2
 ---

@@ -16,7 +16,9 @@ namespace partdiff {
   static constexpr double two_pi_square = (2 * pi * pi);
 
   inline tensor::tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols)
-      : num_matrices(num_matrices), num_rows(num_rows), num_cols(num_cols) {
+    : num_matrices(num_matrices),
+      num_rows(num_rows),
+      num_cols(num_cols) {
     auto size = num_matrices * num_rows * num_cols;
     try {
       data = new double[size]();
@@ -32,11 +34,16 @@ namespace partdiff {
   }
 
   inline tensor::tensor(const tensor &other)
-      : num_matrices(other.num_matrices), num_rows(other.num_rows), num_cols(other.num_cols), data(other.data) {}
+    : num_matrices(other.num_matrices),
+      num_rows(other.num_rows),
+      num_cols(other.num_cols),
+      data(other.data) {}
 
   inline tensor::tensor(tensor &&other) noexcept
-      : num_matrices(other.num_matrices), num_rows(other.num_rows), num_cols(other.num_cols),
-        data(std::exchange(other.data, nullptr)) {}
+    : num_matrices(other.num_matrices),
+      num_rows(other.num_rows),
+      num_cols(other.num_cols),
+      data(std::exchange(other.data, nullptr)) {}
 
   inline tensor &tensor::operator=(const tensor &other) {
     return *this = tensor(other);
