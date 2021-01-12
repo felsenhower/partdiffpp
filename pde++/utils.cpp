@@ -1,11 +1,10 @@
-#include <sstream>
-
 #include "partdiff.h"
 
 namespace partdiff {
 
-  const std::string scientific_double(double val, int precision) {
-    std::string temp = build_string({std::scientific, std::setprecision(precision), val});
+  const std::string scientific_double(const double val, const int precision) {
+    std::string temp =
+        build_string([precision, val](auto &ss) { ss << std::scientific << std::setprecision(precision) << val; });
     int epos = temp.find("e");
     std::string mantissa_str = temp.substr(0, epos);
     std::string exponent_str = temp.substr(epos + 1, temp.length() - epos - 1);
@@ -13,11 +12,9 @@ namespace partdiff {
     return mantissa_str + "e" + std::to_string(exponent);
   }
 
-  const std::string build_string(const std::initializer_list<streamable> &streamables) {
+  std::string build_string(const std::function<void(std::stringstream &)> input) {
     std::stringstream ss;
-    for (const streamable &s : streamables) {
-      s.apply(ss);
-    }
+    input(ss);
     return ss.str();
   }
 

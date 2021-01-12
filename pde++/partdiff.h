@@ -5,6 +5,7 @@
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 namespace partdiff {
@@ -26,21 +27,9 @@ namespace partdiff {
     return static_cast<U>(v);
   }
 
-  const std::string scientific_double(double val, int precision);
+  const std::string scientific_double(const double val, const int precision);
 
-  struct streamable {
-    std::function<void(std::ostream &)> apply = {};
-    using iomanip = std::ostream &(*)(std::ostream &);
-    streamable(iomanip x) {
-      this->apply = [x](auto &ss) { ss << *x; };
-    }
-    template <typename T>
-    streamable(const T &x) {
-      this->apply = [x](auto &ss) { ss << x; };
-    }
-  };
-
-  const std::string build_string(const std::initializer_list<streamable> &streamables);
+  std::string build_string(const std::function<void(std::stringstream &)> input);
 
   namespace askparams {
 

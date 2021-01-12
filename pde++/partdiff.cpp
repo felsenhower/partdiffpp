@@ -176,9 +176,10 @@ namespace partdiff {
   static void display_statistics(const calculation_arguments &arguments, const calculation_results &results,
                                  const calculation_options &options) {
 
-    const auto left_pad = [](const std::string input) {
+    const auto left_pad = [](const std::string &input) {
       constexpr std::size_t padding = (partdiff::legacy_mode ? 20 : 25);
-      return partdiff::build_string({std::setw(padding), std::left, std::setfill(' '), input});
+      return partdiff::build_string(
+          [&input](auto &ss) { ss << std::setw(padding) << std::left << std::setfill(' ') << input; });
     };
 
     const int N = arguments.N;
@@ -188,9 +189,12 @@ namespace partdiff {
     const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) * arguments.num_matrices / 1024.0 / 1024.0;
 
     std::cout << left_pad(partdiff::legacy_mode ? "Berechnungszeit:" : "Calculation time:")
-              << partdiff::build_string({std::fixed, std::setprecision(6), time}) << " s" << std::endl
+              << partdiff::build_string([time](auto &ss) { ss << std::fixed << std::setprecision(6) << time; }) << " s"
+              << std::endl
               << left_pad(partdiff::legacy_mode ? "Speicherbedarf:" : "Memory usage:")
-              << partdiff::build_string({std::fixed, std::setprecision(6), memory_consumption}) << " MiB" << std::endl;
+              << partdiff::build_string(
+                     [memory_consumption](auto &ss) { ss << std::fixed << std::setprecision(6) << memory_consumption; })
+              << " MiB" << std::endl;
 
     std::cout << left_pad(partdiff::legacy_mode ? "Berechnungsmethode:" : "Calculation method:");
 
@@ -216,22 +220,21 @@ namespace partdiff {
     std::cout << std::endl << left_pad(partdiff::legacy_mode ? "Anzahl Iterationen:" : "Number of iterations:");
     std::cout << results.stat_iteration << std::endl
               << left_pad(partdiff::legacy_mode ? "Norm des Fehlers:" : "Norm of error:")
-              << partdiff::build_string({std::scientific, results.stat_accuracy}) << std::endl
+              << partdiff::build_string([acc = results.stat_accuracy](auto &ss) { ss << std::scientific << acc; })
+              << std::endl
               << std::endl;
   }
 
   static void display_matrix(const calculation_arguments &arguments, const calculation_results &results,
                              const calculation_options &options) {
-    auto m = results.m;
-
-    const int interlines = options.interlines;
-
     std::cout << "Matrix:" << std::endl;
 
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
-        std::cout << partdiff::build_string({std::fixed, std::internal, std::setprecision(4), " ",
-                                             arguments.matrices(m, y * (interlines + 1), x * (interlines + 1))});
+        std::cout << partdiff::build_string([&arguments, &results, &options, x, y](auto &ss) {
+          ss << std::fixed << std::internal << std::setprecision(4) << " "
+             << arguments.matrices(results.m, y * (options.interlines + 1), x * (options.interlines + 1));
+        });
       }
       std::cout << std::endl;
     }
