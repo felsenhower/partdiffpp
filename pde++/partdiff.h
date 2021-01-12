@@ -8,6 +8,8 @@
 #include <sstream>
 #include <vector>
 
+#include "fmt/core.h"
+
 namespace partdiff {
 
 #ifdef LEGACY

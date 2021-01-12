@@ -1,20 +1,30 @@
-.PHONY: default all clean test testout testmem beautify
+.PHONY: default all clean test testout testmem beautify libfmt cleanhard
 
 CC = g++
 CXX = $(CC)
-CFLAGS  = -std=c++20 -Wall -Werror -Wextra -Wpedantic -O3 -g
+CFLAGS  = -std=c++20 -Wall -Werror -Wextra -Wpedantic -O3 -g -I./fmt/include
 ifeq ($(COMPILE_MODE),LEGACY)
 	CFLAGS += -DLEGACY
 endif
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = $(CXXFLAGS)
-LDLIBS  = -lm
+LDLIBS  = -lm -L./fmt/build -lfmt
 OBJS = partdiff.o askparams.o utils.cpp
-
 
 default: all
 
-all: beautify partdiff
+all: libfmt beautify partdiff
+
+libfmt: fmt/build/libfmt.a fmt/include/fmt/core.h
+
+fmt/build/libfmt.a: fmt/src/format.cc
+	mkdir -p fmt/build && \
+	cd fmt/build && \
+	cmake -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE .. && \
+	make
+
+fmt/src/format.cc:
+	git submodule update --init
 
 partdiff: $(OBJS)
 
@@ -22,6 +32,9 @@ clean:
 	$(RM) partdiff
 	$(RM) *.o
 	$(RM) *~
+
+cleanhard: clean
+	$(RM) fmt
 
 test: testout testmem
 
@@ -56,4 +69,3 @@ beautify: partdiff.cpp partdiff.h askparams.cpp utils.cpp
 	clang-format --style=file -i partdiff.h
 	clang-format --style=file -i askparams.cpp
 	clang-format --style=file -i utils.cpp
-

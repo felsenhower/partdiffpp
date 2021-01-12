@@ -3,8 +3,7 @@
 namespace partdiff {
 
   const std::string scientific_double(const double val, const int precision) {
-    std::string temp =
-        build_string([precision, val](auto &ss) { ss << std::scientific << std::setprecision(precision) << val; });
+    auto temp = fmt::format("{:." + std::to_string(precision) + "e}", val);
     int epos = temp.find("e");
     std::string mantissa_str = temp.substr(0, epos);
     std::string exponent_str = temp.substr(epos + 1, temp.length() - epos - 1);
