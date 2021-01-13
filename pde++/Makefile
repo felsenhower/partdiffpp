@@ -9,7 +9,7 @@ endif
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = $(CXXFLAGS)
 LDLIBS  = -lm -L./fmt/build -lfmt
-OBJS = partdiff.o askparams.o utils.cpp
+OBJS = partdiff.o askparams.o
 
 default: all
 
@@ -64,8 +64,7 @@ testinteractive: default
 	bash -c 'diff <((for i in 1 1 0 1 2 47 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f1 | grep -A9 "Matrix:")'
 	bash -c 'diff <((for i in 1 1 0 1 1 8.7e-5 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f1 | grep -A9 "Matrix:")'
 
-beautify: partdiff.cpp partdiff.h askparams.cpp utils.cpp
+beautify: partdiff.cpp partdiff.h askparams.cpp
 	clang-format --style=file -i partdiff.cpp
 	clang-format --style=file -i partdiff.h
 	clang-format --style=file -i askparams.cpp
-	clang-format --style=file -i utils.cpp

@@ -24,12 +24,12 @@ namespace partdiff {
   static constexpr double min_accuracy = 1e-4;
   static constexpr double max_accuracy = 1e-20;
 
+  static constexpr char invalid_text[] = "< invalid >";
+
   template <typename T, typename U = std::underlying_type_t<T>>
   U to_underlying(T v) {
     return static_cast<U>(v);
   }
-
-  const std::string scientific_double(const double val, const int precision);
 
   namespace askparams {
 
@@ -66,8 +66,9 @@ namespace partdiff {
         interlines = 2,
         inf_func = 3,
         termination = 4,
-        term_accuracy = 5,
-        term_iteration = 6
+        term_dummy = 5,
+        term_accuracy = 6,
+        term_iteration = 7
       };
 
       calculation_options options;
@@ -86,6 +87,8 @@ namespace partdiff {
       template <class T>
       void add_argument_description(std::string name, T *target, std::string description_for_usage,
                                     std::string description_for_interactive, std::function<bool()> check);
+      void add_argument_description(std::string name, std::string description_for_usage,
+                                    std::string description_for_interactive);
     };
 
   } // namespace askparams
