@@ -24,8 +24,6 @@ namespace partdiff {
   static constexpr double min_accuracy = 1e-4;
   static constexpr double max_accuracy = 1e-20;
 
-  static constexpr char invalid_text[] = "< invalid >";
-
   template <typename T, typename U = std::underlying_type_t<T>>
   U to_underlying(T v) {
     return static_cast<U>(v);

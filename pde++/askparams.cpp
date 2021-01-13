@@ -107,6 +107,9 @@ namespace partdiff {
       };
 
       constexpr int indent_width = 17;
+      const std::string accuracy_text = (partdiff::legacy_mode ? "precision" : "accuracy");
+      const std::string acc_text = (partdiff::legacy_mode ? "prec" : "acc");
+      const std::string invalid_text = "< invalid >";
 
       auto number = &(this->options.number);
       this->add_argument_description("num", number, fmt::format("number of threads (1 .. {:d})", partdiff::max_threads),
@@ -161,40 +164,38 @@ namespace partdiff {
                                                  "{1:{0}s}{2:d}: sufficient {3:s}\n"
                                                  "{1:{0}s}{4:d}: number of iterations",
                                                  indent_width, "", to_underlying(termination_condition::accuracy),
-                                                 (partdiff::legacy_mode ? "precision" : "accuracy"),
-                                                 to_underlying(termination_condition::iterations)),
+                                                 accuracy_text, to_underlying(termination_condition::iterations)),
                                      fmt::format("Select termination:\n"
                                                  " {:d}: sufficient {}.\n"
                                                  " {:d}: number of iterations.\n"
                                                  "termination> ",
-                                                 to_underlying(termination_condition::accuracy),
-                                                 (partdiff::legacy_mode ? "precision" : "accuracy"),
+                                                 to_underlying(termination_condition::accuracy), accuracy_text,
                                                  to_underlying(termination_condition::iterations)),
                                      [termination] {
                                        return (*termination == termination_condition::accuracy ||
                                                *termination == termination_condition::iterations);
                                      });
 
-      this->add_argument_description(fmt::format("{}/iter", (partdiff::legacy_mode ? "prec" : "acc")),
+      this->add_argument_description(fmt::format("{}/iter", acc_text),
                                      fmt::format("depending on term:\n"
                                                  "{1:{0}s}{2:s}:  {3:s} .. {4:s}\n"
                                                  "{1:{0}s}iterations:    1 .. {5:d}\n",
-                                                 indent_width, "", (partdiff::legacy_mode ? "precision" : "accuracy"),
+                                                 indent_width, "", accuracy_text,
                                                  scientific_double(partdiff::min_accuracy),
                                                  scientific_double(partdiff::max_accuracy), partdiff::max_iteration),
                                      invalid_text);
 
       auto term_accuracy = &(this->options.term_accuracy);
-      this->add_argument_description(
-          (partdiff::legacy_mode ? "prec" : "acc"), term_accuracy, invalid_text,
-          fmt::format("Select {}:\n"
-                      "  Range: {:s} .. {:s}.\n"
-                      "{}> ",
-                      (partdiff::legacy_mode ? "precision" : "accuracy"), scientific_double(partdiff::min_accuracy),
-                      scientific_double(partdiff::max_accuracy), (partdiff::legacy_mode ? "precision" : "accuracy")),
-          [term_accuracy] {
-            return (*term_accuracy >= partdiff::max_accuracy && *term_accuracy <= partdiff::min_accuracy);
-          });
+      this->add_argument_description(acc_text, term_accuracy, invalid_text,
+                                     fmt::format("Select {}:\n"
+                                                 "  Range: {:s} .. {:s}.\n"
+                                                 "{}> ",
+                                                 accuracy_text, scientific_double(partdiff::min_accuracy),
+                                                 scientific_double(partdiff::max_accuracy), accuracy_text),
+                                     [term_accuracy] {
+                                       return (*term_accuracy >= partdiff::max_accuracy &&
+                                               *term_accuracy <= partdiff::min_accuracy);
+                                     });
 
       auto term_iteration = &(this->options.term_iteration);
       this->add_argument_description(
