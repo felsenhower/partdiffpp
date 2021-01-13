@@ -176,38 +176,34 @@ namespace partdiff {
   static void display_statistics(const calculation_arguments &arguments, const calculation_results &results,
                                  const calculation_options &options) {
 
-    const auto left_pad = [](const std::string &input) {
-      constexpr std::size_t padding = (partdiff::legacy_mode ? 20 : 25);
-      return fmt::format(("{:" + std::to_string(padding) + "}"), input);
-    };
-
     const int N = arguments.N;
 
     const double time = std::chrono::duration<double>(results.end_time - results.start_time).count();
 
     const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) * arguments.num_matrices / 1024.0 / 1024.0;
 
-    fmt::print("{}{:0.6f} s\n"
-               "{}{:0.6f} MiB\n"
-               "{}{:s}\n"
-               "{}{:d}\n"
-               "{}{:s}\n"
-               "{}{:s}\n"
-               "{}{:d}\n"
-               "{}{:e}\n\n",
-               left_pad(partdiff::legacy_mode ? "Berechnungszeit:" : "Calculation time:"), time,
-               left_pad(partdiff::legacy_mode ? "Speicherbedarf:" : "Memory usage:"), memory_consumption,
-               left_pad(partdiff::legacy_mode ? "Berechnungsmethode:" : "Calculation method:"),
-               (options.method == calculation_method::gauss_seidel ? "Gauß-Seidel" : "Jacobi"), left_pad("Interlines:"),
-               options.interlines, left_pad(partdiff::legacy_mode ? "Stoerfunktion:" : "Interference function:"),
+    constexpr std::size_t padding = (partdiff::legacy_mode ? 20 : 25);
+
+    fmt::print("{1:{0}s}{2:0.6f} s\n"
+               "{3:{0}s}{4:0.6f} MiB\n"
+               "{5:{0}s}{6:s}\n"
+               "{7:{0}s}{8:d}\n"
+               "{9:{0}s}{10:s}\n"
+               "{11:{0}s}{12:s}\n"
+               "{13:{0}s}{14:d}\n"
+               "{15:{0}s}{16:e}\n\n",
+               padding, (partdiff::legacy_mode ? "Berechnungszeit:" : "Calculation time:"), time,
+               (partdiff::legacy_mode ? "Speicherbedarf:" : "Memory usage:"), memory_consumption,
+               (partdiff::legacy_mode ? "Berechnungsmethode:" : "Calculation method:"),
+               (options.method == calculation_method::gauss_seidel ? "Gauß-Seidel" : "Jacobi"), ("Interlines:"),
+               options.interlines, (partdiff::legacy_mode ? "Stoerfunktion:" : "Interference function:"),
                (options.inf_func == interference_function::f0 ? "f(x,y) = 0" : "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)"),
-               left_pad(partdiff::legacy_mode ? "Terminierung:" : "Termination condition:"),
+               (partdiff::legacy_mode ? "Terminierung:" : "Termination condition:"),
                (options.termination == termination_condition::accuracy
                     ? (partdiff::legacy_mode ? "Hinreichende Genaugkeit" : "Sufficient accuracy")
                     : (partdiff::legacy_mode ? "Anzahl der Iterationen" : "Number of iterations")),
-               left_pad(partdiff::legacy_mode ? "Anzahl Iterationen:" : "Number of iterations:"),
-               results.stat_iteration, left_pad(partdiff::legacy_mode ? "Norm des Fehlers:" : "Norm of error:"),
-               results.stat_accuracy);
+               (partdiff::legacy_mode ? "Anzahl Iterationen:" : "Number of iterations:"), results.stat_iteration,
+               (partdiff::legacy_mode ? "Norm des Fehlers:" : "Norm of error:"), results.stat_accuracy);
   }
 
   static void display_matrix(const calculation_arguments &arguments, const calculation_results &results,
