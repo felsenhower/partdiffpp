@@ -27,32 +27,32 @@ namespace partdiff {
       return this->get_description(to_underlying(index));
     }
 
-    std::string get_name(const std::string &input) {
-      return partdiff::build_string(
-          [&input](auto &ss) { ss << "  - " << std::setw(11) << std::setfill(' ') << std::left << input + ":"; });
-    }
-
     void argument_parser::usage() const {
-      std::cout << "Usage: " << this->app_name;
+
+      const auto get_name = [](const std::string &input) { return fmt::format("  - {:11}", input + ":"); };
+
+      fmt::print("Usage: {}", this->app_name);
+
       for (std::size_t i = 0; i <= to_underlying(argument_index::termination); i++) {
-        std::cout << " [" << get_description(i).name << "]";
+        fmt::print(" [{}]", get_description(i).name);
       }
-      std::cout << " [" << this->get_description(argument_index::term_accuracy).name << "/"
-                << this->get_description(argument_index::term_iteration).name << "]" << std::endl;
-      std::cout << std::endl;
+
+      fmt::print(" [{}/{}]\n\n", this->get_description(argument_index::term_accuracy).name,
+                 this->get_description(argument_index::term_iteration).name);
+
       for (std::size_t i = 0; i <= to_underlying(argument_index::termination); i++) {
-        std::cout << get_name(this->get_description(i).name) << this->get_description(i).description_for_usage
-                  << std::endl;
+        fmt::print("{}{}\n", get_name(this->get_description(i).name), this->get_description(i).description_for_usage);
       }
-      std::cout << get_name((this->get_description(argument_index::term_accuracy).name + "/" +
-                             this->get_description(argument_index::term_iteration).name))
-                << "depending on term:" << std::endl
-                << (partdiff::legacy_mode ? "                 precision:  " : "                 accuracy: ")
-                << scientific_double(partdiff::min_accuracy, 0) << " .. "
-                << scientific_double(partdiff::max_accuracy, 0) << std::endl
-                << "                 iterations:    1 .. " << partdiff::max_iteration << std::endl
-                << std::endl
-                << "Example: " << app_name << " 1 2 100 1 2 100 " << std::endl;
+
+      fmt::print("{}depending on term:\n"
+                 "                 {}:  {} .. {}\n"
+                 "                 iterations:    1 .. {:d}\n\n",
+                 get_name((this->get_description(argument_index::term_accuracy).name + "/" +
+                           this->get_description(argument_index::term_iteration).name)),
+                 (partdiff::legacy_mode ? "precision" : "accuracy"), scientific_double(partdiff::min_accuracy, 0),
+                 scientific_double(partdiff::max_accuracy, 0), partdiff::max_iteration);
+
+      fmt::print("Example: {} 1 2 100 1 2 100 \n", app_name);
     }
 
     void argument_parser::ask_params() {
@@ -111,90 +111,83 @@ namespace partdiff {
 
     void argument_parser::fill_argument_descriptions() {
       auto number = &(this->options.number);
-      this->add_argument_description(
-          "num", number,
-          partdiff::build_string([](auto &ss) { ss << "number of threads (1 .. " << partdiff::max_threads << ")"; }),
-          partdiff::build_string([](auto &ss) { ss << "Select number of threads:" << std::endl
-                                                   << "Number> "; }),
-          [number] { return (*number >= 1 && *number <= partdiff::max_threads); });
+      this->add_argument_description("num", number, fmt::format("number of threads (1 .. {:d})", partdiff::max_threads),
+                                     "Select number of threads:\n"
+                                     "Number> ",
+                                     [number] { return (*number >= 1 && *number <= partdiff::max_threads); });
       auto method = &(this->options.method);
       this->add_argument_description(
-          "method", method, partdiff::build_string([](auto &ss) {
-            ss << "calculation method (1 .. 2)" << std::endl
-               << "                 " << to_underlying(calculation_method::gauss_seidel) << ": Gauß-Seidel" << std::endl
-               << "                 " << to_underlying(calculation_method::jacobi) << ": Jacobi";
-          }),
-          partdiff::build_string([](auto &ss) {
-            ss << "Select calculation method:" << std::endl
-               << "  " << to_underlying(calculation_method::gauss_seidel) << ": Gauß-Seidel." << std::endl
-               << "  " << to_underlying(calculation_method::jacobi) << ": Jacobi." << std::endl
-               << "method> ";
-          }),
+          "method", method,
+          fmt::format("calculation method (1 .. 2)\n"
+                      "                 {:d}: Gauß-Seidel\n"
+                      "                 {:d}: Jacobi",
+                      to_underlying(calculation_method::gauss_seidel), to_underlying(calculation_method::jacobi)),
+          fmt::format("Select calculation method:\n"
+                      "  {:d}: Gauß-Seidel.\n"
+                      "  {:d}: Jacobi.\n"
+                      "method> ",
+                      to_underlying(calculation_method::gauss_seidel), to_underlying(calculation_method::jacobi)),
           [method] { return (*method == calculation_method::gauss_seidel || *method == calculation_method::jacobi); });
       auto interlines = &(this->options.interlines);
-      this->add_argument_description(
-          "lines", interlines, partdiff::build_string([](auto &ss) {
-            ss << "number of interlines (0 .. " << partdiff::max_interlines << ")" << std::endl
-               << "                 matrixsize = (interlines * 8) + 9";
-          }),
-          partdiff::build_string([](auto &ss) { ss << "Matrixsize = Interlines*8+9" << std::endl
-                                                   << "Interlines> "; }),
-          [interlines] { return (*interlines <= partdiff::max_interlines); });
+      this->add_argument_description("lines", interlines,
+                                     fmt::format("number of interlines (0 .. {:d})\n"
+                                                 "                 matrixsize = (interlines * 8) + 9",
+                                                 partdiff::max_interlines),
+                                     "Matrixsize = Interlines*8+9\n"
+                                     "Interlines> ",
+                                     [interlines] { return (*interlines <= partdiff::max_interlines); });
       auto inf_func = &(this->options.inf_func);
       this->add_argument_description(
-          "func", inf_func, partdiff::build_string([](auto &ss) {
-            ss << "interference function (1 .. 2)" << std::endl
-               << "                 " << to_underlying(interference_function::f0) << ": f(x,y) = 0" << std::endl
-               << "                 " << to_underlying(interference_function::fpisin)
-               << ": f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)";
-          }),
-          partdiff::build_string([](auto &ss) {
-            ss << "Select interference function:" << std::endl
-               << " " << to_underlying(interference_function::f0) << ": f(x,y)=0." << std::endl
-               << " " << to_underlying(interference_function::fpisin) << ": f(x,y)=2pi^2*sin(pi*x)sin(pi*y)."
-               << std::endl
-               << "interference function> ";
-          }),
+          "func", inf_func,
+          fmt::format("interference function (1 .. 2)\n"
+                      "                 {:d}: f(x,y) = 0\n"
+                      "                 {:d}: f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)",
+                      to_underlying(interference_function::f0), to_underlying(interference_function::fpisin)),
+          fmt::format("Select interference function:\n"
+                      " {:d}: f(x,y)=0.\n"
+                      " {:d}: f(x,y)=2pi^2*sin(pi*x)sin(pi*y).\n"
+                      "interference function> ",
+                      to_underlying(interference_function::f0), to_underlying(interference_function::fpisin)),
           [inf_func] {
             return (*inf_func == interference_function::f0 || *inf_func == interference_function::fpisin);
           });
       auto termination = &(this->options.termination);
-      this->add_argument_description(
-          "term", termination, partdiff::build_string([](auto &ss) {
-            ss << "termination condition ( 1.. 2)" << std::endl
-               << "                 " << to_underlying(termination_condition::accuracy)
-               << (partdiff::legacy_mode ? ": sufficient precision" : ": sufficient accuracy") << std::endl
-               << "                 " << to_underlying(termination_condition::iterations) << ": number of iterations";
-          }),
-          partdiff::build_string([](auto &ss) {
-            ss << "Select termination:" << std::endl
-               << " " << to_underlying(termination_condition::accuracy)
-               << (partdiff::legacy_mode ? ": sufficient precision." : ": sufficient accuracy.") << std::endl
-               << " " << to_underlying(termination_condition::iterations) << ": number of iterations." << std::endl
-               << "termination> ";
-          }),
-          [termination] {
-            return (*termination == termination_condition::accuracy ||
-                    *termination == termination_condition::iterations);
-          });
+      this->add_argument_description("term", termination,
+                                     fmt::format("termination condition ( 1.. 2)\n"
+                                                 "                 {:d}: sufficient {}\n"
+                                                 "                 {:d}: number of iterations",
+                                                 to_underlying(termination_condition::accuracy),
+                                                 (partdiff::legacy_mode ? "precision" : "accuracy"),
+                                                 to_underlying(termination_condition::iterations)),
+                                     fmt::format("Select termination:\n"
+                                                 " {:d}: sufficient {}.\n"
+                                                 " {:d}: number of iterations.\n"
+                                                 "termination> ",
+                                                 to_underlying(termination_condition::accuracy),
+                                                 (partdiff::legacy_mode ? "precision" : "accuracy"),
+                                                 to_underlying(termination_condition::iterations)),
+                                     [termination] {
+                                       return (*termination == termination_condition::accuracy ||
+                                               *termination == termination_condition::iterations);
+                                     });
       auto term_accuracy = &(this->options.term_accuracy);
       this->add_argument_description(
-          (partdiff::legacy_mode ? "prec" : "acc"), term_accuracy, "< invalid >", partdiff::build_string([](auto &ss) {
-            ss << (partdiff::legacy_mode ? "Select precision:" : "Select accuracy:") << std::endl
-               << "  Range: " << scientific_double(partdiff::min_accuracy, 0) << " .. "
-               << scientific_double(partdiff::max_accuracy, 0) << "." << std::endl
-               << (partdiff::legacy_mode ? "precision> " : "accuracy> ");
-          }),
+          (partdiff::legacy_mode ? "prec" : "acc"), term_accuracy, "< invalid >",
+          fmt::format("Select {}:\n"
+                      "  Range: {:s} .. {:s}.\n"
+                      "{}> ",
+                      (partdiff::legacy_mode ? "precision" : "accuracy"), scientific_double(partdiff::min_accuracy, 0),
+                      scientific_double(partdiff::max_accuracy, 0), (partdiff::legacy_mode ? "precision" : "accuracy")),
           [term_accuracy] {
             return (*term_accuracy >= partdiff::max_accuracy && *term_accuracy <= partdiff::min_accuracy);
           });
       auto term_iteration = &(this->options.term_iteration);
       this->add_argument_description(
-          "iter", term_iteration, "< invalid >", partdiff::build_string([](auto &ss) {
-            ss << "Select number of iterations:" << std::endl
-               << "  Range: 1 .. " << partdiff::max_iteration << "." << std::endl
-               << "Iterations> ";
-          }),
+          "iter", term_iteration, "< invalid >",
+          fmt::format("Select number of iterations:\n"
+                      "  Range: 1 .. {:d}.\n"
+                      "Iterations> ",
+                      partdiff::max_iteration),
           [term_iteration] { return (*term_iteration >= 1 && *term_iteration <= partdiff::max_iteration); });
     }
 

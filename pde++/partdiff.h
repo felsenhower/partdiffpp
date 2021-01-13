@@ -31,8 +31,6 @@ namespace partdiff {
 
   const std::string scientific_double(const double val, const int precision);
 
-  std::string build_string(const std::function<void(std::stringstream &)> input);
-
   namespace askparams {
 
     struct calculation_options {

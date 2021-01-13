@@ -178,8 +178,7 @@ namespace partdiff {
 
     const auto left_pad = [](const std::string &input) {
       constexpr std::size_t padding = (partdiff::legacy_mode ? 20 : 25);
-      return partdiff::build_string(
-          [&input](auto &ss) { ss << std::setw(padding) << std::left << std::setfill(' ') << input; });
+      return fmt::format(("{:" + std::to_string(padding) + "}"), input);
     };
 
     const int N = arguments.N;
@@ -188,41 +187,27 @@ namespace partdiff {
 
     const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) * arguments.num_matrices / 1024.0 / 1024.0;
 
-    std::cout << left_pad(partdiff::legacy_mode ? "Berechnungszeit:" : "Calculation time:")
-              << partdiff::build_string([time](auto &ss) { ss << std::fixed << std::setprecision(6) << time; }) << " s"
-              << std::endl
-              << left_pad(partdiff::legacy_mode ? "Speicherbedarf:" : "Memory usage:")
-              << partdiff::build_string(
-                     [memory_consumption](auto &ss) { ss << std::fixed << std::setprecision(6) << memory_consumption; })
-              << " MiB" << std::endl;
-
-    std::cout << left_pad(partdiff::legacy_mode ? "Berechnungsmethode:" : "Calculation method:");
-
-    if (options.method == calculation_method::gauss_seidel) {
-      std::cout << "Gauß-Seidel";
-    } else if (options.method == calculation_method::jacobi) {
-      std::cout << "Jacobi";
-    }
-    std::cout << std::endl
-              << left_pad("Interlines:") << options.interlines << std::endl
-              << left_pad(partdiff::legacy_mode ? "Stoerfunktion:" : "Interference function:");
-    if (options.inf_func == interference_function::f0) {
-      std::cout << "f(x,y) = 0";
-    } else if (options.inf_func == interference_function::fpisin) {
-      std::cout << "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)";
-    }
-    std::cout << std::endl << left_pad(partdiff::legacy_mode ? "Terminierung:" : "Termination condition:");
-    if (options.termination == termination_condition::accuracy) {
-      std::cout << (partdiff::legacy_mode ? "Hinreichende Genaugkeit" : "Sufficient accuracy");
-    } else if (options.termination == termination_condition::iterations) {
-      std::cout << (partdiff::legacy_mode ? "Anzahl der Iterationen" : "Number of iterations");
-    }
-    std::cout << std::endl << left_pad(partdiff::legacy_mode ? "Anzahl Iterationen:" : "Number of iterations:");
-    std::cout << results.stat_iteration << std::endl
-              << left_pad(partdiff::legacy_mode ? "Norm des Fehlers:" : "Norm of error:")
-              << partdiff::build_string([acc = results.stat_accuracy](auto &ss) { ss << std::scientific << acc; })
-              << std::endl
-              << std::endl;
+    fmt::print("{}{:0.6f} s\n"
+               "{}{:0.6f} MiB\n"
+               "{}{:s}\n"
+               "{}{:d}\n"
+               "{}{:s}\n"
+               "{}{:s}\n"
+               "{}{:d}\n"
+               "{}{:e}\n\n",
+               left_pad(partdiff::legacy_mode ? "Berechnungszeit:" : "Calculation time:"), time,
+               left_pad(partdiff::legacy_mode ? "Speicherbedarf:" : "Memory usage:"), memory_consumption,
+               left_pad(partdiff::legacy_mode ? "Berechnungsmethode:" : "Calculation method:"),
+               (options.method == calculation_method::gauss_seidel ? "Gauß-Seidel" : "Jacobi"), left_pad("Interlines:"),
+               options.interlines, left_pad(partdiff::legacy_mode ? "Stoerfunktion:" : "Interference function:"),
+               (options.inf_func == interference_function::f0 ? "f(x,y) = 0" : "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)"),
+               left_pad(partdiff::legacy_mode ? "Terminierung:" : "Termination condition:"),
+               (options.termination == termination_condition::accuracy
+                    ? (partdiff::legacy_mode ? "Hinreichende Genaugkeit" : "Sufficient accuracy")
+                    : (partdiff::legacy_mode ? "Anzahl der Iterationen" : "Number of iterations")),
+               left_pad(partdiff::legacy_mode ? "Anzahl Iterationen:" : "Number of iterations:"),
+               results.stat_iteration, left_pad(partdiff::legacy_mode ? "Norm des Fehlers:" : "Norm of error:"),
+               results.stat_accuracy);
   }
 
   static void display_matrix(const calculation_arguments &arguments, const calculation_results &results,
@@ -231,10 +216,8 @@ namespace partdiff {
 
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
-        std::cout << partdiff::build_string([&arguments, &results, &options, x, y](auto &ss) {
-          ss << std::fixed << std::internal << std::setprecision(4) << " "
-             << arguments.matrices(results.m, y * (options.interlines + 1), x * (options.interlines + 1));
-        });
+        fmt::print(" {:.4f}",
+                   arguments.matrices(results.m, y * (options.interlines + 1), x * (options.interlines + 1)));
       }
       std::cout << std::endl;
     }

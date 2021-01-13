@@ -11,10 +11,4 @@ namespace partdiff {
     return mantissa_str + "e" + std::to_string(exponent);
   }
 
-  std::string build_string(const std::function<void(std::stringstream &)> input) {
-    std::stringstream ss;
-    input(ss);
-    return ss.str();
-  }
-
 } // namespace partdiff
