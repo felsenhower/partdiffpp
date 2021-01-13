@@ -107,6 +107,8 @@ namespace partdiff {
       };
 
       constexpr int indent_width = 17;
+      const std::string indent = fmt::format("{:{}s}", "", indent_width);
+
       const std::string accuracy_text = (partdiff::legacy_mode ? "precision" : "accuracy");
       const std::string acc_text = (partdiff::legacy_mode ? "prec" : "acc");
       const std::string invalid_text = "< invalid >";
@@ -121,9 +123,9 @@ namespace partdiff {
       this->add_argument_description(
           "method", method,
           fmt::format("calculation method (1 .. 2)\n"
-                      "{1:{0}s}{2:d}: Gauß-Seidel\n"
-                      "{1:{0}s}{3:d}: Jacobi",
-                      indent_width, "", to_underlying(calculation_method::gauss_seidel),
+                      "{0}{1:d}: Gauß-Seidel\n"
+                      "{0}{2:d}: Jacobi",
+                      indent, to_underlying(calculation_method::gauss_seidel),
                       to_underlying(calculation_method::jacobi)),
           fmt::format("Select calculation method:\n"
                       "  {:d}: Gauß-Seidel.\n"
@@ -134,9 +136,9 @@ namespace partdiff {
 
       auto interlines = &(this->options.interlines);
       this->add_argument_description("lines", interlines,
-                                     fmt::format("number of interlines (0 .. {2:d})\n"
-                                                 "{1:{0}s}matrixsize = (interlines * 8) + 9",
-                                                 indent_width, "", partdiff::max_interlines),
+                                     fmt::format("number of interlines (0 .. {1:d})\n"
+                                                 "{0}matrixsize = (interlines * 8) + 9",
+                                                 indent, partdiff::max_interlines),
                                      "Matrixsize = Interlines*8+9\n"
                                      "Interlines> ",
                                      [interlines] { return (*interlines <= partdiff::max_interlines); });
@@ -145,10 +147,9 @@ namespace partdiff {
       this->add_argument_description(
           "func", inf_func,
           fmt::format("interference function (1 .. 2)\n"
-                      "{1:{0}s}{2:d}: f(x,y) = 0\n"
-                      "{1:{0}s}{3:d}: f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)",
-                      indent_width, "", to_underlying(interference_function::f0),
-                      to_underlying(interference_function::fpisin)),
+                      "{0}{1:d}: f(x,y) = 0\n"
+                      "{0}{2:d}: f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)",
+                      indent, to_underlying(interference_function::f0), to_underlying(interference_function::fpisin)),
           fmt::format("Select interference function:\n"
                       " {:d}: f(x,y)=0.\n"
                       " {:d}: f(x,y)=2pi^2*sin(pi*x)sin(pi*y).\n"
@@ -161,10 +162,10 @@ namespace partdiff {
       auto termination = &(this->options.termination);
       this->add_argument_description("term", termination,
                                      fmt::format("termination condition ( 1.. 2)\n"
-                                                 "{1:{0}s}{2:d}: sufficient {3:s}\n"
-                                                 "{1:{0}s}{4:d}: number of iterations",
-                                                 indent_width, "", to_underlying(termination_condition::accuracy),
-                                                 accuracy_text, to_underlying(termination_condition::iterations)),
+                                                 "{0}{1:d}: sufficient {2:s}\n"
+                                                 "{0}{3:d}: number of iterations",
+                                                 indent, to_underlying(termination_condition::accuracy), accuracy_text,
+                                                 to_underlying(termination_condition::iterations)),
                                      fmt::format("Select termination:\n"
                                                  " {:d}: sufficient {}.\n"
                                                  " {:d}: number of iterations.\n"
@@ -178,10 +179,9 @@ namespace partdiff {
 
       this->add_argument_description(fmt::format("{}/iter", acc_text),
                                      fmt::format("depending on term:\n"
-                                                 "{1:{0}s}{2:s}:  {3:s} .. {4:s}\n"
-                                                 "{1:{0}s}iterations:    1 .. {5:d}\n",
-                                                 indent_width, "", accuracy_text,
-                                                 scientific_double(partdiff::min_accuracy),
+                                                 "{0}{1:s}:  {2:s} .. {3:s}\n"
+                                                 "{0}iterations:    1 .. {4:d}\n",
+                                                 indent, accuracy_text, scientific_double(partdiff::min_accuracy),
                                                  scientific_double(partdiff::max_accuracy), partdiff::max_iteration),
                                      invalid_text);
 
