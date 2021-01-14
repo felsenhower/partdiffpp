@@ -25,9 +25,9 @@ namespace partdiff {
     } catch (std::bad_alloc &) {
       auto size_bytes = size * sizeof(double);
       if (partdiff::legacy_mode) {
-        std::cout << "Speicherprobleme! " << size_bytes << " Bytes angefordert" << std::endl;
+        std::cout << "Speicherprobleme! (" << size_bytes << " Bytes angefordert)" << std::endl;
       } else {
-        std::cout << "Memory failure! Requested" << size_bytes << " bytes" << std::endl;
+        std::cout << "Memory failure! (Requested" << size_bytes << " bytes)" << std::endl;
       }
       exit(EXIT_FAILURE);
     }
