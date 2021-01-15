@@ -2,14 +2,21 @@
 
 CC = g++
 CXX = $(CC)
-CFLAGS  = -std=c++20 -Wall -Werror -Wextra -Wpedantic
-CFLAGS += -I./fmt/include
-CFLAGS += -O3 -flto -march=native
+FLAGS = -std=c++20 -Wall -Werror -Wextra -Wpedantic
+FLAGS += -I./fmt/include
+FLAGS += -O3 -flto -march=native
+CFLAGS = $(FLAGS)
 ifeq ($(COMPILE_MODE),LEGACY)
 	CFLAGS += -DLEGACY
 endif
+ifeq ($(POLLY),TRUE)
+	POLLY_FLAGS = -polly -polly-parallel -polly-num-threads=8
+	CFLAGS += $(foreach arg, $(POLLY_FLAGS),-mllvm $(arg))
+	CC = clang++
+	CXX = clang++
+endif
 CXXFLAGS = $(CFLAGS)
-LDFLAGS = $(CXXFLAGS)
+LDFLAGS = $(FLAGS)
 LDLIBS  = -lm -L./fmt/build -lfmt
 OBJS = partdiff.o askparams.o
 

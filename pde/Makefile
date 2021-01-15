@@ -1,9 +1,15 @@
 .PHONY: default all clean test testout testmem beautify
 
 CC = gcc
-CFLAGS  = -std=c11 -Wall -Wextra -Wpedantic
-CFLAGS += -O3 -flto -march=native
-LDFLAGS = $(CFLAGS)
+FLAGS  = -std=c11 -Wall -Wextra -Wpedantic
+FLAGS += -O3 -flto -march=native
+CFLAGS = $(FLAGS)
+ifeq ($(POLLY),TRUE)
+	POLLY_FLAGS = -polly -polly-parallel -polly-num-threads=8
+	CFLAGS += $(foreach arg, $(POLLY_FLAGS),-mllvm $(arg))
+	CC = clang
+endif
+LDFLAGS = $(FLAGS)
 LDLIBS  = -lm
 OBJS = partdiff.o askparams.o
 
