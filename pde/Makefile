@@ -1,7 +1,8 @@
 .PHONY: default all clean test testout testmem beautify
 
 CC = gcc
-CFLAGS  = -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native
+CFLAGS  = -std=c11 -Wall -Wextra -Wpedantic
+CFLAGS += -O3 -flto -march=native
 LDFLAGS = $(CFLAGS)
 LDLIBS  = -lm
 OBJS = partdiff.o askparams.o
