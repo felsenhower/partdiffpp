@@ -1,0 +1,240 @@
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 1 pde/partdiff 1 1 1024 2 2 60: 45.19
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 1 pde/partdiff 1 1 1024 2 2 60: 47.93
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 1 pde/partdiff 1 1 1024 2 2 60: 47.56
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 1 pde++/partdiff 1 1 1024 2 2 60: 41.81
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 1 pde++/partdiff 1 1 1024 2 2 60: 66.47
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 1 pde++/partdiff 1 1 1024 2 2 60: 66.43
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 1 pde/partdiff 1 2 1024 2 2 60: 41.30
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 1 pde/partdiff 1 2 1024 2 2 60: 43.62
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 1 pde/partdiff 1 2 1024 2 2 60: 43.52
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 1 pde++/partdiff 1 2 1024 2 2 60: 41.87
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 1 pde++/partdiff 1 2 1024 2 2 60: 65.46
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 1 pde++/partdiff 1 2 1024 2 2 60: 65.41
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 2 pde/partdiff 1 1 1024 2 2 60: 45.10
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 2 pde/partdiff 1 1 1024 2 2 60: 48.70
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 2 pde/partdiff 1 1 1024 2 2 60: 47.54
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 2 pde++/partdiff 1 1 1024 2 2 60: 41.93
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 2 pde++/partdiff 1 1 1024 2 2 60: 66.44
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 2 pde++/partdiff 1 1 1024 2 2 60: 66.45
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 2 pde/partdiff 1 2 1024 2 2 60: 41.95
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 2 pde/partdiff 1 2 1024 2 2 60: 43.75
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 2 pde/partdiff 1 2 1024 2 2 60: 43.47
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 2 pde++/partdiff 1 2 1024 2 2 60: 41.85
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 2 pde++/partdiff 1 2 1024 2 2 60: 65.35
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 2 pde++/partdiff 1 2 1024 2 2 60: 65.45
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 3 pde/partdiff 1 1 1024 2 2 60: 45.24
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 3 pde/partdiff 1 1 1024 2 2 60: 47.71
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 3 pde/partdiff 1 1 1024 2 2 60: 47.49
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 3 pde++/partdiff 1 1 1024 2 2 60: 41.81
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 3 pde++/partdiff 1 1 1024 2 2 60: 66.40
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 3 pde++/partdiff 1 1 1024 2 2 60: 66.41
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 3 pde/partdiff 1 2 1024 2 2 60: 41.37
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 3 pde/partdiff 1 2 1024 2 2 60: 43.93
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 3 pde/partdiff 1 2 1024 2 2 60: 43.95
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 3 pde++/partdiff 1 2 1024 2 2 60: 41.76
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 3 pde++/partdiff 1 2 1024 2 2 60: 65.26
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 3 pde++/partdiff 1 2 1024 2 2 60: 65.38
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 4 pde/partdiff 1 1 1024 2 2 60: 45.22
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 4 pde/partdiff 1 1 1024 2 2 60: 47.67
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 4 pde/partdiff 1 1 1024 2 2 60: 47.94
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 4 pde++/partdiff 1 1 1024 2 2 60: 41.89
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 4 pde++/partdiff 1 1 1024 2 2 60: 66.44
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 4 pde++/partdiff 1 1 1024 2 2 60: 66.45
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 4 pde/partdiff 1 2 1024 2 2 60: 41.27
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 4 pde/partdiff 1 2 1024 2 2 60: 43.62
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 4 pde/partdiff 1 2 1024 2 2 60: 43.64
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 4 pde++/partdiff 1 2 1024 2 2 60: 41.77
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 4 pde++/partdiff 1 2 1024 2 2 60: 65.30
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 4 pde++/partdiff 1 2 1024 2 2 60: 65.37
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 5 pde/partdiff 1 1 1024 2 2 60: 45.13
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 5 pde/partdiff 1 1 1024 2 2 60: 47.58
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 5 pde/partdiff 1 1 1024 2 2 60: 47.56
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 5 pde++/partdiff 1 1 1024 2 2 60: 41.88
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 5 pde++/partdiff 1 1 1024 2 2 60: 66.49
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 5 pde++/partdiff 1 1 1024 2 2 60: 66.36
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 5 pde/partdiff 1 2 1024 2 2 60: 41.37
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 5 pde/partdiff 1 2 1024 2 2 60: 43.84
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 5 pde/partdiff 1 2 1024 2 2 60: 43.69
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 5 pde++/partdiff 1 2 1024 2 2 60: 45.54
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 5 pde++/partdiff 1 2 1024 2 2 60: 65.77
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 5 pde++/partdiff 1 2 1024 2 2 60: 65.42
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 6 pde/partdiff 1 1 1024 2 2 60: 45.11
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 6 pde/partdiff 1 1 1024 2 2 60: 47.53
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 6 pde/partdiff 1 1 1024 2 2 60: 47.52
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 6 pde++/partdiff 1 1 1024 2 2 60: 41.82
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 6 pde++/partdiff 1 1 1024 2 2 60: 66.57
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 6 pde++/partdiff 1 1 1024 2 2 60: 66.46
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 6 pde/partdiff 1 2 1024 2 2 60: 41.38
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 6 pde/partdiff 1 2 1024 2 2 60: 43.62
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 6 pde/partdiff 1 2 1024 2 2 60: 43.57
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 6 pde++/partdiff 1 2 1024 2 2 60: 41.75
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 6 pde++/partdiff 1 2 1024 2 2 60: 65.29
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 6 pde++/partdiff 1 2 1024 2 2 60: 65.35
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 7 pde/partdiff 1 1 1024 2 2 60: 45.25
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 7 pde/partdiff 1 1 1024 2 2 60: 47.57
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 7 pde/partdiff 1 1 1024 2 2 60: 47.58
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 7 pde++/partdiff 1 1 1024 2 2 60: 41.88
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 7 pde++/partdiff 1 1 1024 2 2 60: 66.36
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 7 pde++/partdiff 1 1 1024 2 2 60: 66.36
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 7 pde/partdiff 1 2 1024 2 2 60: 41.41
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 7 pde/partdiff 1 2 1024 2 2 60: 43.60
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 7 pde/partdiff 1 2 1024 2 2 60: 43.56
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 7 pde++/partdiff 1 2 1024 2 2 60: 41.90
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 7 pde++/partdiff 1 2 1024 2 2 60: 65.36
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 7 pde++/partdiff 1 2 1024 2 2 60: 65.34
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 8 pde/partdiff 1 1 1024 2 2 60: 45.47
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 8 pde/partdiff 1 1 1024 2 2 60: 47.57
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 8 pde/partdiff 1 1 1024 2 2 60: 47.48
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 8 pde++/partdiff 1 1 1024 2 2 60: 41.85
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 8 pde++/partdiff 1 1 1024 2 2 60: 66.38
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 8 pde++/partdiff 1 1 1024 2 2 60: 66.40
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 8 pde/partdiff 1 2 1024 2 2 60: 41.40
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 8 pde/partdiff 1 2 1024 2 2 60: 43.64
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 8 pde/partdiff 1 2 1024 2 2 60: 43.72
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 8 pde++/partdiff 1 2 1024 2 2 60: 41.76
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 8 pde++/partdiff 1 2 1024 2 2 60: 65.35
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 8 pde++/partdiff 1 2 1024 2 2 60: 65.39
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 9 pde/partdiff 1 1 1024 2 2 60: 45.13
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 9 pde/partdiff 1 1 1024 2 2 60: 47.48
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 9 pde/partdiff 1 1 1024 2 2 60: 47.60
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 9 pde++/partdiff 1 1 1024 2 2 60: 41.93
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 9 pde++/partdiff 1 1 1024 2 2 60: 66.45
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 9 pde++/partdiff 1 1 1024 2 2 60: 66.41
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 9 pde/partdiff 1 2 1024 2 2 60: 41.48
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 9 pde/partdiff 1 2 1024 2 2 60: 43.71
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 9 pde/partdiff 1 2 1024 2 2 60: 43.53
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 9 pde++/partdiff 1 2 1024 2 2 60: 41.85
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 9 pde++/partdiff 1 2 1024 2 2 60: 65.31
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 9 pde++/partdiff 1 2 1024 2 2 60: 65.42
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 10 pde/partdiff 1 1 1024 2 2 60: 45.10
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 10 pde/partdiff 1 1 1024 2 2 60: 51.69
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 10 pde/partdiff 1 1 1024 2 2 60: 47.59
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 10 pde++/partdiff 1 1 1024 2 2 60: 41.85
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 10 pde++/partdiff 1 1 1024 2 2 60: 66.40
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 10 pde++/partdiff 1 1 1024 2 2 60: 66.46
+gcc -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 10 pde/partdiff 1 2 1024 2 2 60: 41.43
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native   -c -o partdiff.o partdiff.c
+i = 10 pde/partdiff 1 2 1024 2 2 60: 43.58
+clang -std=c11 -Wall -Wextra -Wpedantic -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.c
+i = 10 pde/partdiff 1 2 1024 2 2 60: 43.63
+g++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 10 pde++/partdiff 1 2 1024 2 2 60: 41.77
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native   -c -o partdiff.o partdiff.cpp
+i = 10 pde++/partdiff 1 2 1024 2 2 60: 65.35
+clang++ -std=c++20 -Wall -Werror -Wextra -Wpedantic -I./fmt/include -O3 -flto -march=native -mllvm -polly -mllvm -polly-parallel -mllvm -polly-num-threads=8   -c -o partdiff.o partdiff.cpp
+i = 10 pde++/partdiff 1 2 1024 2 2 60: 65.26
