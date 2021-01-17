@@ -1,0 +1,12 @@
+pde++,g++,\nGauß-Seidel 41.87 41.81 41.93 0.04
+pde,gcc,\nGauß-Seidel 45.19 45.10 45.47 0.11
+pde,clang,\nPOLLY=TRUE,Gauß-Seidel 47.59 47.48 47.94 0.12
+pde,clang,\nPOLLY=FALSE,Gauß-Seidel 48.14 47.48 51.69 1.23
+pde++,clang++,\nPOLLY=FALSE,Gauß-Seidel 66.44 66.36 66.57 0.06
+pde++,clang++,\nPOLLY=TRUE,Gauß-Seidel 66.42 66.36 66.46 0.04
+pde,gcc,\nJacobi 41.44 41.27 41.95 0.18
+pde++,g++,\nJacobi 42.18 41.75 45.54 1.12
+pde,clang,\nPOLLY=FALSE,Jacobi 43.69 43.58 43.93 0.11
+pde,clang,\nPOLLY=TRUE,Jacobi 43.63 43.47 43.95 0.13
+pde++,clang++,\nPOLLY=FALSE,Jacobi 65.38 65.26 65.77 0.14
+pde++,clang++,\nPOLLY=TRUE,Jacobi 65.38 65.26 65.45 0.05

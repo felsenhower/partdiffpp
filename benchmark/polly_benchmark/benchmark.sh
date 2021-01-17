@@ -3,6 +3,8 @@
 # load_spack
 # spack load llvm+clang+polly
 
+cd ../../
+
 for i in {1..10} ; do
   for method in '1' '2' ; do
     for t in 'pde,gcc,POLLY=FALSE' 'pde,clang,POLLY=FALSE' 'pde,clang,POLLY=TRUE' 'pde++,g++,POLLY=FALSE' 'pde++,clang++,POLLY=FALSE' 'pde++,clang++,POLLY=TRUE' ; do
