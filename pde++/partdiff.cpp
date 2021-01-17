@@ -21,7 +21,7 @@ namespace partdiff {
       num_cols(num_cols) {
     auto size = num_matrices * num_rows * num_cols;
     try {
-      data = new double[size]();
+      data = new double[size];
     } catch (std::bad_alloc &) {
       auto size_bytes = size * sizeof(double);
       if (partdiff::legacy_mode) {
@@ -82,6 +82,13 @@ namespace partdiff {
   }
 
   void calculation_arguments::init_matrices() {
+    for (uint64_t g = 0; g < this->num_matrices; g++) {
+      for (uint64_t i = 0; i <= N; i++) {
+        for (uint64_t j = 0; j <= N; j++) {
+          this->matrices(g, i, j) = 0.0;
+        }
+      }
+    }
     if (this->inf_func == interference_function::f0) {
       for (uint64_t g = 0; g < this->num_matrices; g++) {
         for (uint64_t i = 0; i <= N; i++) {
