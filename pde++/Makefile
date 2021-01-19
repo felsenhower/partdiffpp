@@ -6,17 +6,19 @@ FLAGS = -std=c++20 -Wall -Werror -Wextra -Wpedantic
 FLAGS += -I./fmt/include
 FLAGS += -O3 -flto -march=native
 CFLAGS = $(FLAGS)
+LDFLAGS = $(FLAGS)
 ifeq ($(COMPILE_MODE),LEGACY)
 	CFLAGS += -DLEGACY
 endif
 ifeq ($(POLLY),TRUE)
 	POLLY_FLAGS = -polly -polly-parallel -polly-num-threads=8
-	CFLAGS += $(foreach arg, $(POLLY_FLAGS),-mllvm $(arg))
+	CFLAGS += $(foreach arg, $(POLLY_FLAGS),-mllvm $(arg)) -fopenmp
+	LDFLAGS += -lgomp
 	CC = clang++
 	CXX = clang++
 endif
 CXXFLAGS = $(CFLAGS)
-LDFLAGS = $(FLAGS)
+
 LDLIBS  = -lm -L./fmt/build -lfmt
 OBJS = partdiff.o askparams.o
 
