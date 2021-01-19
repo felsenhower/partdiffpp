@@ -12,7 +12,9 @@ ifeq ($(COMPILE_MODE),LEGACY)
 endif
 ifeq ($(POLLY),TRUE)
 	POLLY_FLAGS = -polly -polly-parallel -polly-num-threads=8
-	CFLAGS += $(foreach arg, $(POLLY_FLAGS),-mllvm $(arg)) -fopenmp
+	POLLY_FLAGS += -debug-pass=Arguments -polly-dump-before-file=before-polly.ll -polly-dump-after-file=after-polly.ll
+	CFLAGS += $(foreach arg, $(POLLY_FLAGS),-mllvm $(arg))
+	CFLAGS += -fopenmp
 	LDFLAGS += -lgomp
 	CC = clang++
 	CXX = clang++
