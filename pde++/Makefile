@@ -4,7 +4,7 @@ CC = g++
 CXX = $(CC)
 CFLAGS  = -std=c++20 -Wall -Werror -Wextra -Wpedantic
 CFLAGS += -I./fmt/include
-CFLAGS += -O3 -flto -march=native
+CFLAGS += -O3 -march=native
 ifeq ($(COMPILE_MODE),LEGACY)
 	CFLAGS += -DLEGACY
 endif

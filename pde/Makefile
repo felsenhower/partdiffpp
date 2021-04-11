@@ -2,7 +2,7 @@
 
 CC = gcc
 CFLAGS  = -std=c11 -Wall -Wextra -Wpedantic
-CFLAGS += -O3 -flto -march=native
+CFLAGS += -O3 -march=native
 LDFLAGS = $(CFLAGS)
 LDLIBS  = -lm
 OBJS = partdiff.o askparams.o
