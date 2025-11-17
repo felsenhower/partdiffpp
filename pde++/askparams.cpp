@@ -28,17 +28,17 @@ namespace partdiff {
     }
 
     void argument_parser::usage() const {
-      const auto get_name = [](const std::string &input) { return fmt::format("  - {:11}", input + ":"); };
+      const auto get_name = [](const std::string &input) { return std::format("  - {:11}", input + ":"); };
 
-      fmt::print("Usage: {}", this->app_name);
+      std::print("Usage: {}", this->app_name);
       for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
-        fmt::print(" [{}]", get_description(i).name);
+        std::print(" [{}]", get_description(i).name);
       }
       std::cout << std::endl << std::endl;
       for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
-        fmt::print("{}{}\n", get_name(this->get_description(i).name), this->get_description(i).description_for_usage);
+        std::print("{}{}\n", get_name(this->get_description(i).name), this->get_description(i).description_for_usage);
       }
-      fmt::print("Example: {} 1 2 100 1 2 100 \n", app_name);
+      std::print("Example: {} 1 2 100 1 2 100 \n", app_name);
     }
 
     void argument_parser::ask_params() {
@@ -72,7 +72,7 @@ namespace partdiff {
     void argument_parser::fill_argument_descriptions() {
 
       auto scientific_double = [](double val) {
-        auto temp = fmt::format("{:.0e}", val);
+        auto temp = std::format("{:.0e}", val);
         int epos = temp.find("e");
         std::string mantissa_str = temp.substr(0, epos);
         std::string exponent_str = temp.substr(epos + 1, temp.length() - epos - 1);
@@ -81,14 +81,14 @@ namespace partdiff {
       };
 
       constexpr int indent_width = 17;
-      const std::string indent = fmt::format("{:{}s}", "", indent_width);
+      const std::string indent = std::format("{:{}s}", "", indent_width);
 
       const std::string accuracy_text = (partdiff::legacy_mode ? "precision" : "accuracy");
       const std::string acc_text = (partdiff::legacy_mode ? "prec" : "acc");
       const std::string invalid_text = "< invalid >";
 
       auto number = &(this->options.number);
-      this->add_argument_description("num", number, fmt::format("number of threads (1 .. {:d})", partdiff::max_threads),
+      this->add_argument_description("num", number, std::format("number of threads (1 .. {:d})", partdiff::max_threads),
                                      "Select number of threads:\n"
                                      "Number> ",
                                      [number] { return (*number >= 1 && *number <= partdiff::max_threads); });
@@ -96,12 +96,12 @@ namespace partdiff {
       auto method = &(this->options.method);
       this->add_argument_description(
           "method", method,
-          fmt::format("calculation method (1 .. 2)\n"
+          std::format("calculation method (1 .. 2)\n"
                       "{0}{1:d}: Gauß-Seidel\n"
                       "{0}{2:d}: Jacobi",
                       indent, to_underlying(calculation_method::gauss_seidel),
                       to_underlying(calculation_method::jacobi)),
-          fmt::format("Select calculation method:\n"
+          std::format("Select calculation method:\n"
                       "  {:d}: Gauß-Seidel.\n"
                       "  {:d}: Jacobi.\n"
                       "method> ",
@@ -110,7 +110,7 @@ namespace partdiff {
 
       auto interlines = &(this->options.interlines);
       this->add_argument_description("lines", interlines,
-                                     fmt::format("number of interlines (0 .. {1:d})\n"
+                                     std::format("number of interlines (0 .. {1:d})\n"
                                                  "{0}matrixsize = (interlines * 8) + 9",
                                                  indent, partdiff::max_interlines),
                                      "Matrixsize = Interlines*8+9\n"
@@ -120,11 +120,11 @@ namespace partdiff {
       auto inf_func = &(this->options.inf_func);
       this->add_argument_description(
           "func", inf_func,
-          fmt::format("interference function (1 .. 2)\n"
+          std::format("interference function (1 .. 2)\n"
                       "{0}{1:d}: f(x,y) = 0\n"
                       "{0}{2:d}: f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)",
                       indent, to_underlying(interference_function::f0), to_underlying(interference_function::fpisin)),
-          fmt::format("Select interference function:\n"
+          std::format("Select interference function:\n"
                       " {:d}: f(x,y)=0.\n"
                       " {:d}: f(x,y)=2pi^2*sin(pi*x)sin(pi*y).\n"
                       "interference function> ",
@@ -135,12 +135,12 @@ namespace partdiff {
 
       auto termination = &(this->options.termination);
       this->add_argument_description("term", termination,
-                                     fmt::format("termination condition ( 1.. 2)\n"
+                                     std::format("termination condition ( 1.. 2)\n"
                                                  "{0}{1:d}: sufficient {2:s}\n"
                                                  "{0}{3:d}: number of iterations",
                                                  indent, to_underlying(termination_condition::accuracy), accuracy_text,
                                                  to_underlying(termination_condition::iterations)),
-                                     fmt::format("Select termination:\n"
+                                     std::format("Select termination:\n"
                                                  " {:d}: sufficient {}.\n"
                                                  " {:d}: number of iterations.\n"
                                                  "termination> ",
@@ -151,8 +151,8 @@ namespace partdiff {
                                                *termination == termination_condition::iterations);
                                      });
 
-      this->add_argument_description(fmt::format("{}/iter", acc_text),
-                                     fmt::format("depending on term:\n"
+      this->add_argument_description(std::format("{}/iter", acc_text),
+                                     std::format("depending on term:\n"
                                                  "{0}{1:s}:  {2:s} .. {3:s}\n"
                                                  "{0}iterations:    1 .. {4:d}\n",
                                                  indent, accuracy_text, scientific_double(partdiff::min_accuracy),
@@ -161,7 +161,7 @@ namespace partdiff {
 
       auto term_accuracy = &(this->options.term_accuracy);
       this->add_argument_description(acc_text, term_accuracy, invalid_text,
-                                     fmt::format("Select {}:\n"
+                                     std::format("Select {}:\n"
                                                  "  Range: {:s} .. {:s}.\n"
                                                  "{}> ",
                                                  accuracy_text, scientific_double(partdiff::min_accuracy),
@@ -174,7 +174,7 @@ namespace partdiff {
       auto term_iteration = &(this->options.term_iteration);
       this->add_argument_description(
           "iter", term_iteration, invalid_text,
-          fmt::format("Select number of iterations:\n"
+          std::format("Select number of iterations:\n"
                       "  Range: 1 .. {:d}.\n"
                       "Iterations> ",
                       partdiff::max_iteration),

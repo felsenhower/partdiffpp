@@ -2,13 +2,13 @@
 
 #include <any>
 #include <chrono>
+#include <format>
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <print>
 #include <sstream>
 #include <vector>
-
-#include "fmt/core.h"
 
 namespace partdiff {
 

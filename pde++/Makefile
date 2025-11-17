@@ -1,32 +1,20 @@
-.PHONY: default all clean test testout testmem beautify libfmt cleanhard
+.PHONY: default all clean test testout testmem beautify cleanhard
 
 CC = g++
 CXX = $(CC)
-CFLAGS  = -std=c++20 -Wall -Werror -Wextra -Wpedantic
-CFLAGS += -I./fmt/include
+CFLAGS  = -std=c++23 -Wall -Werror -Wextra -Wpedantic
 CFLAGS += -O3 -flto -march=native
 ifeq ($(COMPILE_MODE),LEGACY)
 	CFLAGS += -DLEGACY
 endif
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = $(CXXFLAGS)
-LDLIBS  = -lm -L./fmt/build -lfmt
+LDLIBS  = -lm
 OBJS = partdiff.o askparams.o
 
 default: all
 
-all: libfmt beautify partdiff
-
-libfmt: fmt/build/libfmt.a fmt/include/fmt/core.h
-
-fmt/build/libfmt.a: fmt/src/format.cc
-	mkdir -p fmt/build && \
-	cd fmt/build && \
-	cmake -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE .. && \
-	make
-
-fmt/src/format.cc:
-	git submodule update --init
+all: beautify partdiff
 
 partdiff: $(OBJS)
 
@@ -36,7 +24,7 @@ clean:
 	$(RM) *~
 
 cleanhard: clean
-	$(RM) fmt
+	true
 
 test: testout testmem
 

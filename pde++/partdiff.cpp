@@ -192,7 +192,7 @@ namespace partdiff {
 
     constexpr std::size_t padding = (partdiff::legacy_mode ? 20 : 25);
 
-    fmt::print("{1:{0}s}{2:0.6f} s\n"
+    std::print("{1:{0}s}{2:0.6f} s\n"
                "{3:{0}s}{4:0.6f} MiB\n"
                "{5:{0}s}{6:s}\n"
                "{7:{0}s}{8:d}\n"
@@ -220,7 +220,7 @@ namespace partdiff {
 
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
-        fmt::print(" {:.4f}",
+        std::print(" {:.4f}",
                    arguments.matrices(results.m, y * (options.interlines + 1), x * (options.interlines + 1)));
       }
       std::cout << std::endl;
