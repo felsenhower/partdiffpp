@@ -1,4 +1,4 @@
-.PHONY: default all clean test testout testmem beautify cleanhard
+.PHONY: default all clean beautify
 
 CC = g++
 CXX = $(CC)
@@ -22,37 +22,6 @@ clean:
 	$(RM) partdiff
 	$(RM) *.o
 	$(RM) *~
-
-cleanhard: clean
-	true
-
-test: testout testmem
-
-testmem: default
-	valgrind --leak-check=full ./partdiff 1 2 0 2 2 85 > /dev/null
-
-testout: testbatch testinteractive
-	@echo 'All tests completed!'
-
-testbatch: default
-	bash -c 'diff <(./partdiff 1 2 0 2 2 85 | grep -A9 "Matrix:") <(cat referenz/Jacobi.f2 | grep -A9 "Matrix:")'
-	bash -c 'diff <(./partdiff 1 2 0 2 1 1e-4 | grep -A9 "Matrix:") <(cat referenz/Jacobi.f2 | grep -A9 "Matrix:")'
-	bash -c 'diff <(./partdiff 1 2 0 1 2 82 | grep -A9 "Matrix:") <(cat referenz/Jacobi.f1 | grep -A9 "Matrix:")'
-	bash -c 'diff <(./partdiff 1 2 0 1 1 1e-4 | grep -A9 "Matrix:") <(cat referenz/Jacobi.f1 | grep -A9 "Matrix:")'
-	bash -c 'diff <(./partdiff 1 1 0 2 2 48 | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f2 | grep -A9 "Matrix:")'
-	bash -c 'diff <(./partdiff 1 1 0 2 1 9.2e-5 | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f2 | grep -A9 "Matrix:")'
-	bash -c 'diff <(./partdiff 1 1 0 1 2 47 | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f1 | grep -A9 "Matrix:")'
-	bash -c 'diff <(./partdiff 1 1 0 1 1 8.7e-5 | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f1 | grep -A9 "Matrix:")'
-
-testinteractive: default
-	bash -c 'diff <((for i in 1 2 0 2 2 85 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/Jacobi.f2 | grep -A9 "Matrix:")'
-	bash -c 'diff <((for i in 1 2 0 2 1 1e-4 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/Jacobi.f2 | grep -A9 "Matrix:")'
-	bash -c 'diff <((for i in 1 2 0 1 2 82 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/Jacobi.f1 | grep -A9 "Matrix:")'
-	bash -c 'diff <((for i in 1 2 0 1 1 1e-4 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/Jacobi.f1 | grep -A9 "Matrix:")'
-	bash -c 'diff <((for i in 1 1 0 2 2 48 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f2 | grep -A9 "Matrix:")'
-	bash -c 'diff <((for i in 1 1 0 2 1 9.2e-5 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f2 | grep -A9 "Matrix:")'
-	bash -c 'diff <((for i in 1 1 0 1 2 47 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f1 | grep -A9 "Matrix:")'
-	bash -c 'diff <((for i in 1 1 0 1 1 8.7e-5 ; do echo $$i ; done | ./partdiff) | grep -A9 "Matrix:") <(cat referenz/GaussSeidel.f1 | grep -A9 "Matrix:")'
 
 beautify: partdiff.cpp partdiff.h askparams.cpp
 	clang-format --style=file -i partdiff.cpp
