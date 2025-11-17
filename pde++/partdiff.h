@@ -95,7 +95,7 @@ namespace partdiff {
 
     class tensor {
       public:
-      tensor(){};
+      tensor() {};
       tensor(std::size_t num_matrices, std::size_t num_rows, std::size_t num_cols);
       tensor(const tensor &other);
       tensor(tensor &&other) noexcept;
