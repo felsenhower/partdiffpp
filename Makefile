@@ -14,7 +14,7 @@ OBJS = partdiff.o askparams.o
 
 default: all
 
-all: beautify partdiff
+all: partdiff
 
 partdiff: $(OBJS)
 
@@ -22,8 +22,3 @@ clean:
 	$(RM) partdiff
 	$(RM) *.o
 	$(RM) *~
-
-beautify: partdiff.cpp partdiff.h askparams.cpp
-	clang-format --style=file -i partdiff.cpp
-	clang-format --style=file -i partdiff.h
-	clang-format --style=file -i askparams.cpp
