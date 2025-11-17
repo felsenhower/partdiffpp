@@ -42,31 +42,19 @@ namespace partdiff {
     }
 
     void argument_parser::ask_params() {
-      if (this->args.size() < 1) {
-        for (std::size_t i = 0; i <= to_underlying(argument_index::termination); i++) {
-          ask_param(i);
-        }
-        if (this->options.termination == termination_condition::accuracy) {
-          ask_param(argument_index::term_accuracy);
-          this->options.term_iteration = partdiff::max_iteration;
-        } else {
-          ask_param(argument_index::term_iteration);
-          this->options.term_accuracy = 0.0;
-        }
-      } else if (this->args.size() < 6 || this->args[0] == "-h" || this->args[0] == "-?") {
+      if (this->args.size() < 6) {
         usage();
         exit(EXIT_SUCCESS);
+      }
+      for (std::size_t i = 0; i <= to_underlying(argument_index::termination); i++) {
+        parse_param(i, args[i]);
+      }
+      if (this->options.termination == termination_condition::accuracy) {
+        parse_param(argument_index::term_accuracy, args[5]);
+        this->options.term_iteration = partdiff::max_iteration;
       } else {
-        for (std::size_t i = 0; i <= to_underlying(argument_index::termination); i++) {
-          parse_param(i, args[i]);
-        }
-        if (this->options.termination == termination_condition::accuracy) {
-          parse_param(argument_index::term_accuracy, args[5]);
-          this->options.term_iteration = partdiff::max_iteration;
-        } else {
-          parse_param(argument_index::term_iteration, args[5]);
-          this->options.term_accuracy = 0.0;
-        }
+        parse_param(argument_index::term_iteration, args[5]);
+        this->options.term_accuracy = 0.0;
       }
     }
 
@@ -79,20 +67,6 @@ namespace partdiff {
         this->usage();
         exit(EXIT_FAILURE);
       }
-    }
-
-    void argument_parser::ask_param(argument_index index) {
-      this->ask_param(to_underlying(index));
-    }
-
-    void argument_parser::ask_param(std::size_t index) {
-      bool valid_input = false;
-      do {
-        std::cout << std::endl << this->get_description(index).description_for_interactive << std::flush;
-        std::string input;
-        getline(std::cin, input);
-        valid_input = this->get_description(index).read_from_string(input);
-      } while (!valid_input);
     }
 
     void argument_parser::fill_argument_descriptions() {
