@@ -34,11 +34,12 @@ namespace partdiff {
       for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
         std::print(" [{}]", get_description(i).name);
       }
-      std::print("\n\n");
+      std::println("");
+      std::println("");
       for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
-        std::print("{}{}\n", get_name(this->get_description(i).name), this->get_description(i).description_for_usage);
+        std::println("{}{}", get_name(this->get_description(i).name), this->get_description(i).description_for_usage);
       }
-      std::print("Example: {} 1 2 100 1 2 100 \n", app_name);
+      std::println("Example: {} 1 2 100 1 2 100", app_name);
     }
 
     void argument_parser::ask_params() {

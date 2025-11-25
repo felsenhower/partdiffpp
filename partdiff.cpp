@@ -25,7 +25,7 @@ namespace partdiff {
       data = new double[size];
     } catch (std::bad_alloc &) {
       auto size_bytes = size * sizeof(double);
-      std::print("Memory failure! (Requested {} bytes)\n", size_bytes);
+      std::println("Memory failure! (Requested {} bytes)", size_bytes);
       exit(EXIT_FAILURE);
     }
   }
@@ -203,14 +203,14 @@ namespace partdiff {
   static void display_matrix(const calculation_arguments &arguments, const calculation_results &results,
                              const calculation_options &options) {
     std::println("");
-    std::print("Matrix:\n");
+    std::println("Matrix:");
 
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
         std::print(" {:.4f}",
                    arguments.matrices(results.m, y * (options.interlines + 1), x * (options.interlines + 1)));
       }
-      std::print("\n");
+      std::println("");
     }
   }
 
