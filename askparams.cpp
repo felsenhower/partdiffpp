@@ -34,7 +34,7 @@ namespace partdiff {
       for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
         std::print(" [{}]", get_description(i).name);
       }
-      std::cout << std::endl << std::endl;
+      std::print("\n\n");
       for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
         std::print("{}{}\n", get_name(this->get_description(i).name), this->get_description(i).description_for_usage);
       }
