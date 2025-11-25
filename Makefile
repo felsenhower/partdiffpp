@@ -3,7 +3,7 @@
 CC = g++
 CXX = $(CC)
 CFLAGS  = -std=c++23 -Wall -Werror -Wextra -Wpedantic
-CFLAGS += -O3 -flto -march=native
+CFLAGS += -O3 -flto=auto -march=native
 ifeq ($(COMPILE_MODE),LEGACY)
 	CFLAGS += -DLEGACY
 endif
