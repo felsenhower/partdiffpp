@@ -83,8 +83,8 @@ namespace partdiff {
       constexpr int indent_width = 17;
       const std::string indent = std::format("{:{}s}", "", indent_width);
 
-      const std::string accuracy_text = (partdiff::legacy_mode ? "precision" : "accuracy");
-      const std::string acc_text = (partdiff::legacy_mode ? "prec" : "acc");
+      const std::string accuracy_text = "accuracy";
+      const std::string acc_text = "acc";
       const std::string invalid_text = "< invalid >";
 
       auto number = &(this->options.number);

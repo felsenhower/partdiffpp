@@ -25,11 +25,7 @@ namespace partdiff {
       data = new double[size];
     } catch (std::bad_alloc &) {
       auto size_bytes = size * sizeof(double);
-      if (partdiff::legacy_mode) {
-        std::cout << "Speicherprobleme! (" << size_bytes << " Bytes angefordert)" << std::endl;
-      } else {
-        std::cout << "Memory failure! (Requested" << size_bytes << " bytes)" << std::endl;
-      }
+      std::cout << "Memory failure! (Requested" << size_bytes << " bytes)" << std::endl;
       exit(EXIT_FAILURE);
     }
   }
@@ -190,28 +186,24 @@ namespace partdiff {
 
     const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) * arguments.num_matrices / 1024.0 / 1024.0;
 
-    constexpr std::size_t padding = (partdiff::legacy_mode ? 20 : 25);
+    constexpr std::size_t padding = 25;
 
-    std::print("{1:{0}s}{2:0.6f} s\n"
-               "{3:{0}s}{4:0.6f} MiB\n"
-               "{5:{0}s}{6:s}\n"
-               "{7:{0}s}{8:d}\n"
-               "{9:{0}s}{10:s}\n"
-               "{11:{0}s}{12:s}\n"
-               "{13:{0}s}{14:d}\n"
-               "{15:{0}s}{16:e}\n\n",
-               padding, (partdiff::legacy_mode ? "Berechnungszeit:" : "Calculation time:"), time,
-               (partdiff::legacy_mode ? "Speicherbedarf:" : "Memory usage:"), memory_consumption,
-               (partdiff::legacy_mode ? "Berechnungsmethode:" : "Calculation method:"),
-               (options.method == calculation_method::gauss_seidel ? "Gauß-Seidel" : "Jacobi"), ("Interlines:"),
-               options.interlines, (partdiff::legacy_mode ? "Stoerfunktion:" : "Interference function:"),
-               (options.inf_func == interference_function::f0 ? "f(x,y) = 0" : "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)"),
-               (partdiff::legacy_mode ? "Terminierung:" : "Termination condition:"),
-               (options.termination == termination_condition::accuracy
-                    ? (partdiff::legacy_mode ? "Hinreichende Genaugkeit" : "Sufficient accuracy")
-                    : (partdiff::legacy_mode ? "Anzahl der Iterationen" : "Number of iterations")),
-               (partdiff::legacy_mode ? "Anzahl Iterationen:" : "Number of iterations:"), results.stat_iteration,
-               (partdiff::legacy_mode ? "Norm des Fehlers:" : "Norm of error:"), results.stat_accuracy);
+    std::print(
+        "{1:{0}s}{2:0.6f} s\n"
+        "{3:{0}s}{4:0.6f} MiB\n"
+        "{5:{0}s}{6:s}\n"
+        "{7:{0}s}{8:d}\n"
+        "{9:{0}s}{10:s}\n"
+        "{11:{0}s}{12:s}\n"
+        "{13:{0}s}{14:d}\n"
+        "{15:{0}s}{16:e}\n\n",
+        padding, "Calculation time:", time, "Memory usage:", memory_consumption,
+        "Calculation method:", (options.method == calculation_method::gauss_seidel ? "Gauß-Seidel" : "Jacobi"),
+        ("Interlines:"), options.interlines, "Interference function:",
+        (options.inf_func == interference_function::f0 ? "f(x,y) = 0" : "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)"),
+        "Termination condition:",
+        (options.termination == termination_condition::accuracy ? "Sufficient accuracy" : "Number of iterations"),
+        "Number of iterations:", results.stat_iteration, "Norm of error:", results.stat_accuracy);
   }
 
   static void display_matrix(const calculation_arguments &arguments, const calculation_results &results,

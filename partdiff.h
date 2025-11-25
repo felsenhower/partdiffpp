@@ -12,12 +12,6 @@
 
 namespace partdiff {
 
-#ifdef LEGACY
-  static constexpr bool legacy_mode = true;
-#else
-  static constexpr bool legacy_mode = false;
-#endif
-
   static constexpr uint64_t max_interlines = 10240;
   static constexpr uint64_t max_iteration = 200000;
   static constexpr uint64_t max_threads = 1024;
