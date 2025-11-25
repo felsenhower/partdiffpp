@@ -5,7 +5,7 @@ namespace partdiff {
   namespace askparams {
 
     using calculation_method = calculation_options::calculation_method;
-    using interference_function = calculation_options::interference_function;
+    using perturbation_function = calculation_options::perturbation_function;
     using termination_condition = calculation_options::termination_condition;
 
     argument_parser::argument_parser(const int argc, char const *argv[])
@@ -118,20 +118,20 @@ namespace partdiff {
                                      "Interlines> ",
                                      [interlines] { return (*interlines <= partdiff::max_interlines); });
 
-      auto inf_func = &(this->options.inf_func);
+      auto pert_func = &(this->options.pert_func);
       this->add_argument_description(
-          "func", inf_func,
-          std::format("interference function (1 .. 2)\n"
+          "func", pert_func,
+          std::format("perturbation function (1 .. 2)\n"
                       "{0}{1:d}: f(x,y) = 0\n"
                       "{0}{2:d}: f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)",
-                      indent, to_underlying(interference_function::f0), to_underlying(interference_function::fpisin)),
-          std::format("Select interference function:\n"
+                      indent, to_underlying(perturbation_function::f0), to_underlying(perturbation_function::fpisin)),
+          std::format("Select perturbation function:\n"
                       " {:d}: f(x,y)=0.\n"
                       " {:d}: f(x,y)=2pi^2*sin(pi*x)sin(pi*y).\n"
-                      "interference function> ",
-                      to_underlying(interference_function::f0), to_underlying(interference_function::fpisin)),
-          [inf_func] {
-            return (*inf_func == interference_function::f0 || *inf_func == interference_function::fpisin);
+                      "perturbation function> ",
+                      to_underlying(perturbation_function::f0), to_underlying(perturbation_function::fpisin)),
+          [pert_func] {
+            return (*pert_func == perturbation_function::f0 || *pert_func == perturbation_function::fpisin);
           });
 
       auto termination = &(this->options.termination);

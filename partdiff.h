@@ -27,12 +27,12 @@ namespace partdiff {
 
     struct calculation_options {
       enum class calculation_method : uint64_t { gauss_seidel = 1, jacobi = 2 };
-      enum class interference_function : uint64_t { f0 = 1, fpisin = 2 };
+      enum class perturbation_function : uint64_t { f0 = 1, fpisin = 2 };
       enum class termination_condition : uint64_t { accuracy = 1, iterations = 2 };
       uint64_t number;
       uint64_t interlines;
       calculation_method method;
-      interference_function inf_func;
+      perturbation_function pert_func;
       termination_condition termination;
       uint64_t term_iteration;
       double term_accuracy;
@@ -56,7 +56,7 @@ namespace partdiff {
         number = 0,
         method = 1,
         interlines = 2,
-        inf_func = 3,
+        pert_func = 3,
         termination = 4,
         term_dummy = 5,
         term_accuracy = 6,
@@ -111,7 +111,7 @@ namespace partdiff {
     calculation_arguments(const askparams::calculation_options &);
 
     private:
-    askparams::calculation_options::interference_function inf_func;
+    askparams::calculation_options::perturbation_function pert_func;
     void init_matrices();
   };
 

@@ -9,7 +9,7 @@ namespace partdiff {
   using argument_parser = askparams::argument_parser;
   using calculation_options = askparams::calculation_options;
   using calculation_method = calculation_options::calculation_method;
-  using interference_function = calculation_options::interference_function;
+  using perturbation_function = calculation_options::perturbation_function;
   using termination_condition = calculation_options::termination_condition;
   using tensor = calculation_arguments::tensor;
 
@@ -70,7 +70,7 @@ namespace partdiff {
     return data[(num_cols * num_rows * matrix) + (num_cols * row) + (col)];
   }
 
-  calculation_arguments::calculation_arguments(const calculation_options &options) : inf_func(options.inf_func) {
+  calculation_arguments::calculation_arguments(const calculation_options &options) : pert_func(options.pert_func) {
     this->N = (options.interlines * 8) + 9 - 1;
     this->num_matrices = (options.method == calculation_method::jacobi) ? 2 : 1;
     this->h = 1.0 / this->N;
@@ -86,7 +86,7 @@ namespace partdiff {
         }
       }
     }
-    if (this->inf_func == interference_function::f0) {
+    if (this->pert_func == perturbation_function::f0) {
       for (uint64_t g = 0; g < this->num_matrices; g++) {
         for (uint64_t i = 0; i <= N; i++) {
           this->matrices(g, i, 0) = 1.0 - (h * i);
@@ -121,7 +121,7 @@ namespace partdiff {
     int m1 = 0;
     int m2 = (options.method == calculation_method::jacobi) ? 1 : 0;
 
-    if (options.inf_func == interference_function::fpisin) {
+    if (options.pert_func == perturbation_function::fpisin) {
       pih = pi * h;
       fpisin = 0.25 * two_pi_square * h * h;
     }
@@ -135,7 +135,7 @@ namespace partdiff {
       for (int i = 1; i < N; i++) {
         double fpisin_i = 0.0;
 
-        if (options.inf_func == interference_function::fpisin) {
+        if (options.pert_func == perturbation_function::fpisin) {
           fpisin_i = fpisin * std::sin(pih * (double)i);
         }
 
@@ -143,7 +143,7 @@ namespace partdiff {
           double star = 0.25 * (arguments.matrices(m2, i - 1, j) + arguments.matrices(m2, i, j - 1) +
                                 arguments.matrices(m2, i, j + 1) + arguments.matrices(m2, i + 1, j));
 
-          if (options.inf_func == interference_function::fpisin) {
+          if (options.pert_func == perturbation_function::fpisin) {
             star += fpisin_i * std::sin(pih * (double)j);
           }
 
@@ -186,7 +186,7 @@ namespace partdiff {
     const std::string_view calculation_method_display =
         options.method == calculation_method::gauss_seidel ? "Gauß-Seidel" : "Jacobi";
     const std::string_view perturbation_function_display =
-        options.inf_func == interference_function::f0 ? "f(x,y) = 0" : "f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)";
+        options.pert_func == perturbation_function::f0 ? "f(x,y) = 0" : "f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)";
     const std::string_view termination_display =
         options.termination == termination_condition::accuracy ? "Required accuracy" : "Number of iterations";
 
