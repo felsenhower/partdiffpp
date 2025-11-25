@@ -181,33 +181,28 @@ namespace partdiff {
                                  const calculation_options &options) {
 
     const int N = arguments.N;
-
     const double time = std::chrono::duration<double>(results.end_time - results.start_time).count();
-
     const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) * arguments.num_matrices / 1024.0 / 1024.0;
+    const std::string_view calculation_method_display =
+        options.method == calculation_method::gauss_seidel ? "Gauß-Seidel" : "Jacobi";
+    const std::string_view perturbation_function_display =
+        options.inf_func == interference_function::f0 ? "f(x,y) = 0" : "f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)";
+    const std::string_view termination_display =
+        options.termination == termination_condition::accuracy ? "Required accuracy" : "Number of iterations";
 
-    constexpr std::size_t padding = 25;
-
-    std::print(
-        "{1:{0}s}{2:0.6f} s\n"
-        "{3:{0}s}{4:0.6f} MiB\n"
-        "{5:{0}s}{6:s}\n"
-        "{7:{0}s}{8:d}\n"
-        "{9:{0}s}{10:s}\n"
-        "{11:{0}s}{12:s}\n"
-        "{13:{0}s}{14:d}\n"
-        "{15:{0}s}{16:e}\n\n",
-        padding, "Calculation time:", time, "Memory usage:", memory_consumption,
-        "Calculation method:", (options.method == calculation_method::gauss_seidel ? "Gauß-Seidel" : "Jacobi"),
-        ("Interlines:"), options.interlines, "Interference function:",
-        (options.inf_func == interference_function::f0 ? "f(x,y) = 0" : "f(x,y) = 2pi^2*sin(pi*x)sin(pi*y)"),
-        "Termination condition:",
-        (options.termination == termination_condition::accuracy ? "Sufficient accuracy" : "Number of iterations"),
-        "Number of iterations:", results.stat_iteration, "Norm of error:", results.stat_accuracy);
+    std::println("Calculation time:       {:0.6f} s", time);
+    std::println("Memory usage:           {:0.6f} MiB", memory_consumption);
+    std::println("Calculation method:     {:s}", calculation_method_display);
+    std::println("Interlines:             {:d}", options.interlines);
+    std::println("Perturbation function:  {:s}", perturbation_function_display);
+    std::println("Termination:            {:s}", termination_display);
+    std::println("Number of iterations:   {:d}", results.stat_iteration);
+    std::println("Residuum:               {:e}", results.stat_accuracy);
   }
 
   static void display_matrix(const calculation_arguments &arguments, const calculation_results &results,
                              const calculation_options &options) {
+    std::println("");
     std::print("Matrix:\n");
 
     for (int y = 0; y < 9; y++) {
