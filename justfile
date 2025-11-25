@@ -1,5 +1,5 @@
-default:
-    echo 'Hello, world!'
+@default:
+    just --list
 
 build:
     make
