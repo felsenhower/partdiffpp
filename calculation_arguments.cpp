@@ -20,20 +20,20 @@ namespace partdiff {
     for (uint64_t g = 0; g < this->num_matrices; g++) {
       for (uint64_t i = 0; i <= N; i++) {
         for (uint64_t j = 0; j <= N; j++) {
-          this->matrices(g, i, j) = 0.0;
+          this->matrices[g, i, j] = 0.0;
         }
       }
     }
     if (this->pert_func == perturbation_function::f0) {
       for (uint64_t g = 0; g < this->num_matrices; g++) {
         for (uint64_t i = 0; i <= N; i++) {
-          this->matrices(g, i, 0) = 1.0 - (h * i);
-          this->matrices(g, i, N) = h * i;
-          this->matrices(g, 0, i) = 1.0 - (h * i);
-          this->matrices(g, N, i) = h * i;
+          this->matrices[g, i, 0] = 1.0 - (h * i);
+          this->matrices[g, i, N] = h * i;
+          this->matrices[g, 0, i] = 1.0 - (h * i);
+          this->matrices[g, N, i] = h * i;
         }
-        this->matrices(g, N, 0) = 0.0;
-        this->matrices(g, 0, N) = 0.0;
+        this->matrices[g, N, 0] = 0.0;
+        this->matrices[g, 0, N] = 0.0;
       }
     }
   }
