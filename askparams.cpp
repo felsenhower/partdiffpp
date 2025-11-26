@@ -37,7 +37,8 @@ namespace partdiff {
       std::println("");
       std::println("");
       for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
-        std::println("{}{}", get_name(this->get_description(i).name), this->get_description(i).description_for_usage);
+        const std::string description = this->get_description(i).description_for_usage.value_or("<invalid>");
+        std::println("{}{}", get_name(this->get_description(i).name), description);
       }
       std::println("Example: {} 1 2 100 1 2 100", app_name);
     }
@@ -83,8 +84,6 @@ namespace partdiff {
 
       constexpr int indent_width = 17;
       const std::string indent = std::format("{:{}s}", "", indent_width);
-
-      const std::string invalid_text = "< invalid >";
 
       auto number = &(this->options.number);
       this->add_argument_description("num", number, std::format("number of threads (1 .. {:d})", partdiff::max_threads),
@@ -138,17 +137,17 @@ namespace partdiff {
                                                  scientific_double(partdiff::max_accuracy), partdiff::max_iteration));
 
       auto term_accuracy = &(this->options.term_accuracy);
-      this->add_argument_description("acc", term_accuracy, invalid_text, [term_accuracy] {
+      this->add_argument_description("acc", term_accuracy, std::nullopt, [term_accuracy] {
         return (*term_accuracy >= partdiff::max_accuracy && *term_accuracy <= partdiff::min_accuracy);
       });
 
       auto term_iteration = &(this->options.term_iteration);
-      this->add_argument_description("iter", term_iteration, invalid_text, [term_iteration] {
+      this->add_argument_description("iter", term_iteration, std::nullopt, [term_iteration] {
         return (*term_iteration >= 1 && *term_iteration <= partdiff::max_iteration);
       });
     }
 
-    void argument_parser::add_argument_description(std::string name, std::string description_for_usage) {
+    void argument_parser::add_argument_description(std::string name, std::optional<std::string> description_for_usage) {
       argument_description arg_desc;
       arg_desc.name = name;
       arg_desc.description_for_usage = description_for_usage;
@@ -156,7 +155,8 @@ namespace partdiff {
     }
 
     template <class T>
-    void argument_parser::add_argument_description(std::string name, T *target, std::string description_for_usage,
+    void argument_parser::add_argument_description(std::string name, T *target,
+                                                   std::optional<std::string> description_for_usage,
                                                    std::function<bool()> check) {
       argument_description arg_desc;
       arg_desc.name = name;
