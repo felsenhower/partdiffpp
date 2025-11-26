@@ -4,9 +4,18 @@
 #include <print>
 #include <sstream>
 
-#include "partdiff.h"
-
 namespace partdiff {
+
+  template <typename T, typename U = std::underlying_type_t<T>>
+  U to_underlying(T v) {
+    return static_cast<U>(v);
+  }
+
+  static constexpr uint64_t max_interlines = 10240;
+  static constexpr uint64_t max_iteration = 200000;
+  static constexpr uint64_t max_threads = 1024;
+  static constexpr double min_accuracy = 1e-4;
+  static constexpr double max_accuracy = 1e-20;
 
   using calculation_method = calculation_options::calculation_method;
   using perturbation_function = calculation_options::perturbation_function;
