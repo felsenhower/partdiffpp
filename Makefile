@@ -7,7 +7,7 @@ CFLAGS += -O3 -flto=auto -march=native
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = $(CXXFLAGS)
 LDLIBS  = -lm
-OBJS = partdiff.o argument_parser.o calculation_arguments.o
+OBJS = partdiff.o argument_parser.o calculation_arguments.o tensor.o
 
 default: all
 
