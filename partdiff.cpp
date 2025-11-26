@@ -1,3 +1,4 @@
+#include "calculation_results.hpp"
 #include "tensor.hpp"
 #include <cmath>
 #include <numbers>
@@ -15,15 +16,14 @@ namespace partdiff {
   static constexpr double pi = std::numbers::pi;
   static constexpr double two_pi_square = (2 * pi * pi);
 
-  calculation_results::calculation_results() {
-    this->m = 0;
-    this->stat_iteration = 0;
-    this->stat_accuracy = 0;
-  }
+  static calculation_results calculate(calculation_arguments &arguments, const calculation_options &options) {
 
-  static void calculate(calculation_arguments &arguments, calculation_results &results,
-                        const calculation_options &options) {
-    results.start_time = std::chrono::high_resolution_clock::now();
+    const auto now = std::chrono::high_resolution_clock::now;
+
+    const auto start_time = now();
+
+    uint64_t stat_iteration = 0;
+    double stat_accuracy = 0.0;
 
     const int N = arguments.N;
     const double h = arguments.h;
@@ -72,8 +72,8 @@ namespace partdiff {
         }
       }
 
-      results.stat_iteration++;
-      results.stat_accuracy = maxresiduum;
+      stat_iteration++;
+      stat_accuracy = maxresiduum;
 
       const int temp = m1;
       m1 = m2;
@@ -88,8 +88,10 @@ namespace partdiff {
       }
     }
 
-    results.m = m2;
-    results.end_time = std::chrono::high_resolution_clock::now();
+    const auto end_time = now();
+
+    calculation_results results = {m2, stat_iteration, stat_accuracy, start_time, end_time};
+    return results;
   }
 
   static void display_statistics(const calculation_arguments &arguments, const calculation_results &results,
@@ -140,9 +142,8 @@ int main(const int argc, char const *argv[]) {
   argument_parser parser(argc, argv);
   calculation_options options = parser.get_options();
   calculation_arguments arguments(options);
-  calculation_results results;
 
-  calculate(arguments, results, options);
+  calculation_results results = calculate(arguments, options);
 
   display_statistics(arguments, results, options);
   display_matrix(arguments, results, options);
