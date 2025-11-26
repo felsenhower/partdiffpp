@@ -2,11 +2,9 @@
 #include "calculation_arguments.hpp"
 #include "calculation_options.hpp"
 #include "calculation_results.hpp"
-#include "tensor.hpp"
 #include <cmath>
-#include <numbers>
-
-#include "partdiff.h"
+#include <format>
+#include <print>
 
 namespace partdiff {
 

@@ -1,12 +1,8 @@
-#include "argument_parser.hpp"
 #include "calculation_arguments.hpp"
 #include "calculation_options.hpp"
 
-#include "partdiff.h"
-
 namespace partdiff {
 
-  using argument_parser = argument_parser;
   using calculation_options = calculation_options;
   using calculation_method = calculation_options::calculation_method;
   using perturbation_function = calculation_options::perturbation_function;

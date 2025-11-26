@@ -1,8 +1,7 @@
 #pragma once
 
 #include "calculation_options.hpp"
-
-#include "partdiff.h"
+#include "tensor.hpp"
 
 namespace partdiff {
 
