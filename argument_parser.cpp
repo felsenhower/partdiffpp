@@ -1,5 +1,6 @@
 #include "argument_parser.hpp"
 #include "calculation_options.hpp"
+#include "enums.hpp"
 #include <format>
 #include <print>
 #include <sstream>
@@ -45,10 +46,6 @@ namespace partdiff {
   U to_underlying(T v) {
     return static_cast<U>(v);
   }
-
-  using calculation_method = calculation_options::calculation_method;
-  using perturbation_function = calculation_options::perturbation_function;
-  using termination_condition = calculation_options::termination_condition;
 
   static constexpr bounds<uint64_t> interlines_bounds{0, 10240};
   static constexpr bounds<uint64_t> iteration_bounds{1, 200000};

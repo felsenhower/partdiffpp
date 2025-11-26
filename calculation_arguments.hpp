@@ -1,6 +1,7 @@
 #pragma once
 
 #include "calculation_options.hpp"
+#include "enums.hpp"
 #include "tensor.hpp"
 
 namespace partdiff {
@@ -14,7 +15,7 @@ namespace partdiff {
     calculation_arguments(const calculation_options &);
 
     private:
-    calculation_options::perturbation_function pert_func;
+    perturbation_function pert_func;
     void init_matrices();
   };
 

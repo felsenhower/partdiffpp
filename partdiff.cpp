@@ -8,12 +8,6 @@
 
 namespace partdiff {
 
-  using argument_parser = argument_parser;
-  using calculation_options = calculation_options;
-  using calculation_method = calculation_options::calculation_method;
-  using perturbation_function = calculation_options::perturbation_function;
-  using termination_condition = calculation_options::termination_condition;
-
   static constexpr double pi = std::numbers::pi;
   static constexpr double two_pi_square = (2 * pi * pi);
 

@@ -1,12 +1,8 @@
 #include "calculation_arguments.hpp"
 #include "calculation_options.hpp"
+#include "enums.hpp"
 
 namespace partdiff {
-
-  using calculation_options = calculation_options;
-  using calculation_method = calculation_options::calculation_method;
-  using perturbation_function = calculation_options::perturbation_function;
-  using termination_condition = calculation_options::termination_condition;
 
   calculation_arguments::calculation_arguments(const calculation_options &options) : pert_func(options.pert_func) {
     this->N = (options.interlines * 8) + 9 - 1;
