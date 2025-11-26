@@ -10,8 +10,8 @@
 
 namespace partdiff {
 
-  using argument_parser = askparams::argument_parser;
-  using calculation_options = askparams::calculation_options;
+  using argument_parser = argument_parser;
+  using calculation_options = calculation_options;
   using calculation_method = calculation_options::calculation_method;
   using perturbation_function = calculation_options::perturbation_function;
   using termination_condition = calculation_options::termination_condition;
@@ -138,8 +138,8 @@ namespace partdiff {
 
 using calculation_arguments = partdiff::calculation_arguments;
 using calculation_results = partdiff::calculation_results;
-using argument_parser = partdiff::askparams::argument_parser;
-using calculation_options = partdiff::askparams::calculation_options;
+using argument_parser = partdiff::argument_parser;
+using calculation_options = partdiff::calculation_options;
 
 int main(const int argc, char const *argv[]) {
   argument_parser parser(argc, argv);
