@@ -1,3 +1,5 @@
+#include "argument_parser.hpp"
+
 #include "partdiff.h"
 
 namespace partdiff {
