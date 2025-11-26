@@ -11,8 +11,11 @@ namespace partdiff {
     return static_cast<U>(v);
   }
 
+  static constexpr uint64_t min_interlines = 0;
   static constexpr uint64_t max_interlines = 10240;
+  static constexpr uint64_t min_iteration = 1;
   static constexpr uint64_t max_iteration = 200000;
+  static constexpr uint64_t min_threads = 1;
   static constexpr uint64_t max_threads = 1024;
   static constexpr double min_accuracy = 1e-4;
   static constexpr double max_accuracy = 1e-20;
@@ -66,7 +69,7 @@ namespace partdiff {
     }
     if (this->options.termination == termination_condition::accuracy) {
       parse_param(argument_index::term_accuracy, args[5]);
-      this->options.term_iteration = partdiff::max_iteration;
+      this->options.term_iteration = max_iteration;
     } else {
       parse_param(argument_index::term_iteration, args[5]);
       this->options.term_accuracy = 0.0;
@@ -99,8 +102,9 @@ namespace partdiff {
     const std::string indent = std::format("{:{}s}", "", indent_width);
 
     auto number = &(this->options.number);
-    this->add_argument_description("num", number, std::format("number of threads (1 .. {:d})", partdiff::max_threads),
-                                   [number] { return (*number >= 1 && *number <= partdiff::max_threads); });
+    this->add_argument_description("num", number,
+                                   std::format("number of threads ({:d} .. {:d})", min_threads, max_threads),
+                                   [number] { return (*number >= min_threads && *number <= max_threads); });
 
     auto method = &(this->options.method);
     this->add_argument_description(
@@ -112,11 +116,12 @@ namespace partdiff {
         [method] { return (*method == calculation_method::gauss_seidel || *method == calculation_method::jacobi); });
 
     auto interlines = &(this->options.interlines);
-    this->add_argument_description("lines", interlines,
-                                   std::format("number of interlines (0 .. {1:d})\n"
-                                               "{0}matrixsize = (interlines * 8) + 9",
-                                               indent, partdiff::max_interlines),
-                                   [interlines] { return (*interlines <= partdiff::max_interlines); });
+    this->add_argument_description(
+        "lines", interlines,
+        std::format("number of interlines ({1:d} .. {2:d})\n"
+                    "{0}matrixsize = (interlines * 8) + 9",
+                    indent, min_interlines, max_interlines),
+        [interlines] { return (*interlines >= min_interlines && *interlines <= max_interlines); });
 
     auto pert_func = &(this->options.pert_func);
     this->add_argument_description(
@@ -144,18 +149,18 @@ namespace partdiff {
     this->add_argument_description("acc/iter",
                                    std::format("depending on term:\n"
                                                "{0}accuracy:  {1:s} .. {2:s}\n"
-                                               "{0}iterations:    1 .. {3:d}\n",
-                                               indent, scientific_double(partdiff::min_accuracy),
-                                               scientific_double(partdiff::max_accuracy), partdiff::max_iteration));
+                                               "{0}iterations:    {3:d} .. {4:d}\n",
+                                               indent, scientific_double(min_accuracy), scientific_double(max_accuracy),
+                                               min_iteration, max_iteration));
 
     auto term_accuracy = &(this->options.term_accuracy);
     this->add_argument_description("acc", term_accuracy, std::nullopt, [term_accuracy] {
-      return (*term_accuracy >= partdiff::max_accuracy && *term_accuracy <= partdiff::min_accuracy);
+      return (*term_accuracy >= max_accuracy && *term_accuracy <= min_accuracy);
     });
 
     auto term_iteration = &(this->options.term_iteration);
     this->add_argument_description("iter", term_iteration, std::nullopt, [term_iteration] {
-      return (*term_iteration >= 1 && *term_iteration <= partdiff::max_iteration);
+      return (*term_iteration >= min_iteration && *term_iteration <= max_iteration);
     });
   }
 
