@@ -49,11 +49,11 @@ namespace partdiff {
     }
   }
 
-  double &tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) {
+  double &tensor::operator[](std::size_t matrix, std::size_t row, std::size_t col) {
     return data[(num_cols * num_rows * matrix) + (num_cols * row) + (col)];
   }
 
-  double tensor::operator()(std::size_t matrix, std::size_t row, std::size_t col) const {
+  double tensor::operator[](std::size_t matrix, std::size_t row, std::size_t col) const {
     return data[(num_cols * num_rows * matrix) + (num_cols * row) + (col)];
   }
 

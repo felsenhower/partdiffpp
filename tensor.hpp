@@ -1,7 +1,7 @@
 #pragma once
 
+#include <cstddef>
 #include <utility>
-#include <vector>
 
 namespace partdiff {
 
@@ -14,8 +14,8 @@ namespace partdiff {
     tensor &operator=(const tensor &other);
     tensor &operator=(tensor &&other) noexcept;
     ~tensor();
-    double &operator()(std::size_t matrix, std::size_t row, std::size_t col);
-    double operator()(std::size_t matrix, std::size_t row, std::size_t col) const;
+    double &operator[](std::size_t matrix, std::size_t row, std::size_t col);
+    double operator[](std::size_t matrix, std::size_t row, std::size_t col) const;
 
     private:
     std::size_t num_matrices, num_rows, num_cols;

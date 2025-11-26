@@ -55,20 +55,20 @@ namespace partdiff {
         }
 
         for (int j = 1; j < N; j++) {
-          double star = 0.25 * (arguments.matrices(m2, i - 1, j) + arguments.matrices(m2, i, j - 1) +
-                                arguments.matrices(m2, i, j + 1) + arguments.matrices(m2, i + 1, j));
+          double star = 0.25 * (arguments.matrices[m2, i - 1, j] + arguments.matrices[m2, i, j - 1] +
+                                arguments.matrices[m2, i, j + 1] + arguments.matrices[m2, i + 1, j]);
 
           if (options.pert_func == perturbation_function::fpisin) {
             star += fpisin_i * std::sin(pih * (double)j);
           }
 
           if (options.termination == termination_condition::accuracy || term_iteration == 1) {
-            double residuum = arguments.matrices(m2, i, j) - star;
+            double residuum = arguments.matrices[m2, i, j] - star;
             residuum = std::fabs(residuum);
             maxresiduum = std::max(residuum, maxresiduum);
           }
 
-          arguments.matrices(m1, i, j) = star;
+          arguments.matrices[m1, i, j] = star;
         }
       }
 
@@ -123,7 +123,7 @@ namespace partdiff {
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
         std::print(" {:.4f}",
-                   arguments.matrices(results.m, y * (options.interlines + 1), x * (options.interlines + 1)));
+                   arguments.matrices[results.m, y * (options.interlines + 1), x * (options.interlines + 1)]);
       }
       std::println("");
     }
