@@ -1,3 +1,5 @@
+#include "calculation_arguments.hpp"
+
 #include "partdiff.h"
 
 namespace partdiff {
