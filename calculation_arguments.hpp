@@ -1,5 +1,7 @@
 #pragma once
 
+#include "calculation_options.hpp"
+
 #include "partdiff.h"
 
 namespace partdiff {

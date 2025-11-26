@@ -1,4 +1,6 @@
 #include "partdiff.h"
+#include "calculation_options.hpp"
+
 
 namespace partdiff {
 
