@@ -25,6 +25,4 @@ namespace partdiff {
     return static_cast<U>(v);
   }
 
-  namespace askparams {} // namespace askparams
-
 } // namespace partdiff
