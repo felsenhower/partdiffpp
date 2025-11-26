@@ -48,7 +48,6 @@ namespace partdiff {
         std::any target;
         std::string name;
         std::string description_for_usage;
-        std::string description_for_interactive;
         std::function<bool(const std::string &input)> read_from_string = [](auto) { return false; };
       };
 
@@ -78,9 +77,8 @@ namespace partdiff {
       void fill_argument_descriptions();
       template <class T>
       void add_argument_description(std::string name, T *target, std::string description_for_usage,
-                                    std::string description_for_interactive, std::function<bool()> check);
-      void add_argument_description(std::string name, std::string description_for_usage,
-                                    std::string description_for_interactive);
+                                    std::function<bool()> check);
+      void add_argument_description(std::string name, std::string description_for_usage);
     };
 
   } // namespace askparams
