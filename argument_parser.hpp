@@ -1,6 +1,9 @@
 #include "calculation_options.hpp"
-
-#include "partdiff.h"
+#include <any>
+#include <functional>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace partdiff {
 

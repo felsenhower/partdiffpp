@@ -1,16 +1,7 @@
 #pragma once
 
-#include "tensor.hpp"
-#include <any>
-#include <chrono>
-#include <format>
+#include <cstdint>
 #include <functional>
-#include <iomanip>
-#include <iostream>
-#include <optional>
-#include <print>
-#include <sstream>
-#include <vector>
 
 namespace partdiff {
 
