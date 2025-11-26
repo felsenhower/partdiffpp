@@ -5,4 +5,4 @@ build:
     make
 
 format:
-    clang-format --style=file -i *.h *.cpp *.hpp
+    clang-format --style=file -i *.cpp *.hpp
