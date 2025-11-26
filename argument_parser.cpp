@@ -3,6 +3,41 @@
 #include <format>
 #include <print>
 #include <sstream>
+#include <utility>
+
+template <typename T>
+struct bounds {
+  T lower;
+  T upper;
+  bool contains(T x) const {
+    return (x >= lower && x <= upper);
+  }
+};
+
+namespace std {
+
+  template <typename T, typename Char>
+    requires std::formattable<T, Char>
+  struct formatter<bounds<T>, Char> {
+    std::formatter<T, Char> underlying_;
+
+    constexpr auto parse(std::basic_format_parse_context<Char> &ctx) {
+      return underlying_.parse(ctx);
+    }
+
+    template <typename FormatContext>
+    auto format(const bounds<T> &b, FormatContext &ctx) const {
+      auto out = ctx.out();
+      out = underlying_.format(b.lower, ctx);
+      for (const char &c : std::string(" .. ")) {
+        *out++ = Char(c);
+      }
+      out = underlying_.format(b.upper, ctx);
+      return out;
+    }
+  };
+
+} // namespace std
 
 namespace partdiff {
 
@@ -11,18 +46,14 @@ namespace partdiff {
     return static_cast<U>(v);
   }
 
-  static constexpr uint64_t min_interlines = 0;
-  static constexpr uint64_t max_interlines = 10240;
-  static constexpr uint64_t min_iteration = 1;
-  static constexpr uint64_t max_iteration = 200000;
-  static constexpr uint64_t min_threads = 1;
-  static constexpr uint64_t max_threads = 1024;
-  static constexpr double min_accuracy = 1e-4;
-  static constexpr double max_accuracy = 1e-20;
-
   using calculation_method = calculation_options::calculation_method;
   using perturbation_function = calculation_options::perturbation_function;
   using termination_condition = calculation_options::termination_condition;
+
+  static constexpr bounds<uint64_t> interlines_bounds{0, 10240};
+  static constexpr bounds<uint64_t> iteration_bounds{1, 200000};
+  static constexpr bounds<uint64_t> thread_bounds{1, 1024};
+  static constexpr bounds<double> accuracy_bounds{1e-20, 1e-4};
 
   argument_parser::argument_parser(const int argc, char const *argv[])
     : app_name(argv[0]),
@@ -69,7 +100,7 @@ namespace partdiff {
     }
     if (this->options.termination == termination_condition::accuracy) {
       parse_param(argument_index::term_accuracy, args[5]);
-      this->options.term_iteration = max_iteration;
+      this->options.term_iteration = iteration_bounds.upper;
     } else {
       parse_param(argument_index::term_iteration, args[5]);
       this->options.term_accuracy = 0.0;
@@ -89,22 +120,12 @@ namespace partdiff {
 
   void argument_parser::fill_argument_descriptions() {
 
-    auto scientific_double = [](double val) {
-      auto temp = std::format("{:.0e}", val);
-      int epos = temp.find("e");
-      std::string mantissa_str = temp.substr(0, epos);
-      std::string exponent_str = temp.substr(epos + 1, temp.length() - epos - 1);
-      int exponent = stoi(exponent_str);
-      return mantissa_str + "e" + std::to_string(exponent);
-    };
-
     constexpr int indent_width = 17;
     const std::string indent = std::format("{:{}s}", "", indent_width);
 
     auto number = &(this->options.number);
-    this->add_argument_description("num", number,
-                                   std::format("number of threads ({:d} .. {:d})", min_threads, max_threads),
-                                   [number] { return (*number >= min_threads && *number <= max_threads); });
+    this->add_argument_description("num", number, std::format("number of threads ({:d})", thread_bounds),
+                                   [number] { return (thread_bounds.contains(*number)); });
 
     auto method = &(this->options.method);
     this->add_argument_description(
@@ -116,12 +137,11 @@ namespace partdiff {
         [method] { return (*method == calculation_method::gauss_seidel || *method == calculation_method::jacobi); });
 
     auto interlines = &(this->options.interlines);
-    this->add_argument_description(
-        "lines", interlines,
-        std::format("number of interlines ({1:d} .. {2:d})\n"
-                    "{0}matrixsize = (interlines * 8) + 9",
-                    indent, min_interlines, max_interlines),
-        [interlines] { return (*interlines >= min_interlines && *interlines <= max_interlines); });
+    this->add_argument_description("lines", interlines,
+                                   std::format("number of interlines ({1:d})\n"
+                                               "{0}matrixsize = (interlines * 8) + 9",
+                                               indent, interlines_bounds),
+                                   [interlines] { return (interlines_bounds.contains(*interlines)); });
 
     auto pert_func = &(this->options.pert_func);
     this->add_argument_description(
@@ -146,22 +166,18 @@ namespace partdiff {
                                              *termination == termination_condition::iterations);
                                    });
 
-    this->add_argument_description("acc/iter",
-                                   std::format("depending on term:\n"
-                                               "{0}accuracy:  {1:s} .. {2:s}\n"
-                                               "{0}iterations:    {3:d} .. {4:d}\n",
-                                               indent, scientific_double(min_accuracy), scientific_double(max_accuracy),
-                                               min_iteration, max_iteration));
+    this->add_argument_description("acc/iter", std::format("depending on term:\n"
+                                                           "{0}accuracy:  {1:.0e}\n"
+                                                           "{0}iterations:    {2:d}\n",
+                                                           indent, accuracy_bounds, iteration_bounds));
 
     auto term_accuracy = &(this->options.term_accuracy);
-    this->add_argument_description("acc", term_accuracy, std::nullopt, [term_accuracy] {
-      return (*term_accuracy >= max_accuracy && *term_accuracy <= min_accuracy);
-    });
+    this->add_argument_description("acc", term_accuracy, std::nullopt,
+                                   [term_accuracy] { return (accuracy_bounds.contains(*term_accuracy)); });
 
     auto term_iteration = &(this->options.term_iteration);
-    this->add_argument_description("iter", term_iteration, std::nullopt, [term_iteration] {
-      return (*term_iteration >= min_iteration && *term_iteration <= max_iteration);
-    });
+    this->add_argument_description("iter", term_iteration, std::nullopt,
+                                   [term_iteration] { return (iteration_bounds.contains(*term_iteration)); });
   }
 
   void argument_parser::add_argument_description(std::string name, std::optional<std::string> description_for_usage) {
