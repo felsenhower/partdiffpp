@@ -79,7 +79,7 @@ namespace partdiff {
     void ask_param(argument_index index);
     void fill_argument_descriptions();
     template <class T>
-    void add_argument(std::string name, T *target, std::optional<std::string> description, bounds_t<T> bounds);
+    void add_argument(std::string name, T &target, std::optional<std::string> description, bounds_t<T> bounds);
     void add_argument(std::string name, std::optional<std::string> description);
   };
 
