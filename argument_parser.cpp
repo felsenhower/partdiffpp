@@ -13,159 +13,45 @@ namespace partdiff {
     return static_cast<U>(v);
   }
 
-  static constexpr bounds_t<uint64_t> num_bounds{1, 1024};
-  static constexpr bounds_t<calculation_method> method_bounds{calculation_method::gauss_seidel,
-                                                              calculation_method::jacobi};
-  static constexpr bounds_t<uint64_t> lines_bounds{0, 10240};
-  static constexpr bounds_t<perturbation_function> func_bounds{perturbation_function::f0,
-                                                               perturbation_function::fpisin};
-  static constexpr bounds_t<termination_condition> term_bounds{termination_condition::accuracy,
-                                                               termination_condition::iterations};
-  static constexpr bounds_t<uint64_t> iteration_bounds{1, 200000};
-  static constexpr bounds_t<double> accuracy_bounds{1e-20, 1e-4};
-
-  argument_parser::argument_parser(const int argc, char const *argv[])
-    : app_name(argv[0]),
-      args(argv + 1, argv + argc) {
-    this->fill_argument_descriptions();
-    this->ask_params();
-  }
-
-  calculation_options argument_parser::get_options() {
-    return this->options;
-  }
-
-  argument_parser::argument_description argument_parser::get_description(std::size_t index) const {
-    return this->argument_descriptions[index];
-  }
-
-  argument_parser::argument_description argument_parser::get_description(argument_index index) const {
-    return this->get_description(to_underlying(index));
-  }
+  argument_parser::argument_parser(const std::optional<std::string> app_name, const std::optional<std::string> epilog)
+    : app_name(app_name),
+      epilog(epilog) {}
 
   void argument_parser::usage() const {
     const auto get_name = [](const std::string &input) { return std::format("  - {:11}", input + ":"); };
-
-    std::print("Usage: {}", this->app_name);
-    for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
-      std::print(" [{}]", get_description(i).name);
+    const std::size_t num_args = this->argument_descriptions.size();
+    std::print("Usage: {}", this->app_name.value_or("<app>"));
+    for (std::size_t i = 0; i < num_args; i++) {
+      std::print(" [{}]", argument_descriptions[i].name);
     }
     std::println("");
     std::println("");
-    for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
-      const std::string description = this->get_description(i).description.value_or("<invalid>");
-      std::println("{}{}", get_name(this->get_description(i).name), description);
+    for (std::size_t i = 0; i < num_args; i++) {
+      const std::string description = this->argument_descriptions[i].description.value_or("<invalid>");
+      std::println("{}{}", get_name(this->argument_descriptions[i].name), description);
     }
-    std::println("Example: {} 1 2 100 1 2 100", app_name);
-  }
-
-  void argument_parser::ask_params() {
-    if (this->args.size() < 6) {
-      usage();
-      exit(EXIT_SUCCESS);
-    }
-    for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
-      parse_param(i, args[i]);
-    }
-    if (this->options.termination == termination_condition::accuracy) {
-      parse_param(argument_index::term_accuracy, options.acc_iter);
-      this->options.term_iteration = iteration_bounds.upper;
-    } else {
-      parse_param(argument_index::term_iteration, options.acc_iter);
-      this->options.term_accuracy = 0.0;
+    if (epilog.has_value()) {
+      std::println("");
+      std::println("{}", epilog.value());
     }
   }
 
-  void argument_parser::parse_param(argument_index index, std::string &input) {
-    this->parse_param(to_underlying(index), input);
-  }
-
-  void argument_parser::parse_param(std::size_t index, std::string &input) {
-    if (!this->get_description(index).read_from_string(input)) {
-      this->usage();
-      exit(EXIT_FAILURE);
+  bool argument_parser::parse_args(const std::vector<std::string> args) {
+    const std::size_t num_args_expected = this->argument_descriptions.size();
+    const std::size_t num_args_given = args.size();
+    if (num_args_given < num_args_expected) {
+      return false;
     }
-  }
-
-  void argument_parser::fill_argument_descriptions() {
-
-    constexpr int indent_width = 17;
-    const std::string indent = std::format("{:{}s}", "", indent_width);
-
-    auto display_enum = [indent]<typename T>(bounds_t<T> bounds) -> std::string {
-      std::string result = "";
-      auto lower = to_underlying(bounds.lower);
-      auto upper = to_underlying(bounds.upper);
-      for (auto i = lower; i <= upper; i++) {
-        if (i != lower) {
-          result += "\n";
-        }
-        result += std::format("{0}{1:d}: {1:s}", indent, T(i));
+    for (std::size_t i = 0; i < num_args_expected; i++) {
+      if (!parse_arg(i, args[i])) {
+        return false;
       }
-      return result;
-    };
-
-    auto &number = this->options.number;
-    this->add_argument("num", number, std::make_optional(num_bounds),
-                       std::format("number of threads ({:d})", num_bounds));
-
-    auto &method = this->options.method;
-    this->add_argument("method", method, std::make_optional(method_bounds),
-                       std::format("calculation method ({:d})\n{}", method_bounds, display_enum(method_bounds)));
-
-    auto &interlines = this->options.interlines;
-    this->add_argument("lines", interlines, std::make_optional(lines_bounds),
-                       std::format("number of interlines ({1:d})\n"
-                                   "{0}matrixsize = (interlines * 8) + 9",
-                                   indent, lines_bounds));
-
-    auto &pert_func = this->options.pert_func;
-    this->add_argument("func", pert_func, std::make_optional(func_bounds),
-                       std::format("perturbation function ({:d})\n{}", func_bounds, display_enum(func_bounds)));
-
-    auto &termination = this->options.termination;
-    this->add_argument("term", termination, std::make_optional(term_bounds),
-                       std::format("termination condition ({:d})\n{}", term_bounds, display_enum(term_bounds)));
-
-    auto &acc_iter = this->options.acc_iter;
-    this->add_argument("acc/iter", acc_iter, std::optional<bounds_t<std::string>>{std::nullopt},
-                       std::format("depending on term:\n"
-                                   "{0}accuracy:  {1:.0e}\n"
-                                   "{0}iterations:    {2:d}\n",
-                                   indent, accuracy_bounds, iteration_bounds));
-
-    auto &term_accuracy = this->options.term_accuracy;
-    this->add_argument("acc", term_accuracy, std::make_optional(accuracy_bounds), std::nullopt);
-
-    auto &term_iteration = this->options.term_iteration;
-    this->add_argument("iter", term_iteration, std::make_optional(iteration_bounds), std::nullopt);
+    }
+    return true;
   }
 
-  template <class T>
-  void argument_parser::add_argument(std::string name, T &target, std::optional<bounds_t<T>> bounds,
-                                     std::optional<std::string> description) {
-    argument_description arg_desc;
-    arg_desc.name = name;
-    arg_desc.target = std::reference_wrapper<T>(target);
-    arg_desc.read_from_string = [target_ref_any = arg_desc.target, bounds](const std::string &input) {
-      auto &target_ref = std::any_cast<std::reference_wrapper<T>>(target_ref_any).get();
-      bool valid_input = false;
-      std::istringstream iss(input);
-      if constexpr (std::is_enum_v<T>) {
-        std::underlying_type_t<T> temp;
-        valid_input = static_cast<bool>(iss >> temp);
-        target_ref = static_cast<T>(temp);
-      } else {
-        valid_input = static_cast<bool>(iss >> target_ref);
-      }
-      if (bounds.has_value()) {
-        valid_input &= bounds.value().contains(target_ref);
-      }
-
-      return valid_input;
-    };
-    arg_desc.description = description;
-    this->argument_descriptions.push_back(arg_desc);
+  bool argument_parser::parse_arg(const std::size_t index, const std::string &input) {
+    return this->argument_descriptions[index].read_from_string(input);
   }
 
 } // namespace partdiff

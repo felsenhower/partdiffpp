@@ -43,8 +43,13 @@ namespace partdiff {
 
   class argument_parser {
     public:
-    argument_parser(const int argc, char const *argv[]);
-    calculation_options get_options();
+    argument_parser(const std::optional<std::string> app_name, const std::optional<std::string> epilog);
+    bool parse_args(const std::vector<std::string> args);
+    bool parse_arg(const std::size_t index, const std::string &input);
+    void usage() const;
+    template <class T>
+    void add_arg(std::string name, T &target, std::optional<bounds_t<T>> bounds,
+                 std::optional<std::string> description);
 
     private:
     struct argument_description {
@@ -54,33 +59,36 @@ namespace partdiff {
       std::function<bool(const std::string &input)> read_from_string = [](auto) { return false; };
     };
 
-    enum class argument_index : std::size_t {
-      number = 0,
-      method = 1,
-      interlines = 2,
-      pert_func = 3,
-      termination = 4,
-      term_dummy = 5,
-      term_accuracy = 6,
-      term_iteration = 7
-    };
-
-    calculation_options options;
-    std::string app_name;
-    std::vector<std::string> args;
+    const std::optional<std::string> app_name;
+    const std::optional<std::string> epilog;
     std::vector<argument_description> argument_descriptions;
-    argument_description get_description(std::size_t index) const;
-    argument_description get_description(argument_index index) const;
-    void usage() const;
-    void ask_params();
-    void parse_param(std::size_t index, std::string &input);
-    void parse_param(argument_index index, std::string &input);
-    void ask_param(std::size_t index);
-    void ask_param(argument_index index);
-    void fill_argument_descriptions();
-    template <class T>
-    void add_argument(std::string name, T &target, std::optional<bounds_t<T>> bounds,
-                      std::optional<std::string> description);
   };
+
+  template <class T>
+  void argument_parser::add_arg(std::string name, T &target, std::optional<bounds_t<T>> bounds,
+                                std::optional<std::string> description) {
+    argument_description arg_desc;
+    arg_desc.name = name;
+    arg_desc.target = std::reference_wrapper<T>(target);
+    arg_desc.read_from_string = [target_ref_any = arg_desc.target, bounds](const std::string &input) {
+      auto &target_ref = std::any_cast<std::reference_wrapper<T>>(target_ref_any).get();
+      bool valid_input = false;
+      std::istringstream iss(input);
+      if constexpr (std::is_enum_v<T>) {
+        std::underlying_type_t<T> temp;
+        valid_input = static_cast<bool>(iss >> temp);
+        target_ref = static_cast<T>(temp);
+      } else {
+        valid_input = static_cast<bool>(iss >> target_ref);
+      }
+      if (bounds.has_value()) {
+        valid_input &= bounds.value().contains(target_ref);
+      }
+
+      return valid_input;
+    };
+    arg_desc.description = description;
+    this->argument_descriptions.push_back(arg_desc);
+  }
 
 } // namespace partdiff
