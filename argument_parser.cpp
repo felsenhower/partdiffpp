@@ -128,9 +128,9 @@ namespace partdiff {
     this->add_argument_description(
         "method", method,
         std::format("calculation method (1 .. 2)\n"
-                    "{0}{1:d}: Gauß-Seidel\n"
-                    "{0}{2:d}: Jacobi",
-                    indent, to_underlying(calculation_method::gauss_seidel), to_underlying(calculation_method::jacobi)),
+                    "{0}{1:d}: {1:s}\n"
+                    "{0}{2:d}: {2:s}",
+                    indent, calculation_method::gauss_seidel, calculation_method::jacobi),
         [method] { return (*method == calculation_method::gauss_seidel || *method == calculation_method::jacobi); });
 
     auto interlines = &(this->options.interlines);
@@ -141,27 +141,26 @@ namespace partdiff {
                                    [interlines] { return (interlines_bounds.contains(*interlines)); });
 
     auto pert_func = &(this->options.pert_func);
-    this->add_argument_description(
-        "func", pert_func,
-        std::format("perturbation function (1 .. 2)\n"
-                    "{0}{1:d}: f(x,y) = 0\n"
-                    "{0}{2:d}: f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)",
-                    indent, to_underlying(perturbation_function::f0), to_underlying(perturbation_function::fpisin)),
-        [pert_func] {
-          return (*pert_func == perturbation_function::f0 || *pert_func == perturbation_function::fpisin);
-        });
+    this->add_argument_description("func", pert_func,
+                                   std::format("perturbation function (1 .. 2)\n"
+                                               "{0}{1:d}: {1:s}\n"
+                                               "{0}{2:d}: {2:s}",
+                                               indent, perturbation_function::f0, perturbation_function::fpisin),
+                                   [pert_func] {
+                                     return (*pert_func == perturbation_function::f0 ||
+                                             *pert_func == perturbation_function::fpisin);
+                                   });
 
     auto termination = &(this->options.termination);
-    this->add_argument_description("term", termination,
-                                   std::format("termination condition ( 1.. 2)\n"
-                                               "{0}{1:d}: sufficient accuracy\n"
-                                               "{0}{2:d}: number of iterations",
-                                               indent, to_underlying(termination_condition::accuracy),
-                                               to_underlying(termination_condition::iterations)),
-                                   [termination] {
-                                     return (*termination == termination_condition::accuracy ||
-                                             *termination == termination_condition::iterations);
-                                   });
+    this->add_argument_description(
+        "term", termination,
+        std::format("termination condition ( 1.. 2)\n"
+                    "{0}{1:d}: {1:s}\n"
+                    "{0}{2:d}: {2:s}",
+                    indent, termination_condition::accuracy, termination_condition::iterations),
+        [termination] {
+          return (*termination == termination_condition::accuracy || *termination == termination_condition::iterations);
+        });
 
     this->add_argument_description("acc/iter", std::format("depending on term:\n"
                                                            "{0}accuracy:  {1:.0e}\n"

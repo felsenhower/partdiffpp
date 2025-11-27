@@ -95,19 +95,13 @@ namespace partdiff {
     const int N = arguments.N;
     const double time = std::chrono::duration<double>(results.end_time - results.start_time).count();
     const double memory_consumption = (N + 1) * (N + 1) * sizeof(double) * arguments.num_matrices / 1024.0 / 1024.0;
-    const std::string_view calculation_method_display =
-        options.method == calculation_method::gauss_seidel ? "Gauß-Seidel" : "Jacobi";
-    const std::string_view perturbation_function_display =
-        options.pert_func == perturbation_function::f0 ? "f(x,y) = 0" : "f(x,y) = 2 * pi^2 * sin(pi * x) * sin(pi * y)";
-    const std::string_view termination_display =
-        options.termination == termination_condition::accuracy ? "Required accuracy" : "Number of iterations";
 
     std::println("Calculation time:       {:0.6f} s", time);
     std::println("Memory usage:           {:0.6f} MiB", memory_consumption);
-    std::println("Calculation method:     {:s}", calculation_method_display);
+    std::println("Calculation method:     {:s}", options.method);
     std::println("Interlines:             {:d}", options.interlines);
-    std::println("Perturbation function:  {:s}", perturbation_function_display);
-    std::println("Termination:            {:s}", termination_display);
+    std::println("Perturbation function:  {:s}", options.pert_func);
+    std::println("Termination:            {:s}", options.termination);
     std::println("Number of iterations:   {:d}", results.stat_iteration);
     std::println("Residuum:               {:e}", results.stat_accuracy);
   }
