@@ -6,40 +6,6 @@
 #include <sstream>
 #include <utility>
 
-template <typename T>
-struct bounds {
-  T lower;
-  T upper;
-  bool contains(T x) const {
-    return (x >= lower && x <= upper);
-  }
-};
-
-namespace std {
-
-  template <typename T, typename Char>
-    requires std::formattable<T, Char>
-  struct formatter<bounds<T>, Char> {
-    std::formatter<T, Char> underlying_;
-
-    constexpr auto parse(std::basic_format_parse_context<Char> &ctx) {
-      return underlying_.parse(ctx);
-    }
-
-    template <typename FormatContext>
-    auto format(const bounds<T> &b, FormatContext &ctx) const {
-      auto out = ctx.out();
-      out = underlying_.format(b.lower, ctx);
-      for (const char &c : std::string(" .. ")) {
-        *out++ = Char(c);
-      }
-      out = underlying_.format(b.upper, ctx);
-      return out;
-    }
-  };
-
-} // namespace std
-
 namespace partdiff {
 
   template <typename T, typename U = std::underlying_type_t<T>>
@@ -139,30 +105,29 @@ namespace partdiff {
     };
 
     auto number = &(this->options.number);
-    this->add_argument_description("num", number, std::format("number of threads ({:d})", num_bounds),
-                                   [number] { return num_bounds.contains(*number); });
+    this->add_argument_description("num", number, std::format("number of threads ({:d})", num_bounds), num_bounds);
 
     auto method = &(this->options.method);
     this->add_argument_description(
         "method", method, std::format("calculation method ({:d})\n{}", method_bounds, display_enum(method_bounds)),
-        [method] { return method_bounds.contains(*method); });
+        method_bounds);
 
     auto interlines = &(this->options.interlines);
     this->add_argument_description("lines", interlines,
                                    std::format("number of interlines ({1:d})\n"
                                                "{0}matrixsize = (interlines * 8) + 9",
                                                indent, lines_bounds),
-                                   [interlines] { return lines_bounds.contains(*interlines); });
+                                   lines_bounds);
 
     auto pert_func = &(this->options.pert_func);
     this->add_argument_description(
         "func", pert_func, std::format("perturbation function ({:d})\n{}", func_bounds, display_enum(func_bounds)),
-        [pert_func] { return func_bounds.contains(*pert_func); });
+        func_bounds);
 
     auto termination = &(this->options.termination);
     this->add_argument_description(
         "term", termination, std::format("termination condition ({:d})\n{}", term_bounds, display_enum(term_bounds)),
-        [termination] { return term_bounds.contains(*termination); });
+        term_bounds);
 
     this->add_argument_description("acc/iter", std::format("depending on term:\n"
                                                            "{0}accuracy:  {1:.0e}\n"
@@ -170,12 +135,10 @@ namespace partdiff {
                                                            indent, accuracy_bounds, iteration_bounds));
 
     auto term_accuracy = &(this->options.term_accuracy);
-    this->add_argument_description("acc", term_accuracy, std::nullopt,
-                                   [term_accuracy] { return accuracy_bounds.contains(*term_accuracy); });
+    this->add_argument_description("acc", term_accuracy, std::nullopt, accuracy_bounds);
 
     auto term_iteration = &(this->options.term_iteration);
-    this->add_argument_description("iter", term_iteration, std::nullopt,
-                                   [term_iteration] { return iteration_bounds.contains(*term_iteration); });
+    this->add_argument_description("iter", term_iteration, std::nullopt, iteration_bounds);
   }
 
   void argument_parser::add_argument_description(std::string name, std::optional<std::string> description_for_usage) {
@@ -188,11 +151,11 @@ namespace partdiff {
   template <class T>
   void argument_parser::add_argument_description(std::string name, T *target,
                                                  std::optional<std::string> description_for_usage,
-                                                 std::function<bool()> check) {
+                                                 bounds<T> target_bounds) {
     argument_description arg_desc;
     arg_desc.name = name;
     arg_desc.target = target;
-    arg_desc.read_from_string = [target = arg_desc.target, check](const std::string &input) {
+    arg_desc.read_from_string = [target = arg_desc.target, target_bounds](const std::string &input) {
       T *casted_ptr = std::any_cast<T *>(target);
       bool valid_input = false;
       std::istringstream iss(input);
@@ -203,7 +166,7 @@ namespace partdiff {
       } else {
         valid_input = static_cast<bool>(iss >> *casted_ptr);
       }
-      valid_input &= check();
+      valid_input &= target_bounds.contains(*casted_ptr);
       return valid_input;
     };
     arg_desc.description_for_usage = description_for_usage;
