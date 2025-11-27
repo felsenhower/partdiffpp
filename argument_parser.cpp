@@ -13,15 +13,16 @@ namespace partdiff {
     return static_cast<U>(v);
   }
 
-  static constexpr bounds<uint64_t> num_bounds{1, 1024};
-  static constexpr bounds<calculation_method> method_bounds{calculation_method::gauss_seidel,
-                                                            calculation_method::jacobi};
-  static constexpr bounds<uint64_t> lines_bounds{0, 10240};
-  static constexpr bounds<perturbation_function> func_bounds{perturbation_function::f0, perturbation_function::fpisin};
-  static constexpr bounds<termination_condition> term_bounds{termination_condition::accuracy,
-                                                             termination_condition::iterations};
-  static constexpr bounds<uint64_t> iteration_bounds{1, 200000};
-  static constexpr bounds<double> accuracy_bounds{1e-20, 1e-4};
+  static constexpr bounds_t<uint64_t> num_bounds{1, 1024};
+  static constexpr bounds_t<calculation_method> method_bounds{calculation_method::gauss_seidel,
+                                                              calculation_method::jacobi};
+  static constexpr bounds_t<uint64_t> lines_bounds{0, 10240};
+  static constexpr bounds_t<perturbation_function> func_bounds{perturbation_function::f0,
+                                                               perturbation_function::fpisin};
+  static constexpr bounds_t<termination_condition> term_bounds{termination_condition::accuracy,
+                                                               termination_condition::iterations};
+  static constexpr bounds_t<uint64_t> iteration_bounds{1, 200000};
+  static constexpr bounds_t<double> accuracy_bounds{1e-20, 1e-4};
 
   argument_parser::argument_parser(const int argc, char const *argv[])
     : app_name(argv[0]),
@@ -52,7 +53,7 @@ namespace partdiff {
     std::println("");
     std::println("");
     for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
-      const std::string description = this->get_description(i).description_for_usage.value_or("<invalid>");
+      const std::string description = this->get_description(i).description.value_or("<invalid>");
       std::println("{}{}", get_name(this->get_description(i).name), description);
     }
     std::println("Example: {} 1 2 100 1 2 100", app_name);
@@ -91,10 +92,10 @@ namespace partdiff {
     constexpr int indent_width = 17;
     const std::string indent = std::format("{:{}s}", "", indent_width);
 
-    auto display_enum = [indent]<typename T>(bounds<T> enum_bounds) -> std::string {
+    auto display_enum = [indent]<typename T>(bounds_t<T> bounds) -> std::string {
       std::string result = "";
-      auto lower = to_underlying(enum_bounds.lower);
-      auto upper = to_underlying(enum_bounds.upper);
+      auto lower = to_underlying(bounds.lower);
+      auto upper = to_underlying(bounds.upper);
       for (auto i = lower; i <= upper; i++) {
         if (i != lower) {
           result += "\n";
@@ -105,57 +106,56 @@ namespace partdiff {
     };
 
     auto number = &(this->options.number);
-    this->add_argument_description("num", number, std::format("number of threads ({:d})", num_bounds), num_bounds);
+    this->add_argument("num", number, std::format("number of threads ({:d})", num_bounds), num_bounds);
 
     auto method = &(this->options.method);
-    this->add_argument_description(
-        "method", method, std::format("calculation method ({:d})\n{}", method_bounds, display_enum(method_bounds)),
-        method_bounds);
+    this->add_argument("method", method,
+                       std::format("calculation method ({:d})\n{}", method_bounds, display_enum(method_bounds)),
+                       method_bounds);
 
     auto interlines = &(this->options.interlines);
-    this->add_argument_description("lines", interlines,
-                                   std::format("number of interlines ({1:d})\n"
-                                               "{0}matrixsize = (interlines * 8) + 9",
-                                               indent, lines_bounds),
-                                   lines_bounds);
+    this->add_argument("lines", interlines,
+                       std::format("number of interlines ({1:d})\n"
+                                   "{0}matrixsize = (interlines * 8) + 9",
+                                   indent, lines_bounds),
+                       lines_bounds);
 
     auto pert_func = &(this->options.pert_func);
-    this->add_argument_description(
-        "func", pert_func, std::format("perturbation function ({:d})\n{}", func_bounds, display_enum(func_bounds)),
-        func_bounds);
+    this->add_argument("func", pert_func,
+                       std::format("perturbation function ({:d})\n{}", func_bounds, display_enum(func_bounds)),
+                       func_bounds);
 
     auto termination = &(this->options.termination);
-    this->add_argument_description(
-        "term", termination, std::format("termination condition ({:d})\n{}", term_bounds, display_enum(term_bounds)),
-        term_bounds);
+    this->add_argument("term", termination,
+                       std::format("termination condition ({:d})\n{}", term_bounds, display_enum(term_bounds)),
+                       term_bounds);
 
-    this->add_argument_description("acc/iter", std::format("depending on term:\n"
-                                                           "{0}accuracy:  {1:.0e}\n"
-                                                           "{0}iterations:    {2:d}\n",
-                                                           indent, accuracy_bounds, iteration_bounds));
+    this->add_argument("acc/iter", std::format("depending on term:\n"
+                                               "{0}accuracy:  {1:.0e}\n"
+                                               "{0}iterations:    {2:d}\n",
+                                               indent, accuracy_bounds, iteration_bounds));
 
     auto term_accuracy = &(this->options.term_accuracy);
-    this->add_argument_description("acc", term_accuracy, std::nullopt, accuracy_bounds);
+    this->add_argument("acc", term_accuracy, std::nullopt, accuracy_bounds);
 
     auto term_iteration = &(this->options.term_iteration);
-    this->add_argument_description("iter", term_iteration, std::nullopt, iteration_bounds);
+    this->add_argument("iter", term_iteration, std::nullopt, iteration_bounds);
   }
 
-  void argument_parser::add_argument_description(std::string name, std::optional<std::string> description_for_usage) {
+  void argument_parser::add_argument(std::string name, std::optional<std::string> description) {
     argument_description arg_desc;
     arg_desc.name = name;
-    arg_desc.description_for_usage = description_for_usage;
+    arg_desc.description = description;
     this->argument_descriptions.push_back(arg_desc);
   }
 
   template <class T>
-  void argument_parser::add_argument_description(std::string name, T *target,
-                                                 std::optional<std::string> description_for_usage,
-                                                 bounds<T> target_bounds) {
+  void argument_parser::add_argument(std::string name, T *target, std::optional<std::string> description,
+                                     bounds_t<T> bounds) {
     argument_description arg_desc;
     arg_desc.name = name;
     arg_desc.target = target;
-    arg_desc.read_from_string = [target = arg_desc.target, target_bounds](const std::string &input) {
+    arg_desc.read_from_string = [target = arg_desc.target, bounds](const std::string &input) {
       T *casted_ptr = std::any_cast<T *>(target);
       bool valid_input = false;
       std::istringstream iss(input);
@@ -166,10 +166,10 @@ namespace partdiff {
       } else {
         valid_input = static_cast<bool>(iss >> *casted_ptr);
       }
-      valid_input &= target_bounds.contains(*casted_ptr);
+      valid_input &= bounds.contains(*casted_ptr);
       return valid_input;
     };
-    arg_desc.description_for_usage = description_for_usage;
+    arg_desc.description = description;
     this->argument_descriptions.push_back(arg_desc);
   }
 

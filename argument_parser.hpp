@@ -6,7 +6,7 @@
 #include <vector>
 
 template <typename T>
-struct bounds {
+struct bounds_t {
   T lower;
   T upper;
   bool contains(T x) const {
@@ -18,7 +18,7 @@ namespace std {
 
   template <typename T, typename Char>
     requires std::formattable<T, Char>
-  struct formatter<bounds<T>, Char> {
+  struct formatter<bounds_t<T>, Char> {
     std::formatter<T, Char> underlying_;
 
     constexpr auto parse(std::basic_format_parse_context<Char> &ctx) {
@@ -26,7 +26,7 @@ namespace std {
     }
 
     template <typename FormatContext>
-    auto format(const bounds<T> &b, FormatContext &ctx) const {
+    auto format(const bounds_t<T> &b, FormatContext &ctx) const {
       auto out = ctx.out();
       out = underlying_.format(b.lower, ctx);
       for (const char &c : std::string(" .. ")) {
@@ -50,7 +50,7 @@ namespace partdiff {
     struct argument_description {
       std::any target;
       std::string name;
-      std::optional<std::string> description_for_usage;
+      std::optional<std::string> description;
       std::function<bool(const std::string &input)> read_from_string = [](auto) { return false; };
     };
 
@@ -79,9 +79,8 @@ namespace partdiff {
     void ask_param(argument_index index);
     void fill_argument_descriptions();
     template <class T>
-    void add_argument_description(std::string name, T *target, std::optional<std::string> description_for_usage,
-                                  bounds<T> target_bounds);
-    void add_argument_description(std::string name, std::optional<std::string> description_for_usage);
+    void add_argument(std::string name, T *target, std::optional<std::string> description, bounds_t<T> bounds);
+    void add_argument(std::string name, std::optional<std::string> description);
   };
 
 } // namespace partdiff
