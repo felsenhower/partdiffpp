@@ -64,14 +64,14 @@ namespace partdiff {
       usage();
       exit(EXIT_SUCCESS);
     }
-    for (std::size_t i = 0; i <= to_underlying(argument_index::termination); i++) {
+    for (std::size_t i = 0; i <= to_underlying(argument_index::term_dummy); i++) {
       parse_param(i, args[i]);
     }
     if (this->options.termination == termination_condition::accuracy) {
-      parse_param(argument_index::term_accuracy, args[5]);
+      parse_param(argument_index::term_accuracy, options.acc_iter);
       this->options.term_iteration = iteration_bounds.upper;
     } else {
-      parse_param(argument_index::term_iteration, args[5]);
+      parse_param(argument_index::term_iteration, options.acc_iter);
       this->options.term_accuracy = 0.0;
     }
   }
@@ -106,52 +106,44 @@ namespace partdiff {
     };
 
     auto &number = this->options.number;
-    this->add_argument("num", number, std::format("number of threads ({:d})", num_bounds), num_bounds);
+    this->add_argument("num", number, std::make_optional(num_bounds),
+                       std::format("number of threads ({:d})", num_bounds));
 
     auto &method = this->options.method;
-    this->add_argument("method", method,
-                       std::format("calculation method ({:d})\n{}", method_bounds, display_enum(method_bounds)),
-                       method_bounds);
+    this->add_argument("method", method, std::make_optional(method_bounds),
+                       std::format("calculation method ({:d})\n{}", method_bounds, display_enum(method_bounds)));
 
     auto &interlines = this->options.interlines;
-    this->add_argument("lines", interlines,
+    this->add_argument("lines", interlines, std::make_optional(lines_bounds),
                        std::format("number of interlines ({1:d})\n"
                                    "{0}matrixsize = (interlines * 8) + 9",
-                                   indent, lines_bounds),
-                       lines_bounds);
+                                   indent, lines_bounds));
 
     auto &pert_func = this->options.pert_func;
-    this->add_argument("func", pert_func,
-                       std::format("perturbation function ({:d})\n{}", func_bounds, display_enum(func_bounds)),
-                       func_bounds);
+    this->add_argument("func", pert_func, std::make_optional(func_bounds),
+                       std::format("perturbation function ({:d})\n{}", func_bounds, display_enum(func_bounds)));
 
     auto &termination = this->options.termination;
-    this->add_argument("term", termination,
-                       std::format("termination condition ({:d})\n{}", term_bounds, display_enum(term_bounds)),
-                       term_bounds);
+    this->add_argument("term", termination, std::make_optional(term_bounds),
+                       std::format("termination condition ({:d})\n{}", term_bounds, display_enum(term_bounds)));
 
-    this->add_argument("acc/iter", std::format("depending on term:\n"
-                                               "{0}accuracy:  {1:.0e}\n"
-                                               "{0}iterations:    {2:d}\n",
-                                               indent, accuracy_bounds, iteration_bounds));
+    auto &acc_iter = this->options.acc_iter;
+    this->add_argument("acc/iter", acc_iter, std::optional<bounds_t<std::string>>{std::nullopt},
+                       std::format("depending on term:\n"
+                                   "{0}accuracy:  {1:.0e}\n"
+                                   "{0}iterations:    {2:d}\n",
+                                   indent, accuracy_bounds, iteration_bounds));
 
     auto &term_accuracy = this->options.term_accuracy;
-    this->add_argument("acc", term_accuracy, std::nullopt, accuracy_bounds);
+    this->add_argument("acc", term_accuracy, std::make_optional(accuracy_bounds), std::nullopt);
 
     auto &term_iteration = this->options.term_iteration;
-    this->add_argument("iter", term_iteration, std::nullopt, iteration_bounds);
-  }
-
-  void argument_parser::add_argument(std::string name, std::optional<std::string> description) {
-    argument_description arg_desc;
-    arg_desc.name = name;
-    arg_desc.description = description;
-    this->argument_descriptions.push_back(arg_desc);
+    this->add_argument("iter", term_iteration, std::make_optional(iteration_bounds), std::nullopt);
   }
 
   template <class T>
-  void argument_parser::add_argument(std::string name, T &target, std::optional<std::string> description,
-                                     bounds_t<T> bounds) {
+  void argument_parser::add_argument(std::string name, T &target, std::optional<bounds_t<T>> bounds,
+                                     std::optional<std::string> description) {
     argument_description arg_desc;
     arg_desc.name = name;
     arg_desc.target = std::reference_wrapper<T>(target);
@@ -166,7 +158,10 @@ namespace partdiff {
       } else {
         valid_input = static_cast<bool>(iss >> target_ref);
       }
-      valid_input &= bounds.contains(target_ref);
+      if (bounds.has_value()) {
+        valid_input &= bounds.value().contains(target_ref);
+      }
+
       return valid_input;
     };
     arg_desc.description = description;

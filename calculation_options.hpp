@@ -11,6 +11,7 @@ namespace partdiff {
     calculation_method method;
     perturbation_function pert_func;
     termination_condition termination;
+    std::string acc_iter;
     uint64_t term_iteration;
     double term_accuracy;
   };
