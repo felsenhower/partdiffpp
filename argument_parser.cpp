@@ -47,9 +47,14 @@ namespace partdiff {
     return static_cast<U>(v);
   }
 
-  static constexpr bounds<uint64_t> interlines_bounds{0, 10240};
+  static constexpr bounds<uint64_t> num_bounds{1, 1024};
+  static constexpr bounds<calculation_method> method_bounds{calculation_method::gauss_seidel,
+                                                            calculation_method::jacobi};
+  static constexpr bounds<uint64_t> lines_bounds{0, 10240};
+  static constexpr bounds<perturbation_function> func_bounds{perturbation_function::f0, perturbation_function::fpisin};
+  static constexpr bounds<termination_condition> term_bounds{termination_condition::accuracy,
+                                                             termination_condition::iterations};
   static constexpr bounds<uint64_t> iteration_bounds{1, 200000};
-  static constexpr bounds<uint64_t> thread_bounds{1, 1024};
   static constexpr bounds<double> accuracy_bounds{1e-20, 1e-4};
 
   argument_parser::argument_parser(const int argc, char const *argv[])
@@ -120,47 +125,44 @@ namespace partdiff {
     constexpr int indent_width = 17;
     const std::string indent = std::format("{:{}s}", "", indent_width);
 
+    auto display_enum = [indent]<typename T>(bounds<T> enum_bounds) -> std::string {
+      std::string result = "";
+      auto lower = to_underlying(enum_bounds.lower);
+      auto upper = to_underlying(enum_bounds.upper);
+      for (auto i = lower; i <= upper; i++) {
+        if (i != lower) {
+          result += "\n";
+        }
+        result += std::format("{0}{1:d}: {1:s}", indent, T(i));
+      }
+      return result;
+    };
+
     auto number = &(this->options.number);
-    this->add_argument_description("num", number, std::format("number of threads ({:d})", thread_bounds),
-                                   [number] { return (thread_bounds.contains(*number)); });
+    this->add_argument_description("num", number, std::format("number of threads ({:d})", num_bounds),
+                                   [number] { return num_bounds.contains(*number); });
 
     auto method = &(this->options.method);
     this->add_argument_description(
-        "method", method,
-        std::format("calculation method (1 .. 2)\n"
-                    "{0}{1:d}: {1:s}\n"
-                    "{0}{2:d}: {2:s}",
-                    indent, calculation_method::gauss_seidel, calculation_method::jacobi),
-        [method] { return (*method == calculation_method::gauss_seidel || *method == calculation_method::jacobi); });
+        "method", method, std::format("calculation method ({:d})\n{}", method_bounds, display_enum(method_bounds)),
+        [method] { return method_bounds.contains(*method); });
 
     auto interlines = &(this->options.interlines);
     this->add_argument_description("lines", interlines,
                                    std::format("number of interlines ({1:d})\n"
                                                "{0}matrixsize = (interlines * 8) + 9",
-                                               indent, interlines_bounds),
-                                   [interlines] { return (interlines_bounds.contains(*interlines)); });
+                                               indent, lines_bounds),
+                                   [interlines] { return lines_bounds.contains(*interlines); });
 
     auto pert_func = &(this->options.pert_func);
-    this->add_argument_description("func", pert_func,
-                                   std::format("perturbation function (1 .. 2)\n"
-                                               "{0}{1:d}: {1:s}\n"
-                                               "{0}{2:d}: {2:s}",
-                                               indent, perturbation_function::f0, perturbation_function::fpisin),
-                                   [pert_func] {
-                                     return (*pert_func == perturbation_function::f0 ||
-                                             *pert_func == perturbation_function::fpisin);
-                                   });
+    this->add_argument_description(
+        "func", pert_func, std::format("perturbation function ({:d})\n{}", func_bounds, display_enum(func_bounds)),
+        [pert_func] { return func_bounds.contains(*pert_func); });
 
     auto termination = &(this->options.termination);
     this->add_argument_description(
-        "term", termination,
-        std::format("termination condition ( 1.. 2)\n"
-                    "{0}{1:d}: {1:s}\n"
-                    "{0}{2:d}: {2:s}",
-                    indent, termination_condition::accuracy, termination_condition::iterations),
-        [termination] {
-          return (*termination == termination_condition::accuracy || *termination == termination_condition::iterations);
-        });
+        "term", termination, std::format("termination condition ({:d})\n{}", term_bounds, display_enum(term_bounds)),
+        [termination] { return term_bounds.contains(*termination); });
 
     this->add_argument_description("acc/iter", std::format("depending on term:\n"
                                                            "{0}accuracy:  {1:.0e}\n"
@@ -169,11 +171,11 @@ namespace partdiff {
 
     auto term_accuracy = &(this->options.term_accuracy);
     this->add_argument_description("acc", term_accuracy, std::nullopt,
-                                   [term_accuracy] { return (accuracy_bounds.contains(*term_accuracy)); });
+                                   [term_accuracy] { return accuracy_bounds.contains(*term_accuracy); });
 
     auto term_iteration = &(this->options.term_iteration);
     this->add_argument_description("iter", term_iteration, std::nullopt,
-                                   [term_iteration] { return (iteration_bounds.contains(*term_iteration)); });
+                                   [term_iteration] { return iteration_bounds.contains(*term_iteration); });
   }
 
   void argument_parser::add_argument_description(std::string name, std::optional<std::string> description_for_usage) {
