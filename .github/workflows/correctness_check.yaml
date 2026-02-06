@@ -23,34 +23,18 @@ jobs:
       - name: Build partdiff
         run: make
 
-      - name: Install Valgrind
-        run: sudo apt-get update && sudo apt-get install -y valgrind
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          version: "0.9.8"
-
-      - name: Set up Python
-        run: uv python install
-
-      - name: Clone partdiff_tester
-        run: git clone https://github.com/parcio/partdiff_tester.git
-
       - name: Run small correctness check subset with valgrind
-        run: |
-          cd partdiff_tester && \
-          uv run pytest -n auto --verbose \
-            --executable='../partdiff' \
-            --strictness=4 \
-            --valgrind \
-            --shuffle=42 \
-            --max-num-tests=5
+        uses: parcio/partdiff_tester/.github/actions/partdiff_tester@v0.1.0
+        with:
+          executable: "./partdiff"
+          strictness: "4"
+          valgrind: "true"
+          shuffle: "42"
+          max_num_tests: "5"
 
-      - name: Run correctness check
-        run: |
-          cd partdiff_tester && \
-          uv run pytest -n auto --verbose \
-            --executable='../partdiff' \
-            --strictness=4 \
-            --shuffle=42
+      - name: Run full correctness check without valgrind
+        uses: parcio/partdiff_tester/.github/actions/partdiff_tester@v0.1.0
+        with:
+          executable: "./partdiff"
+          strictness: "4"
+          shuffle: "42"
