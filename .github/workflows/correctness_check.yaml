@@ -24,7 +24,7 @@ jobs:
         run: make
 
       - name: Run small correctness check subset with valgrind
-        uses: parcio/partdiff_tester@v0.1.7
+        uses: parcio/partdiff_tester@v0.1.8
         with:
           executable: "./partdiff"
           strictness: "4"
@@ -33,7 +33,7 @@ jobs:
           max_num_tests: "5"
 
       - name: Run full correctness check without valgrind
-        uses: parcio/partdiff_tester@v0.1.7
+        uses: parcio/partdiff_tester@v0.1.8
         with:
           executable: "./partdiff"
           strictness: "4"
